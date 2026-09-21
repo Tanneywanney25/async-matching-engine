@@ -102,3 +102,36 @@ class BookLevel:
 
     price: Decimal
     quantity: Decimal
+
+
+@dataclass(slots=True, frozen=True)
+class Trade:
+    """A public trade print from the market_trades feed.
+
+    Attributes:
+        trade_id: Exchange-assigned trade identifier.
+        product_id: Product symbol, e.g. ``"BTC-USD"``.
+        price: Execution price.
+        size: Executed base quantity.
+        side: Maker side as reported by Coinbase (``"BUY"`` or ``"SELL"``).
+        time: ISO-8601 timestamp string from the exchange.
+    """
+
+    trade_id: str
+    product_id: str
+    price: Decimal
+    size: Decimal
+    side: str
+    time: str
+
+    @classmethod
+    def from_payload(cls, payload: dict) -> "Trade":
+        """Build a :class:`Trade` from a raw Coinbase trade dict."""
+        return cls(
+            trade_id=str(payload.get("trade_id", "")),
+            product_id=str(payload.get("product_id", "")),
+            price=Decimal(str(payload["price"])),
+            size=Decimal(str(payload["size"])),
+            side=str(payload.get("side", "")).upper(),
+            time=str(payload.get("time", "")),
+        )
