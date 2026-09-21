@@ -91,5 +91,24 @@ def test_book_imbalance_symmetric_is_zero() -> None:
     assert book.book_imbalance() == D("0")
 
 
+def test_empty_book_views_are_none_and_zero() -> None:
+    book = OrderBook("TEST")
+    assert book.best_bid is None
+    assert book.best_ask is None
+    assert book.mid_price is None
+    assert book.spread is None
+    assert book.book_imbalance() == D("0")
+    assert book.match_market_order(Side.BID, D("1")) == []
+
+
+def test_market_order_stops_when_liquidity_exhausted() -> None:
+    book = OrderBook("TEST")
+    book.add_order(Order(Side.ASK, D("100"), D("1")))
+    fills = book.match_market_order(Side.BID, D("5"))
+    # Only 1 unit of liquidity exists; the remainder is dropped (no resting).
+    assert sum(f.quantity for f in fills) == D("1")
+    assert book.best_ask is None
+
+
 if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(pytest.main([__file__, "-v"]))
