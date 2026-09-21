@@ -247,3 +247,95 @@ def create_app() -> "FastAPI":
 
 # Module-level ASGI app for ``uvicorn exchange_engine.engine:app``.
 app = create_app() if FastAPI is not None else None
+
+
+# --------------------------------------------------------------------------- #
+# CLI mode                                                                     #
+# --------------------------------------------------------------------------- #
+
+
+def parse_command(line: str) -> "tuple[Side, OrderType, Optional[Decimal], Decimal]":
+    """Parse a CLI order command into its components.
+
+    Accepts either ``BUY 64000 0.01 LIMIT`` (side price qty type) or
+    ``SELL MARKET 0.5`` (side type qty). Token order around the numbers is
+    tolerant; the order type keyword may appear anywhere.
+
+    Returns:
+        A ``(side, order_type, price, quantity)`` tuple. ``price`` is ``None``
+        for market orders.
+
+    Raises:
+        ValueError: If the command cannot be parsed.
+    """
+    tokens = line.replace(",", " ").split()
+    if not tokens:
+        raise ValueError("empty command")
+
+    side = _parse_side(tokens[0])
+    rest = tokens[1:]
+
+    is_market = any(t.lower() == "market" for t in rest)
+    order_type = OrderType.MARKET if is_market else OrderType.LIMIT
+    numbers = [Decimal(t) for t in rest if t.lower() not in ("limit", "market")]
+
+    if order_type is OrderType.MARKET:
+        if len(numbers) != 1:
+            raise ValueError("market order expects a single quantity")
+        return side, order_type, None, numbers[0]
+
+    if len(numbers) != 2:
+        raise ValueError("limit order expects a price and a quantity")
+    price, quantity = numbers[0], numbers[1]
+    return side, order_type, price, quantity
+
+
+async def run_cli() -> None:
+    """Read orders from stdin, submit them, and print fills and P&L.
+
+    The Coinbase feed runs concurrently so P&L can be marked against the live
+    mid price. Enter ``quit`` (or send EOF) to exit.
+    """
+    feed_task = asyncio.create_task(feed.run())
+    print("exchange-engine CLI — enter orders (e.g. 'BUY 64000 0.01 LIMIT'), 'quit' to exit")
+    try:
+        while True:
+            line = await asyncio.to_thread(_read_line)
+            if line is None or line.strip().lower() in ("quit", "exit"):
+                break
+            if not line.strip():
+                continue
+            try:
+                side, order_type, price, quantity = parse_command(line)
+            except ValueError as exc:
+                print(f"! parse error: {exc}")
+                continue
+            fills = engine.submit_order(side, quantity, price, order_type)
+            mark = feed.metrics(engine.product_id).get("mid_price")
+            filled = sum((f.quantity for f in fills), Decimal(0))
+            print(f"  filled {filled} in {len(fills)} fill(s); pnl={engine.pnl_summary(mark)['pnl']}")
+    finally:
+        await feed.stop()
+        feed_task.cancel()
+        try:
+            await feed_task
+        except asyncio.CancelledError:
+            pass
+
+
+def _read_line() -> Optional[str]:
+    """Blocking stdin read that returns ``None`` on EOF."""
+    try:
+        return input("> ")
+    except EOFError:
+        return None
+
+
+def main() -> None:
+    """Entry point for ``python -m exchange_engine.engine``."""
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+    asyncio.run(run_cli())
+
+
+if __name__ == "__main__":
+    main()
