@@ -1,0 +1,12 @@
+{
+  "name": "exchange-engine",
+  "short_name": "exchange-engine",
+  "description": "Real-time Coinbase limit order book, matching engine and analytics.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#00142d",
+  "theme_color": "#00142d",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
