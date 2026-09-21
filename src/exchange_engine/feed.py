@@ -13,7 +13,6 @@ any Coinbase SDK.
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import json
 import logging
 from collections import deque
@@ -212,7 +211,68 @@ class CoinbaseFeed:
         return rolling_vwap(list(buffer), window=window)
 
     async def _handle_heartbeat(self, msg: dict) -> None:
-        """Placeholder; implemented in a later revision."""
+        """Record heartbeat timestamps and log any counter gaps.
+
+        Heartbeats arrive every second and keep the connection alive; a jump in
+        ``heartbeat_counter`` indicates dropped messages.
+        """
+        self.last_heartbeat = msg.get("timestamp")
+        for event in msg.get("events", []):
+            counter = event.get("heartbeat_counter")
+            if counter is None:
+                continue
+            if self._heartbeat_counter is not None and counter != self._heartbeat_counter + 1:
+                logger.warning(
+                    "heartbeat gap: expected %s, got %s",
+                    self._heartbeat_counter + 1,
+                    counter,
+                )
+            self._heartbeat_counter = counter
+        await self._dispatch({"type": "heartbeat", "timestamp": self.last_heartbeat})
+
+    # -- accessors --------------------------------------------------------
+
+    def get_depth(self, product_id: str, n_levels: int = 10) -> Dict[str, List[BookLevel]]:
+        """Top ``n_levels`` of the mirror for ``product_id`` (empty if unknown)."""
+        book = self.books.get(product_id)
+        if book is None:
+            return {"bids": [], "asks": []}
+        return book.depth(n_levels)
+
+    def recent_trades(self, product_id: str, limit: int = 50) -> List[Trade]:
+        """Most recent trades for ``product_id`` (newest last)."""
+        buffer = self.trades.get(product_id)
+        if not buffer:
+            return []
+        return list(buffer)[-limit:]
+
+    def best_bid(self, product_id: str) -> Optional[Decimal]:
+        """Best bid price in the mirror for ``product_id``."""
+        book = self.books.get(product_id)
+        return book.best_bid if book else None
+
+    def best_ask(self, product_id: str) -> Optional[Decimal]:
+        """Best ask price in the mirror for ``product_id``."""
+        book = self.books.get(product_id)
+        return book.best_ask if book else None
+
+    def metrics(self, product_id: str) -> Dict[str, Optional[Decimal]]:
+        """Return spread, mid price, VWAP and book imbalance for a product."""
+        from .metrics import book_imbalance
+
+        book = self.books.get(product_id)
+        if book is None:
+            return {"spread": None, "mid_price": None, "vwap": Decimal(0), "imbalance": Decimal(0)}
+        bid, ask = book.best_bid, book.best_ask
+        spread = ask - bid if bid is not None and ask is not None else None
+        mid = (bid + ask) / 2 if bid is not None and ask is not None else None
+        depth = book.depth(10)
+        return {
+            "spread": spread,
+            "mid_price": mid,
+            "vwap": self.rolling_vwap(product_id),
+            "imbalance": book_imbalance(depth["bids"], depth["asks"]),
+        }
 
     async def run(self) -> None:
         """Connect and consume forever, reconnecting with exponential backoff.
