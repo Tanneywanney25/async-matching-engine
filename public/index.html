@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>exchange-engine · live order book</title>
+  <meta name="description" content="Real-time limit order book, matching-engine simulator and analytics on live Coinbase market data. Streams directly from the public Coinbase Advanced Trade WebSocket." />
+  <meta name="theme-color" content="#00142d" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="exchange-engine — live order book & matching engine" />
+  <meta property="og:description" content="Real-time Coinbase order book, VWAP, imbalance and a client-side matching simulator." />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◧</span>
+      <div>
+        <h1>exchange-engine</h1>
+        <p class="tagline">real-time order book &amp; matching engine · live Coinbase feed</p>
+      </div>
+    </div>
+    <div class="status" id="status">
+      <span class="dot" id="conn-dot"></span>
+      <span id="conn-text">connecting…</span>
+    </div>
+  </header>
+
+  <nav class="products" id="product-nav" aria-label="Product selector"></nav>
+
+  <main class="grid">
+    <section class="panel book-panel">
+      <div class="panel-head">
+        <h2>Order Book</h2>
+        <span class="muted" id="book-product">BTC-USD</span>
+      </div>
+      <div class="book">
+        <div class="book-col">
+          <div class="book-head"><span>Price</span><span>Size</span><span>Total</span></div>
+          <div id="asks" class="levels asks"></div>
+        </div>
+        <div class="spread-row">
+          <span id="mid-price" class="mid">—</span>
+          <span id="spread" class="spread muted">spread —</span>
+        </div>
+        <div class="book-col">
+          <div id="bids" class="levels bids"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel metrics-panel">
+      <div class="panel-head"><h2>Metrics</h2></div>
+      <ul class="metrics">
+        <li><span>Mid price</span><b id="m-mid">—</b></li>
+        <li><span>Spread</span><b id="m-spread">—</b></li>
+        <li><span>Imbalance (10)</span><b id="m-imb" class="accent">—</b></li>
+        <li><span>VWAP (100)</span><b id="m-vwap" class="cyan">—</b></li>
+        <li><span>Trade flow (50)</span><b id="m-flow">—</b></li>
+        <li><span>Last heartbeat</span><b id="m-hb" class="muted small">—</b></li>
+      </ul>
+
+      <div class="panel-head sim-head"><h2>Order Simulator</h2></div>
+      <form id="sim-form" class="sim">
+        <div class="sim-row">
+          <div class="seg" id="sim-side">
+            <button type="button" data-side="buy" class="active">BUY</button>
+            <button type="button" data-side="sell">SELL</button>
+          </div>
+          <div class="seg" id="sim-type">
+            <button type="button" data-type="limit" class="active">LIMIT</button>
+            <button type="button" data-type="market">MARKET</button>
+          </div>
+        </div>
+        <div class="sim-row">
+          <label>Price <input id="sim-price" type="text" inputmode="decimal" placeholder="auto" /></label>
+          <label>Quantity <input id="sim-qty" type="text" inputmode="decimal" value="0.01" /></label>
+        </div>
+        <button type="submit" class="submit">Submit synthetic order</button>
+      </form>
+      <div class="pnl">
+        <span>Position <b id="pnl-pos">0</b></span>
+        <span>Cash <b id="pnl-cash">0</b></span>
+        <span>P&amp;L <b id="pnl-pnl">0</b></span>
+      </div>
+      <div id="sim-log" class="sim-log"></div>
+    </section>
+
+    <section class="panel tape-panel">
+      <div class="panel-head"><h2>Recent Trades</h2></div>
+      <div class="tape-head"><span>Time</span><span>Price</span><span>Size</span><span>Side</span></div>
+      <div id="tape" class="tape"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Streams from <code>wss://advanced-trade-ws.coinbase.com</code> · no API key required.</span>
+    <span>Matching &amp; analytics mirror the Python <code>exchange_engine</code> package.</span>
+  </footer>
+
+  <script src="/js/app.js" type="module"></script>
+</body>
+</html>
