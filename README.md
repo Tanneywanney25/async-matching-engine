@@ -1,5 +1,9 @@
 # exchange-engine
 
+![CI](https://github.com/Tanneywanney25/async-matching-engine/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.10%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 A real-time limit order book and matching engine that consumes **live Coinbase
 Advanced Trade** market data — no API key or authentication required. It maintains
 an in-memory price-time-priority book, computes microstructure analytics (VWAP,
@@ -121,6 +125,15 @@ python scripts/benchmark.py                      # 100K orders, 10K cancels
 
 Reports p50/p95/p99 insert+match and cancel latency in microseconds. Target:
 median `add_order` under 50 µs (typically ~5–6 µs on a modern laptop).
+
+### Offline demo (no network)
+
+```bash
+python scripts/replay.py --steps 200
+```
+
+Drives the feed with synthetic snapshots, updates and trades, then prints the
+resulting book and metrics — handy for verifying the pipeline offline.
 
 ## Web dashboard (Vercel)
 
