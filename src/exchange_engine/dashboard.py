@@ -13,7 +13,9 @@ import asyncio
 from decimal import Decimal
 from typing import List, Optional
 
+from rich.console import Console
 from rich.layout import Layout
+from rich.live import Live
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
@@ -113,3 +115,53 @@ def build_layout(feed: CoinbaseFeed, product_id: str) -> Layout:
         Layout(Panel(build_metrics_panel(metrics), title="Metrics"), name="metrics"),
     )
     return layout
+
+
+async def run_dashboard(product_id: str, products: Optional[List[str]] = None) -> None:
+    """Start the feed and drive the live-updating dashboard.
+
+    Args:
+        product_id: Product to display in the panels.
+        products: Products to subscribe to (defaults to BTC-USD and ETH-USD).
+    """
+    products = products or ["BTC-USD", "ETH-USD"]
+    if product_id not in products:
+        products = [product_id, *products]
+    feed = CoinbaseFeed(products)
+    feed_task = asyncio.create_task(feed.run())
+    console = Console()
+    interval = 1.0 / REFRESH_HZ
+    try:
+        with Live(
+            build_layout(feed, product_id),
+            console=console,
+            screen=True,
+            refresh_per_second=REFRESH_HZ,
+        ) as live:
+            while True:
+                await asyncio.sleep(interval)
+                live.update(build_layout(feed, product_id))
+    except asyncio.CancelledError:
+        raise
+    finally:
+        await feed.stop()
+        feed_task.cancel()
+        try:
+            await feed_task
+        except asyncio.CancelledError:
+            pass
+
+
+def main() -> None:
+    """CLI entry point: parse args and run the dashboard until interrupted."""
+    parser = argparse.ArgumentParser(description="exchange-engine live terminal dashboard")
+    parser.add_argument("--product", default="BTC-USD", help="product to display")
+    args = parser.parse_args()
+    try:
+        asyncio.run(run_dashboard(args.product))
+    except KeyboardInterrupt:
+        pass
+
+
+if __name__ == "__main__":
+    main()
