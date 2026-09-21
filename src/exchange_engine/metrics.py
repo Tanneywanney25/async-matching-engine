@@ -25,6 +25,13 @@ def _trade_price_size(trade: TradeLike) -> Tuple[Decimal, Decimal]:
     return Decimal(str(trade["price"])), Decimal(str(trade["size"]))
 
 
+def _trade_side(trade: TradeLike) -> str:
+    """Return the upper-cased maker side (``"BUY"``/``"SELL"``) of a trade."""
+    if isinstance(trade, Trade):
+        return trade.side.upper()
+    return str(trade.get("side", "")).upper()
+
+
 def _level_price_qty(level: LevelLike) -> Tuple[Decimal, Decimal]:
     """Return ``(price, quantity)`` as Decimals from a level-like object."""
     if isinstance(level, BookLevel):
@@ -76,3 +83,32 @@ def book_imbalance(
     if total == 0:
         return Decimal(0)
     return (bid_qty - ask_qty) / total
+
+
+def trade_flow_imbalance(trades: Sequence[TradeLike], window: int = 50) -> Decimal:
+    """Signed trade-flow imbalance over the last ``window`` trades.
+
+    Buy volume is attributed to trades whose maker side is ``SELL`` (an
+    aggressive buyer lifted the offer), and sell volume to ``BUY`` makers.
+
+    Args:
+        trades: Ordered sequence of trades (oldest first).
+        window: Number of most-recent trades to include.
+
+    Returns:
+        ``(buy_volume - sell_volume) / total_volume`` in ``[-1, 1]``, or ``0``
+        when there is no volume.
+    """
+    recent = list(trades)[-window:]
+    buy_volume = Decimal(0)
+    sell_volume = Decimal(0)
+    for trade in recent:
+        _price, size = _trade_price_size(trade)
+        if _trade_side(trade) == "SELL":
+            buy_volume += size
+        else:
+            sell_volume += size
+    total = buy_volume + sell_volume
+    if total == 0:
+        return Decimal(0)
+    return (buy_volume - sell_volume) / total
