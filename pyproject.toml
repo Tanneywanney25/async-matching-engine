@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exchange-engine"
+version = "0.1.0"
+description = "Real-time limit order book and matching engine on live Coinbase market data"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Tanush Bhatia" }]
+keywords = ["orderbook", "matching-engine", "coinbase", "trading", "asyncio", "websockets"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+
+dependencies = [
+    "websockets>=12.0",
+    "sortedcontainers>=2.4.0",
+    "rich>=13.0.0",
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.29.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Tanneywanney25/async-matching-engine"
+Repository = "https://github.com/Tanneywanney25/async-matching-engine"
+
+[project.scripts]
+exchange-dashboard = "exchange_engine.dashboard:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
