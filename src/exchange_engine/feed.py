@@ -183,7 +183,33 @@ class CoinbaseFeed:
             )
 
     async def _handle_trades(self, msg: dict) -> None:
-        """Placeholder; implemented in a later revision."""
+        """Append trades from a market_trades message to the per-product buffer.
+
+        Each message may batch several trades (Coinbase flushes every ~250ms).
+        Trades are stored newest-last in a capped deque.
+        """
+        for event in msg.get("events", []):
+            for raw_trade in event.get("trades", []):
+                try:
+                    trade = Trade.from_payload(raw_trade)
+                except (KeyError, ValueError):
+                    continue
+                buffer = self.trades.get(trade.product_id)
+                if buffer is None:
+                    continue
+                buffer.append(trade)
+                await self._dispatch(
+                    {"type": "trade", "product_id": trade.product_id, "trade": trade}
+                )
+
+    def rolling_vwap(self, product_id: str, window: int = 100) -> Decimal:
+        """Volume-weighted average price of the last ``window`` trades."""
+        from .metrics import rolling_vwap
+
+        buffer = self.trades.get(product_id)
+        if not buffer:
+            return Decimal(0)
+        return rolling_vwap(list(buffer), window=window)
 
     async def _handle_heartbeat(self, msg: dict) -> None:
         """Placeholder; implemented in a later revision."""
