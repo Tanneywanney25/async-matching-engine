@@ -18,9 +18,11 @@ from contextlib import asynccontextmanager
 from decimal import Decimal, InvalidOperation
 from typing import Dict, List, Optional
 
-from .feed import CoinbaseFeed
 from .models import Fill, Order, OrderType, Side
 from .orderbook import OrderBook
+
+if False:  # pragma: no cover - typing-only import, avoids a hard websockets dep
+    from .feed import CoinbaseFeed
 
 logger = logging.getLogger("exchange_engine.engine")
 
@@ -111,9 +113,25 @@ except ImportError:  # pragma: no cover - FastAPI optional at import time
     FastAPI = None  # type: ignore[assignment]
 
 
-# Shared singletons used by the API layer.
-feed = CoinbaseFeed(PRODUCT_IDS)
+# Shared engine singleton used by the API and CLI layers.
 engine = MatchingEngine("BTC-USD")
+
+_feed: "Optional[CoinbaseFeed]" = None
+
+
+def get_feed() -> "CoinbaseFeed":
+    """Return the lazily-constructed shared feed.
+
+    Importing the feed (and thus ``websockets``) is deferred so that the core
+    matching engine can be imported in environments—such as a lightweight
+    serverless function—that never start the live feed.
+    """
+    global _feed
+    if _feed is None:
+        from .feed import CoinbaseFeed
+
+        _feed = CoinbaseFeed(PRODUCT_IDS)
+    return _feed
 
 
 def _levels_to_json(levels: List) -> List[Dict[str, str]]:
@@ -135,6 +153,8 @@ def create_app() -> "FastAPI":
     """Build and configure the FastAPI application."""
     if FastAPI is None:  # pragma: no cover
         raise RuntimeError("fastapi is not installed")
+
+    feed = get_feed()
 
     @asynccontextmanager
     async def lifespan(_app: "FastAPI"):
@@ -296,6 +316,7 @@ async def run_cli() -> None:
     The Coinbase feed runs concurrently so P&L can be marked against the live
     mid price. Enter ``quit`` (or send EOF) to exit.
     """
+    feed = get_feed()
     feed_task = asyncio.create_task(feed.run())
     print("exchange-engine CLI — enter orders (e.g. 'BUY 64000 0.01 LIMIT'), 'quit' to exit")
     try:
