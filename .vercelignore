@@ -8,5 +8,6 @@ scripts/
 .ruff_cache/
 *.egg-info/
 CSS File/
+CSS File 3.0/
 prompt-async-matching-engine.txt
 Makefile
