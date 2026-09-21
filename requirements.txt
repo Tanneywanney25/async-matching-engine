@@ -1,0 +1,4 @@
+# Runtime dependencies for the Vercel Python serverless function (api/index.py).
+# The live dashboard itself is static and needs none of these.
+fastapi>=0.110.0
+sortedcontainers>=2.4.0
