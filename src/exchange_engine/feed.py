@@ -160,7 +160,27 @@ class CoinbaseFeed:
         # "subscriptions" and other control frames are ignored.
 
     async def _handle_l2(self, msg: dict) -> None:
-        """Placeholder; implemented in a later revision."""
+        """Apply a level2 snapshot or update to the product mirror.
+
+        Snapshots clear and rebuild the book; updates set the absolute quantity
+        at a level, deleting the level when the new quantity is zero. Coinbase
+        uses ``"offer"`` for the ask side, which is mapped accordingly.
+        """
+        for event in msg.get("events", []):
+            product_id = event.get("product_id")
+            book = self.books.get(product_id)
+            if book is None:
+                continue
+            if event.get("type") == "snapshot":
+                book.clear()
+            for update in event.get("updates", []):
+                side = update["side"]  # "bid" or "offer"
+                price = Decimal(update["price_level"])
+                quantity = Decimal(update["new_quantity"])
+                book.set_level(side, price, quantity)
+            await self._dispatch(
+                {"type": "l2", "product_id": product_id, "event_type": event.get("type")}
+            )
 
     async def _handle_trades(self, msg: dict) -> None:
         """Placeholder; implemented in a later revision."""
