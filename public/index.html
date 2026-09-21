@@ -3,16 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>exchange-engine · live order book</title>
-  <meta name="description" content="Real-time limit order book, matching-engine simulator and analytics on live Coinbase market data. Streams directly from the public Coinbase Advanced Trade WebSocket." />
-  <meta name="theme-color" content="#00142d" />
+  <title>exchange-engine · live Coinbase order book + execution simulator</title>
+  <meta name="description" content="Streams live BTC and ETH Level 2 market data from Coinbase, computes liquidity metrics in real time, and estimates how hypothetical orders would fill. No real trades are placed." />
+  <meta name="theme-color" content="#00112b" />
+  <link rel="canonical" href="https://async-matching-engine.vercel.app/" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="manifest" href="/manifest.webmanifest" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="exchange-engine — live order book & matching engine" />
-  <meta property="og:description" content="Real-time Coinbase order book, VWAP, imbalance and a client-side matching simulator." />
+  <meta property="og:title" content="exchange-engine — live order book & execution simulator" />
+  <meta property="og:description" content="Live Coinbase Level 2 order book, real-time liquidity metrics, and a hypothetical execution simulator. Simulated only — no real trades." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://async-matching-engine.vercel.app/" />
+  <meta property="og:image" content="https://async-matching-engine.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="exchange-engine — live order book & execution simulator" />
+  <meta name="twitter:description" content="Live Coinbase Level 2 order book, real-time liquidity metrics, and a hypothetical execution simulator. Simulated only." />
+  <meta name="twitter:image" content="https://async-matching-engine.vercel.app/og-image.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -20,90 +30,196 @@
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
+  <a class="skip-link" href="#book">Skip to order book</a>
+
   <header class="topbar">
-    <div class="brand">
-      <span class="logo">◧</span>
-      <div>
-        <h1>exchange-engine</h1>
-        <p class="tagline">real-time order book &amp; matching engine · live Coinbase feed</p>
+    <a class="brand" href="/">
+      <span class="logo" aria-hidden="true">◧</span>
+      <span class="wordmark">EXCHANGE<span class="accent">ENGINE</span></span>
+    </a>
+    <div class="topbar-right">
+      <a class="source-link" href="https://github.com/Tanneywanney25/async-matching-engine" target="_blank" rel="noopener noreferrer">View source</a>
+      <div class="status" role="status" aria-live="polite">
+        <span class="dot connecting" id="conn-dot" aria-hidden="true"></span>
+        <span id="conn-text">Connecting…</span>
+        <span class="mode-badge" id="mode-badge" hidden>DEMO DATA</span>
       </div>
-    </div>
-    <div class="status" id="status">
-      <span class="dot" id="conn-dot"></span>
-      <span id="conn-text">connecting…</span>
     </div>
   </header>
 
-  <nav class="products" id="product-nav" aria-label="Product selector"></nav>
+  <section class="intro">
+    <h1>Live Coinbase order book <span class="accent-plus">+</span> execution simulator</h1>
+    <p class="lede">
+      Streams BTC and ETH Level 2 market data straight from Coinbase, calculates liquidity
+      metrics in real time, and estimates how hypothetical orders would fill.
+      <strong>Simulated only — no real trades are placed.</strong>
+    </p>
+    <details class="how card-bold">
+      <summary>How it works</summary>
+      <div class="how-body">
+        <p>Two separate implementations share one design:</p>
+        <div class="how-cols">
+          <div>
+            <h3>Python engine (the repo)</h3>
+            <p>Price-time-priority limit order book (<code>Decimal</code>, <code>SortedDict</code>, FIFO
+            queues), a Coinbase WebSocket consumer, a synthetic matching engine + FastAPI, a Rich
+            terminal dashboard, unit tests, and a 100k-order benchmark.</p>
+            <pre>synthetic orders → matching engine → fills / P&amp;L / API</pre>
+          </div>
+          <div>
+            <h3>This static demo (the browser)</h3>
+            <p>Connects to the public Coinbase WebSocket directly, mirrors the book per product,
+            computes analytics, and estimates hypothetical fills. Read-only market data; the browser
+            uses IEEE numbers for estimates while Python is the precision implementation.</p>
+            <pre>Coinbase WS → parser → per-product book → metrics → view</pre>
+          </div>
+        </div>
+        <p class="muted small">Vercel serves this static page; it does not run the Python engine.</p>
+      </div>
+    </details>
+  </section>
+
+  <nav class="products" id="product-nav" aria-label="Select product"></nav>
+
+  <div class="demo-banner card-bold" id="demo-banner" role="region" aria-label="Connection help" hidden>
+    <span>Can’t reach the live Coinbase feed (some networks block WebSockets).</span>
+    <div class="demo-actions">
+      <button type="button" id="demo-run" class="btn btn-accent">Run with sample data</button>
+      <button type="button" id="demo-retry" class="btn btn-ghost">Retry live</button>
+    </div>
+  </div>
 
   <main class="grid">
-    <section class="panel book-panel">
+    <!-- Order book -->
+    <section class="panel card-bold book-panel" id="book" aria-label="Order book">
       <div class="panel-head">
         <h2>Order Book</h2>
-        <span class="muted" id="book-product">BTC-USD</span>
+        <span class="tag" id="book-product">BTC-USD</span>
       </div>
       <div class="book">
-        <div class="book-col">
-          <div class="book-head"><span>Price</span><span>Size</span><span>Total</span></div>
-          <div id="asks" class="levels asks"></div>
-        </div>
+        <div class="book-head"><span>Price</span><span>Size</span><span>Total</span></div>
+        <div id="asks" class="levels asks" role="rowgroup" aria-label="Asks"></div>
         <div class="spread-row">
           <span id="mid-price" class="mid">—</span>
           <span id="spread" class="spread muted">spread —</span>
         </div>
-        <div class="book-col">
-          <div id="bids" class="levels bids"></div>
-        </div>
+        <div id="bids" class="levels bids" role="rowgroup" aria-label="Bids"></div>
       </div>
     </section>
 
-    <section class="panel metrics-panel">
+    <!-- Metrics + feed health -->
+    <section class="panel card-bold metrics-panel" aria-label="Metrics">
       <div class="panel-head"><h2>Metrics</h2></div>
-      <ul class="metrics">
-        <li><span>Mid price</span><b id="m-mid">—</b></li>
-        <li><span>Spread</span><b id="m-spread">—</b></li>
-        <li><span>Imbalance (10)</span><b id="m-imb" class="accent">—</b></li>
-        <li><span>VWAP (100)</span><b id="m-vwap" class="cyan">—</b></li>
-        <li><span>Trade flow (50)</span><b id="m-flow">—</b></li>
-        <li><span>Last heartbeat</span><b id="m-hb" class="muted small">—</b></li>
-      </ul>
+      <div class="metrics">
+        <details class="metric">
+          <summary><span>Mid price</span><b id="m-mid">—</b></summary>
+          <p>The midpoint between the best bid and best ask.</p>
+        </details>
+        <details class="metric">
+          <summary><span>Bid–ask spread</span><b id="m-spread">—</b></summary>
+          <p>The gap between the best ask and best bid — the cost of crossing the book.</p>
+        </details>
+        <details class="metric">
+          <summary><span>Top-10 imbalance</span><b id="m-imb" class="accent">—</b></summary>
+          <p>Bid vs. ask quantity over the top 10 levels, from −100% (all asks) to +100% (all bids).</p>
+        </details>
+        <details class="metric">
+          <summary><span>VWAP (100)</span><b id="m-vwap" class="cyan">—</b></summary>
+          <p>Volume-weighted average price of the last 100 trades.</p>
+        </details>
+        <details class="metric">
+          <summary><span>Aggressive flow (50)</span><b id="m-flow">—</b></summary>
+          <p>Net aggressor volume over the last 50 trades; positive means aggressive buyers dominated.</p>
+        </details>
+      </div>
 
-      <div class="panel-head sim-head"><h2>Order Simulator</h2></div>
-      <form id="sim-form" class="sim">
+      <div class="panel-head sub"><h2>Feed health</h2></div>
+      <ul class="feed-health">
+        <li><span>Source</span><b id="fh-source">—</b></li>
+        <li><span>Last message</span><b id="fh-msg">—</b></li>
+        <li><span>Last heartbeat</span><b id="fh-hb">—</b></li>
+        <li><span>Msg rate</span><b id="fh-rate">—</b></li>
+        <li><span>Reconnects</span><b id="fh-reconnects">0</b></li>
+      </ul>
+    </section>
+
+    <!-- Execution simulator -->
+    <section class="panel card-bold sim-panel" aria-label="Execution simulator">
+      <div class="panel-head">
+        <h2>Execution Simulator</h2>
+        <button type="button" id="reset-product" class="btn btn-ghost btn-sm">Reset</button>
+      </div>
+      <p class="muted small sim-copy">
+        Estimates immediate fills against the current displayed liquidity. Simulated only —
+        no order is sent to Coinbase, and unfilled quantity is not held as a resting order.
+      </p>
+
+      <form id="sim-form" class="sim" novalidate>
         <div class="sim-row">
-          <div class="seg" id="sim-side">
-            <button type="button" data-side="buy" class="active">BUY</button>
-            <button type="button" data-side="sell">SELL</button>
+          <div class="seg" id="sim-side" role="group" aria-label="Side">
+            <button type="button" data-value="buy" class="active" aria-pressed="true">BUY</button>
+            <button type="button" data-value="sell" aria-pressed="false">SELL</button>
           </div>
-          <div class="seg" id="sim-type">
-            <button type="button" data-type="limit" class="active">LIMIT</button>
-            <button type="button" data-type="market">MARKET</button>
+          <div class="seg" id="sim-type" role="group" aria-label="Order type">
+            <button type="button" data-value="limit" class="active" aria-pressed="true">LIMIT</button>
+            <button type="button" data-value="market" aria-pressed="false">MARKET</button>
           </div>
         </div>
         <div class="sim-row">
-          <label>Price <input id="sim-price" type="text" inputmode="decimal" placeholder="auto" /></label>
-          <label>Quantity <input id="sim-qty" type="text" inputmode="decimal" value="0.01" /></label>
+          <label class="field">Price
+            <input id="sim-price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="auto" autocomplete="off" />
+          </label>
+          <label class="field">Quantity
+            <input id="sim-qty" type="number" inputmode="decimal" min="0" step="0.0001" value="0.01" autocomplete="off" />
+          </label>
         </div>
-        <button type="submit" class="submit">Submit synthetic order</button>
+        <p class="hint" id="auto-hint" aria-live="polite"></p>
+        <button type="submit" id="sim-submit" class="btn btn-accent btn-block">Simulate order</button>
+        <p class="gate" id="sim-gate" role="status" aria-live="polite" hidden></p>
       </form>
+
+      <div class="exec-result" id="exec-result" hidden aria-label="Execution details">
+        <div class="er-top">
+          <span class="er-status muted" id="er-status">—</span>
+        </div>
+        <dl class="er-grid">
+          <div><dt>Requested</dt><dd id="er-requested">—</dd></div>
+          <div><dt>Filled</dt><dd id="er-filled">—</dd></div>
+          <div><dt>Unfilled</dt><dd id="er-unfilled">—</dd></div>
+          <div><dt>Avg fill</dt><dd id="er-avg">—</dd></div>
+          <div><dt>Notional</dt><dd id="er-notional">—</dd></div>
+          <div><dt>Slippage</dt><dd id="er-slip">—</dd></div>
+          <div><dt>Levels</dt><dd id="er-levels">—</dd></div>
+        </dl>
+      </div>
+
       <div class="pnl">
         <span>Position <b id="pnl-pos">0</b></span>
-        <span>Cash <b id="pnl-cash">0</b></span>
-        <span>P&amp;L <b id="pnl-pnl">0</b></span>
+        <span>Cash <b id="pnl-cash">$0.00</b></span>
+        <span>P&amp;L <b id="pnl-pnl">$0.00</b></span>
       </div>
-      <div id="sim-log" class="sim-log"></div>
+      <p class="muted tiny">Hypothetical mark-to-market P&amp;L in USD, fees excluded.</p>
+
+      <div class="panel-head sub"><h2>History</h2></div>
+      <div class="hist-head"><span>Time</span><span>Side</span><span>Type</span><span>Req</span><span>Fill</span><span>Avg</span><span>Status</span></div>
+      <div id="history" class="history"></div>
+      <div id="sim-log" class="sr-only" role="log" aria-live="polite"></div>
     </section>
 
-    <section class="panel tape-panel">
-      <div class="panel-head"><h2>Recent Trades</h2></div>
-      <div class="tape-head"><span>Time</span><span>Price</span><span>Size</span><span>Side</span></div>
+    <!-- Trade tape -->
+    <section class="panel card-bold tape-panel" aria-label="Recent trades">
+      <div class="panel-head">
+        <h2>Recent Trades</h2>
+        <span class="muted small">Coloured by aggressor</span>
+      </div>
+      <div class="tape-head"><span>Time</span><span>Price</span><span>Size</span><span>Aggressor</span></div>
       <div id="tape" class="tape"></div>
     </section>
   </main>
 
   <footer class="footer">
-    <span>Streams from <code>wss://advanced-trade-ws.coinbase.com</code> · no API key required.</span>
-    <span>Matching &amp; analytics mirror the Python <code>exchange_engine</code> package.</span>
+    <span>Streams from <code>wss://advanced-trade-ws.coinbase.com</code> · public data · no API key.</span>
+    <span>Matching &amp; analytics mirror the Python <code>exchange_engine</code> package. No real orders are placed.</span>
   </footer>
 
   <script src="/js/app.js" type="module"></script>
