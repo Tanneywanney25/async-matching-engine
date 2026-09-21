@@ -15,7 +15,9 @@ from typing import Deque, Dict, List, Optional, Tuple
 
 from sortedcontainers import SortedDict
 
-from .models import BookLevel, Order, OrderStatus, OrderType, Side
+import time
+
+from .models import BookLevel, Fill, Order, OrderStatus, OrderType, Side
 
 
 class OrderBook:
@@ -65,24 +67,116 @@ class OrderBook:
         qty_map[order.price] += order.quantity
         self._orders[order.id] = (order, key, order.side)
 
-    # -- public API -------------------------------------------------------
-
-    def add_order(self, order: Order) -> List["object"]:
-        """Insert a limit order, resting it on the book.
-
-        Matching against a crossing spread is added in a later revision.
+    def _consume(
+        self,
+        taker_side: Side,
+        quantity: Decimal,
+        taker_id: int,
+        limit_price: Optional[Decimal],
+    ) -> Tuple[List[Fill], Decimal]:
+        """Walk the opposite side, filling ``quantity`` at the best prices.
 
         Args:
-            order: The order to insert.
+            taker_side: Side of the incoming (aggressing) order.
+            quantity: Quantity to fill.
+            taker_id: Id recorded on the resulting taker fills.
+            limit_price: Price limit for the taker, or ``None`` for a market order.
 
         Returns:
-            The list of fills produced (currently always empty).
+            A ``(fills, remaining_quantity)`` tuple. ``remaining_quantity`` is the
+            portion that could not be matched at acceptable prices.
+        """
+        opp_tree, opp_qty = self._book(taker_side.opposite)
+        fills: List[Fill] = []
+        remaining = quantity
+
+        while remaining > 0 and opp_tree:
+            key, level = opp_tree.peekitem(0)  # best opposing level
+            level_price = -key if taker_side.opposite is Side.BID else key
+            # Respect the taker's limit price (market orders pass through).
+            if limit_price is not None:
+                if taker_side is Side.BID and level_price > limit_price:
+                    break
+                if taker_side is Side.ASK and level_price < limit_price:
+                    break
+
+            while level and remaining > 0:
+                resting = level[0]
+                traded = min(remaining, resting.quantity)
+                fills.append(
+                    Fill(
+                        order_id=taker_id,
+                        price=level_price,
+                        quantity=traded,
+                        timestamp=time.time(),
+                        side=taker_side,
+                    )
+                )
+                resting.quantity -= traded
+                remaining -= traded
+                opp_qty[level_price] -= traded
+                if resting.quantity == 0:
+                    resting.status = OrderStatus.FILLED
+                    level.popleft()
+                    self._orders.pop(resting.id, None)
+                else:
+                    resting.status = OrderStatus.PARTIAL
+
+            if not level:
+                del opp_tree[key]
+                opp_qty.pop(level_price, None)
+
+        return fills, remaining
+
+    # -- public API -------------------------------------------------------
+
+    def add_order(self, order: Order) -> List[Fill]:
+        """Insert a limit order, matching immediately if it crosses the spread.
+
+        Any residual quantity that does not cross is rested on the book with
+        price-time priority.
+
+        Args:
+            order: The limit order to insert.
+
+        Returns:
+            The list of fills the incoming order received (may be empty).
         """
         if order.order_type is not OrderType.LIMIT:
-            raise ValueError("add_order only accepts LIMIT orders")
-        self._rest(order)
-        order.status = OrderStatus.OPEN
-        return []
+            raise ValueError("add_order only accepts LIMIT orders; use match_market_order")
+
+        original_qty = order.quantity
+        fills, remaining = self._consume(order.side, order.quantity, order.id, order.price)
+        order.quantity = remaining
+
+        if remaining == 0:
+            order.status = OrderStatus.FILLED
+        elif remaining < original_qty:
+            order.status = OrderStatus.PARTIAL
+            self._rest(order)
+        else:
+            order.status = OrderStatus.OPEN
+            self._rest(order)
+        return fills
+
+    def match_market_order(
+        self, side: Side, quantity: Decimal, order_id: Optional[int] = None
+    ) -> List[Fill]:
+        """Match a market order against the opposite side of the book.
+
+        Args:
+            side: Side of the aggressing market order.
+            quantity: Quantity to execute.
+            order_id: Optional id to stamp on the resulting fills.
+
+        Returns:
+            The fills produced while walking the book. Any unfilled remainder is
+            simply dropped (market orders do not rest).
+        """
+        quantity = quantity if isinstance(quantity, Decimal) else Decimal(str(quantity))
+        taker_id = order_id if order_id is not None else -1
+        fills, _remaining = self._consume(side, quantity, taker_id, limit_price=None)
+        return fills
 
     def __len__(self) -> int:
         """Return the number of resting orders across both sides."""
