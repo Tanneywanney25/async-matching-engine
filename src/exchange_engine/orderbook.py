@@ -205,6 +205,77 @@ class OrderBook:
         order.status = OrderStatus.CANCELLED
         return True
 
+    # -- market data views ------------------------------------------------
+
+    @property
+    def best_bid(self) -> Optional[Decimal]:
+        """Highest resting bid price, or ``None`` if there are no bids."""
+        if not self._bids:
+            return None
+        return self._bids.peekitem(0)[1][0].price
+
+    @property
+    def best_ask(self) -> Optional[Decimal]:
+        """Lowest resting ask price, or ``None`` if there are no asks."""
+        if not self._asks:
+            return None
+        return self._asks.peekitem(0)[1][0].price
+
+    @property
+    def mid_price(self) -> Optional[Decimal]:
+        """Midpoint between best bid and best ask, or ``None`` if either side is empty."""
+        bid, ask = self.best_bid, self.best_ask
+        if bid is None or ask is None:
+            return None
+        return (bid + ask) / 2
+
+    @property
+    def spread(self) -> Optional[Decimal]:
+        """Difference between best ask and best bid, or ``None`` if either side is empty."""
+        bid, ask = self.best_bid, self.best_ask
+        if bid is None or ask is None:
+            return None
+        return ask - bid
+
+    def get_depth(self, n_levels: int = 10) -> Dict[str, List[BookLevel]]:
+        """Return the top ``n_levels`` aggregated levels for each side.
+
+        Args:
+            n_levels: Number of price levels to return per side.
+
+        Returns:
+            A dict with ``"bids"`` (descending price) and ``"asks"`` (ascending
+            price) lists of :class:`~exchange_engine.models.BookLevel`.
+        """
+        bids: List[BookLevel] = []
+        for key in self._bids.keys():
+            if len(bids) >= n_levels:
+                break
+            price = -key
+            bids.append(BookLevel(price=price, quantity=self._bid_qty[price]))
+
+        asks: List[BookLevel] = []
+        for price in self._asks.keys():
+            if len(asks) >= n_levels:
+                break
+            asks.append(BookLevel(price=price, quantity=self._ask_qty[price]))
+
+        return {"bids": bids, "asks": asks}
+
+    def book_imbalance(self, n_levels: int = 10) -> Decimal:
+        """Order-book imbalance over the top ``n_levels`` of each side.
+
+        Computed as ``(bid_qty - ask_qty) / (bid_qty + ask_qty)`` and bounded to
+        ``[-1, 1]``. Returns ``0`` when the book is empty.
+        """
+        depth = self.get_depth(n_levels)
+        bid_qty = sum((lvl.quantity for lvl in depth["bids"]), Decimal(0))
+        ask_qty = sum((lvl.quantity for lvl in depth["asks"]), Decimal(0))
+        total = bid_qty + ask_qty
+        if total == 0:
+            return Decimal(0)
+        return (bid_qty - ask_qty) / total
+
     def __len__(self) -> int:
         """Return the number of resting orders across both sides."""
         return len(self._orders)
