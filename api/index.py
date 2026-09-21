@@ -47,10 +47,10 @@ def _order(payload: Dict) -> Dict[str, object]:
         quantity = Decimal(str(payload["quantity"]))
         price = payload.get("price")
         price_dec = Decimal(str(price)) if price is not None else None
+        fills = engine.submit_order(side, quantity, price_dec, order_type)
     except (KeyError, ValueError, InvalidOperation) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    fills = engine.submit_order(side, quantity, price_dec, order_type)
     return {
         "fills": [
             {"price": str(f.price), "quantity": str(f.quantity), "side": f.side.value}

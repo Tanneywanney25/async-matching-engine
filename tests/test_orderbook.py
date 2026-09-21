@@ -91,6 +91,66 @@ def test_book_imbalance_symmetric_is_zero() -> None:
     assert book.book_imbalance() == D("0")
 
 
+def test_partial_fill_on_resting_order() -> None:
+    book = OrderBook("TEST")
+    resting = Order(Side.ASK, D("100"), D("3"))
+    book.add_order(resting)
+    fills = book.add_order(Order(Side.BID, D("100"), D("1")))
+    assert sum(f.quantity for f in fills) == D("1")
+    assert resting.status == OrderStatus.PARTIAL
+    assert resting.quantity == D("2")  # resting order reduced, not removed
+    assert book.best_ask == D("100")
+
+
+def test_cancel_after_partial_fill() -> None:
+    book = OrderBook("TEST")
+    resting = Order(Side.ASK, D("100"), D("3"))
+    book.add_order(resting)
+    book.add_order(Order(Side.BID, D("100"), D("1")))  # partially fills resting
+    assert book.cancel_order(resting.id) is True
+    assert book.best_ask is None
+    assert len(book) == 0
+
+
+def test_duplicate_resting_order_id_rejected() -> None:
+    book = OrderBook("TEST")
+    first = Order(Side.BID, D("100"), D("1"))
+    book.add_order(first)
+    clash = Order(Side.BID, D("99"), D("1"))
+    object.__setattr__(clash, "id", first.id)  # force an id collision
+    with pytest.raises(ValueError, match="duplicate"):
+        book.add_order(clash)
+
+
+@pytest.mark.parametrize("qty", [D("0"), D("-1"), D("-0.001")])
+def test_non_positive_quantity_rejected(qty: Decimal) -> None:
+    book = OrderBook("TEST")
+    with pytest.raises(ValueError, match="quantity must be positive"):
+        book.add_order(Order(Side.BID, D("100"), qty))
+
+
+@pytest.mark.parametrize("price", [D("0"), D("-100")])
+def test_non_positive_limit_price_rejected(price: Decimal) -> None:
+    book = OrderBook("TEST")
+    with pytest.raises(ValueError, match="price must be positive"):
+        book.add_order(Order(Side.BID, price, D("1")))
+
+
+def test_market_order_zero_quantity_rejected() -> None:
+    book = OrderBook("TEST")
+    with pytest.raises(ValueError, match="quantity must be positive"):
+        book.match_market_order(Side.BID, D("0"))
+
+
+def test_decimal_precision_preserved_with_string_values() -> None:
+    book = OrderBook("TEST")
+    book.add_order(Order(Side.ASK, D("100.123456789"), D("0.000000010")))
+    fills = book.add_order(Order(Side.BID, D("100.123456789"), D("0.000000010")))
+    assert fills[0].price == D("100.123456789")
+    assert fills[0].quantity == D("0.000000010")
+    assert fills[0].notional == D("100.123456789") * D("0.000000010")
+
+
 def test_empty_book_views_are_none_and_zero() -> None:
     book = OrderBook("TEST")
     assert book.best_bid is None

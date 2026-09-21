@@ -144,6 +144,12 @@ class OrderBook:
         """
         if order.order_type is not OrderType.LIMIT:
             raise ValueError("add_order only accepts LIMIT orders; use match_market_order")
+        if order.quantity <= 0:
+            raise ValueError(f"order quantity must be positive, got {order.quantity}")
+        if order.price <= 0:
+            raise ValueError(f"limit price must be positive, got {order.price}")
+        if order.id in self._orders:
+            raise ValueError(f"duplicate resting order id: {order.id}")
 
         original_qty = order.quantity
         fills, remaining = self._consume(order.side, order.quantity, order.id, order.price)
@@ -174,6 +180,8 @@ class OrderBook:
             simply dropped (market orders do not rest).
         """
         quantity = quantity if isinstance(quantity, Decimal) else Decimal(str(quantity))
+        if quantity <= 0:
+            raise ValueError(f"market order quantity must be positive, got {quantity}")
         taker_id = order_id if order_id is not None else -1
         fills, _remaining = self._consume(side, quantity, taker_id, limit_price=None)
         return fills

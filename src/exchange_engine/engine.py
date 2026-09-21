@@ -185,11 +185,27 @@ def create_app() -> "FastAPI":
 
     @app.get("/")
     async def root() -> Dict[str, object]:
-        """Basic health/info endpoint."""
+        """Basic service info endpoint."""
         return {
             "service": "exchange-engine",
             "products": PRODUCT_IDS,
             "last_heartbeat": feed.last_heartbeat,
+        }
+
+    @app.get("/health")
+    async def health() -> Dict[str, object]:
+        """Lightweight health probe: feed liveness and product readiness."""
+        return {
+            "status": "ok",
+            "last_heartbeat": feed.last_heartbeat,
+            "products": {
+                pid: {
+                    "best_bid": (str(feed.best_bid(pid)) if feed.best_bid(pid) is not None else None),
+                    "best_ask": (str(feed.best_ask(pid)) if feed.best_ask(pid) is not None else None),
+                    "trades": len(feed.recent_trades(pid, 500)),
+                }
+                for pid in PRODUCT_IDS
+            },
         }
 
     @app.post("/order")
@@ -205,10 +221,10 @@ def create_app() -> "FastAPI":
             quantity = Decimal(str(payload["quantity"]))
             price = payload.get("price")
             price_dec = Decimal(str(price)) if price is not None else None
+            fills = engine.submit_order(side, quantity, price_dec, order_type)
         except (KeyError, ValueError, InvalidOperation) as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-        fills = engine.submit_order(side, quantity, price_dec, order_type)
         mark = feed.metrics(engine.product_id).get("mid_price")
         return {
             "fills": [
