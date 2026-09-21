@@ -1,0 +1,12 @@
+# Keep the Vercel deployment lean: only public/ (static) and api/ + src/ ship.
+.venv/
+.git/
+.github/
+tests/
+scripts/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+CSS File/
+prompt-async-matching-engine.txt
+Makefile
