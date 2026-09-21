@@ -178,6 +178,33 @@ class OrderBook:
         fills, _remaining = self._consume(side, quantity, taker_id, limit_price=None)
         return fills
 
+    def cancel_order(self, order_id: int) -> bool:
+        """Cancel a resting order and clean up its price level if now empty.
+
+        Args:
+            order_id: Id of the order to remove.
+
+        Returns:
+            ``True`` if an order was found and cancelled, ``False`` otherwise.
+        """
+        entry = self._orders.pop(order_id, None)
+        if entry is None:
+            return False
+        order, key, side = entry
+        tree, qty_map = self._book(side)
+        level = tree.get(key)
+        if level is not None:
+            try:
+                level.remove(order)
+            except ValueError:  # pragma: no cover - defensive
+                pass
+            qty_map[order.price] -= order.quantity
+            if not level:
+                del tree[key]
+                qty_map.pop(order.price, None)
+        order.status = OrderStatus.CANCELLED
+        return True
+
     def __len__(self) -> int:
         """Return the number of resting orders across both sides."""
         return len(self._orders)
