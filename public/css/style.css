@@ -1,0 +1,127 @@
+/* exchange-engine dashboard theme.
+   Palette and typography adapted from the provided UI kit:
+   deep navy (#00142d), Archivo Black display + Space Grotesk body. */
+
+:root {
+  --navy: #00142d;
+  --navy-2: #071f3d;
+  --panel: #0b2547;
+  --panel-2: #0e2c54;
+  --line: #17385f;
+  --text: #e8eef7;
+  --muted: #8fa6c4;
+  --green: #26d07c;
+  --red: #ff5c72;
+  --cyan: #37d6d6;
+  --accent: #ffd166;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, #0a2a52 0%, transparent 60%),
+    var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+h1, h2 { font-family: "Space Grotesk", sans-serif; font-weight: 700; }
+.logo, .mid { font-family: "Archivo Black", sans-serif; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 18px 24px; border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.logo { font-size: 30px; color: var(--accent); }
+.topbar h1 { margin: 0; font-size: 22px; letter-spacing: 0.5px; }
+.tagline { margin: 2px 0 0; color: var(--muted); font-size: 12.5px; }
+
+.status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); box-shadow: 0 0 0 3px rgba(255,255,255,0.05); }
+.dot.live { background: var(--green); box-shadow: 0 0 10px var(--green); }
+.dot.down { background: var(--red); }
+
+.products { display: flex; gap: 10px; padding: 14px 24px 0; flex-wrap: wrap; }
+.products button {
+  font-family: inherit; cursor: pointer; border: 1px solid var(--line);
+  background: var(--panel); color: var(--muted); padding: 8px 16px;
+  border-radius: 999px; font-size: 13px; font-weight: 600; transition: all .15s ease;
+}
+.products button.active { background: var(--accent); color: #21160a; border-color: var(--accent); }
+.products button:hover { color: var(--text); }
+.products button.active:hover { color: #21160a; }
+
+.grid {
+  display: grid; gap: 16px; padding: 18px 24px 8px;
+  grid-template-columns: 1.15fr 1fr 1fr;
+}
+@media (max-width: 1050px) { .grid { grid-template-columns: 1fr 1fr; } .tape-panel { grid-column: 1 / -1; } }
+@media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+
+.panel {
+  background: linear-gradient(180deg, var(--panel) 0%, var(--navy-2) 100%);
+  border: 1px solid var(--line); border-radius: 16px; padding: 16px;
+  box-shadow: var(--shadow);
+}
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.panel-head h2 { margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+.sim-head { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+.muted { color: var(--muted); }
+.small { font-size: 11px; }
+.accent { color: var(--accent); }
+.cyan { color: var(--cyan); }
+
+/* Order book */
+.book-head, .tape-head { display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 11px; color: var(--muted); padding: 0 6px 6px; letter-spacing: 0.5px; }
+.tape-head { grid-template-columns: 1.3fr 1fr 1fr 0.7fr; }
+.levels { display: flex; flex-direction: column; gap: 2px; }
+.row { position: relative; display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 3px 6px; font-variant-numeric: tabular-nums; font-size: 13px; border-radius: 4px; overflow: hidden; }
+.row .bar { position: absolute; top: 0; bottom: 0; right: 0; opacity: 0.14; z-index: 0; }
+.row span { position: relative; z-index: 1; text-align: right; }
+.row span:first-child { text-align: left; }
+.asks .row .px { color: var(--red); }
+.asks .row .bar { background: var(--red); }
+.bids .row .px { color: var(--green); }
+.bids .row .bar { background: var(--green); }
+
+.spread-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 6px; margin: 6px 0; border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); }
+.mid { font-size: 20px; }
+.spread { font-size: 12px; }
+
+/* Metrics */
+.metrics { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.metrics li { display: flex; align-items: baseline; justify-content: space-between; font-size: 13px; }
+.metrics li span { color: var(--muted); }
+.metrics li b { font-variant-numeric: tabular-nums; font-size: 15px; }
+
+/* Simulator */
+.sim { display: flex; flex-direction: column; gap: 10px; }
+.sim-row { display: flex; gap: 10px; }
+.seg { display: flex; flex: 1; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.seg button { flex: 1; border: none; background: transparent; color: var(--muted); font-family: inherit; font-weight: 600; font-size: 12px; padding: 8px; cursor: pointer; }
+.seg button.active { background: var(--panel-2); color: var(--text); }
+#sim-side button.active[data-side="buy"] { color: var(--green); }
+#sim-side button.active[data-side="sell"] { color: var(--red); }
+.sim label { flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: var(--muted); }
+.sim input { background: var(--navy); border: 1px solid var(--line); color: var(--text); border-radius: 8px; padding: 8px; font-family: inherit; font-size: 14px; }
+.submit { border: none; border-radius: 10px; padding: 10px; font-family: inherit; font-weight: 700; cursor: pointer; background: var(--accent); color: #21160a; }
+.submit:hover { filter: brightness(1.05); }
+
+.pnl { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; font-size: 12px; color: var(--muted); }
+.pnl b { display: block; color: var(--text); font-size: 15px; font-variant-numeric: tabular-nums; }
+.sim-log { margin-top: 10px; font-size: 12px; color: var(--muted); max-height: 90px; overflow-y: auto; font-variant-numeric: tabular-nums; }
+.sim-log div { padding: 2px 0; border-bottom: 1px solid var(--line); }
+
+/* Trade tape */
+.tape { display: flex; flex-direction: column; gap: 1px; max-height: 520px; overflow-y: auto; }
+.tape .row { grid-template-columns: 1.3fr 1fr 1fr 0.7fr; font-size: 12.5px; }
+.tape .buy { color: var(--red); }
+.tape .sell { color: var(--green); }
+
+.footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 14px 24px 26px; color: var(--muted); font-size: 12px; }
+.footer code { color: var(--cyan); }
