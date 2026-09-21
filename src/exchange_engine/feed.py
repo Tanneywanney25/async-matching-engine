@@ -146,6 +146,14 @@ class CoinbaseFeed:
             if asyncio.iscoroutine(result):
                 await result
 
+    async def apply(self, raw: str) -> None:
+        """Public hook to feed a single raw JSON frame into the router.
+
+        Useful for tests, replays and offline demos that drive the feed without
+        a live WebSocket connection.
+        """
+        await self._handle_message(raw)
+
     async def _handle_message(self, raw: str) -> None:
         """Parse one raw frame and route it by channel."""
         msg = json.loads(raw)
