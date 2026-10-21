@@ -331,7 +331,8 @@ def stage_archive(archive_dir: Path, slug: str, compress: bool = True) -> Path:
 
 def dataset_exists(slug: str) -> bool:
     out = kaggle("datasets", "list", "--mine", "--search", slug, check=False)
-    return f"{USER}/{slug}" in out
+    # Exact match on the ref column: "exchange-engine-archive" must not match "...-archive-synth".
+    return re.search(rf"^{re.escape(USER)}/{re.escape(slug)}(\s|$)", out, re.MULTILINE) is not None
 
 
 def dataset_upload(archive_dir: Path, slug: str, compress: bool = True) -> str:
