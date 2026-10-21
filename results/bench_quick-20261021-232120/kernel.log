@@ -1,0 +1,44 @@
+[{"stream_name":"stdout","time":0.724593447,"data":"[    0.0s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":0.724634608,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":16.36178942,"data":"[   15.7s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"NVIDIA Nsight Systems version 2025.1.1.0\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":17.98853373,"data":"[   17.3s] repo at 8c0a7e7b55246a5365c5987680ff6d4fac37d95d on gpu-phase2\n"}
+,{"stream_name":"stdout","time":18.345055811,"data":"[   17.7s] archive: /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth\n"}
+,{"stream_name":"stdout","time":18.400497081,"data":"[   17.7s] archive source=synthetic snapshots=300000 trades=100000 hash=805644066b5d802d\n"}
+,{"stream_name":"stdout","time":18.406721555,"data":"[   17.7s] running: /usr/bin/python3 -u -m bench.run_all --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth --out /kaggle/working/results/bench_quick-20261021-232120 --source synthetic --quick --sections scans --budget-minutes 36\n"}
+,{"stream_name":"stdout","time":24.675478271,"data":"[run_all] archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth (synthetic, 300,000 snapshots, 100,000 trades) -\u003e /kaggle/working/results/bench_quick-20261021-232120\n"}
+,{"stream_name":"stdout","time":24.675510773,"data":"[run_all] gpu Tesla T4; sections scans; engine 100,000 orders / 10,000 cancels; iters 5; quick True\n"}
+,{"stream_name":"stdout","time":27.512916208,"data":"[scans] look-back check: passed (0.32 s)\n"}
+,{"stream_name":"stdout","time":36.379173705,"data":"[scans] scans n=100,000: winner cub_device_scan; n=1,048,576: winner cub_device_scan\n"}
+,{"stream_name":"stdout","time":36.918798844,"data":"[scans] rolling vwap: 0.667 ms, decimal max rel err 2.42e-16, {'1s': {'nan_pattern_equal': True, 'max_rel_err': 0.0, 'reference': 'math.fsum over each sampled window', 'sample': 2000, 'float64_cumsum_max_rel_err': 7.2956890145424164e-09, 'gpu_vs_numpy_cumsum_max_rel_err': 9.134142656271785e-09, 'coverage_pct': 79.60300000000001}, '10s': {'nan_pattern_equal': True, 'max_rel_err': 1.693313064781238e-16, 'reference': 'math.fsum over each sampled window', 'sample': 2000, 'float64_cumsum_max_rel_err': 9.012639521336294e-11, 'gpu_vs_numpy_cumsum_max_rel_err': 1.2448827595567228e-10, 'coverage_pct': 99.993}}\n"}
+,{"stream_name":"stdout","time":37.092361166,"data":"[scans] rolling book: 0.235 ms, spread err 0.00e+00, imbalance err 9.69e-08\n"}
+,{"stream_name":"stdout","time":37.09487271,"data":"[run_all] scans          12.4 s  ok\n"}
+,{"stream_name":"stdout","time":37.105895039,"data":"[run_all] $ python /kaggle/working/repo/scripts/benchmark.py --orders 100000 --cancels 10000 --results-dir /kaggle/working/results/bench_quick-20261021-232120/engine\n"}
+,{"stream_name":"stdout","time":38.784036679,"data":"    Benchmarking OrderBook with 100,000 orders (mid=64,000)...\n"}
+,{"stream_name":"stdout","time":38.784066237,"data":"\n"}
+,{"stream_name":"stdout","time":38.784071674,"data":"    add_order (insert + match) (100,000 ops)\n"}
+,{"stream_name":"stdout","time":38.784076386,"data":"      mean :    10.51 us\n"}
+,{"stream_name":"stdout","time":38.784081973,"data":"      p50  :     7.94 us\n"}
+,{"stream_name":"stdout","time":38.784086757,"data":"      p95  :    22.40 us\n"}
+,{"stream_name":"stdout","time":38.784091481,"data":"      p99  :    31.90 us\n"}
+,{"stream_name":"stdout","time":38.784095506,"data":"\n"}
+,{"stream_name":"stdout","time":38.784112016,"data":"    cancel_order (10,000 ops)\n"}
+,{"stream_name":"stdout","time":38.78411632,"data":"      mean :     2.02 us\n"}
+,{"stream_name":"stdout","time":38.784121009,"data":"      p50  :     0.40 us\n"}
+,{"stream_name":"stdout","time":38.784162857,"data":"      p95  :     5.63 us\n"}
+,{"stream_name":"stdout","time":38.784166311,"data":"      p99  :     7.13 us\n"}
+,{"stream_name":"stdout","time":38.784169737,"data":"\n"}
+,{"stream_name":"stdout","time":38.784173139,"data":"    Target: median add_order under 50 us.\n"}
+,{"stream_name":"stdout","time":38.784176603,"data":"\n"}
+,{"stream_name":"stdout","time":38.784180025,"data":"    Wrote /kaggle/working/results/bench_quick-20261021-232120/engine/metrics.json, /kaggle/working/results/bench_quick-20261021-232120/engine/manifest.json and /kaggle/working/results/bench_quick-20261021-232120/engine/raw/engine_latency_us.json\n"}
+,{"stream_name":"stdout","time":38.786191277,"data":"[run_all] engine          1.7 s  ok\n"}
+,{"stream_name":"stdout","time":38.786764189,"data":"[run_all] done in 20.1 s: 2 section(s) in /kaggle/working/results/bench_quick-20261021-232120/metrics.json, 0 error(s)\n"}
+,{"stream_name":"stdout","time":38.97594265,"data":"[   38.3s] run_all exit code 0\n"}
+,{"stream_name":"stdout","time":39.041645735,"data":"[   38.4s] finished: complete 38s\n"}
+,{"stream_name":"stdout","time":39.780186298,"data":"RESULT_BUNDLE results_bench_quick-20261021-232120.tar.gz\n"}
+,{"stream_name":"stderr","time":41.970346391,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":41.970383954,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":42.192713613,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":42.192738067,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":43.054345577,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":43.976989384,"data":"[NbConvertApp] Writing 325379 bytes to __results__.html\n"}
+]

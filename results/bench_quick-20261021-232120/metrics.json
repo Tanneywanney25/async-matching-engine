@@ -1,0 +1,552 @@
+{
+  "archive": {
+    "bytes": 245300000,
+    "capture_end_ns": 1760031542297381535,
+    "capture_seconds": 31542.107849594,
+    "capture_start_ns": 1760000000189531941,
+    "content_hash": "805644066b5d802da56706841a2ac40c600e4f856a0c1e5147b8e555d1cbfae3",
+    "gap_count": 0,
+    "levels": 50,
+    "n_snapshots": 300000,
+    "n_trades": 100000,
+    "per_product_snapshots": {
+      "BTC-USD": 150000,
+      "ETH-USD": 150000
+    },
+    "source": "synthetic"
+  },
+  "created_unix": 1792624909.6347494,
+  "errors": [],
+  "gpu": {
+    "compute_capability": "7.5",
+    "cuda_runtime": 12090,
+    "cupy_version": "14.0.1",
+    "l2_cache_bytes": 4194304,
+    "memory_bus_width_bits": 256,
+    "memory_clock_khz": 5001000,
+    "memory_gb": 15.636,
+    "name": "Tesla T4",
+    "nvrtc_arch": "sm_75",
+    "shared_mem_per_sm_bytes": 65536,
+    "sm_count": 40,
+    "theoretical_bw_gbs": 320.06
+  },
+  "run_all": {
+    "argv": [
+      "--archive",
+      "/kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth",
+      "--out",
+      "/kaggle/working/results/bench_quick-20261021-232120",
+      "--source",
+      "synthetic",
+      "--quick",
+      "--sections",
+      "scans",
+      "--budget-minutes",
+      "36"
+    ],
+    "engine": true,
+    "finished_unix": 1792624924.1995401,
+    "hostname": "a5846d6314b8",
+    "n_iters": 5,
+    "platform": "Linux-6.18.48+-x86_64-with-glibc2.39",
+    "python": "3.13.15",
+    "quick": true,
+    "sections_requested": [
+      "scans"
+    ],
+    "started_unix": 1792624904.1071143,
+    "wall_seconds": 20.1
+  },
+  "sections": {
+    "engine": {
+      "add_order": {
+        "mean_us": 10.508180220000002,
+        "p50_us": 7.94,
+        "p95_us": 22.404,
+        "p99_us": 31.903
+      },
+      "cancel_order": {
+        "mean_us": 2.0175389,
+        "p50_us": 0.397,
+        "p95_us": 5.635,
+        "p99_us": 7.134
+      },
+      "cancels": 10000,
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+      "orders": 100000,
+      "python": "3.13.15",
+      "raw_file": "raw/engine_latency_us.json",
+      "runner": "scripts/benchmark.py --results-dir"
+    },
+    "scans": {
+      "bytes_per_element": 16,
+      "ceilings_gbs": {
+        "copy_ceiling": null,
+        "read_ceiling": null
+      },
+      "counting": "8 bytes read + 8 bytes written per element",
+      "cub_error": null,
+      "dtype": "float64",
+      "implementations": [
+        {
+          "elements_per_s": 1563281572.4861515,
+          "final_rel_err": 7.266149021211642e-15,
+          "gbs": 25.012505159778424,
+          "max_rel_diff_vs": {
+            "cub_device_scan": 7.842540438903558e-16,
+            "decoupled_lookback": 6.181965793806708e-16,
+            "warp_shuffle": 4.643344287792913e-16
+          },
+          "max_rel_err": 1.3982089687533895e-14,
+          "ms": {
+            "clock_drop_pct": 0.0,
+            "iqr_ms": 0.0008639991283416748,
+            "max_ms": 0.06438399851322174,
+            "mean_ms": 0.063468798995018,
+            "median_ms": 0.0639680027961731,
+            "min_ms": 0.061535999178886414,
+            "n": 5,
+            "q1_ms": 0.06329599767923355,
+            "q3_ms": 0.06415999680757523,
+            "samples_file": "raw/scan_snapshots__blelloch_shared.json",
+            "sm_clock_after_mhz": 585.0,
+            "sm_clock_before_mhz": 585.0,
+            "throttle_flag": false,
+            "warmup_discarded": 3
+          },
+          "name": "blelloch_shared",
+          "notes": "work-efficient up-sweep/down-sweep, 1024 elements per block, bank-conflict padding; recursive carries",
+          "verified": true
+        },
+        {
+          "elements_per_s": 2051871366.7984715,
+          "final_rel_err": 7.12082604078741e-15,
+          "gbs": 32.82994186877554,
+          "max_rel_diff_vs": {
+            "blelloch_shared": 4.643344287792913e-16,
+            "cub_device_scan": 8.297757560880673e-16,
+            "decoupled_lookback": 6.53861093370612e-16
+          },
+          "max_rel_err": 1.3982089687533895e-14,
+          "ms": {
+            "clock_drop_pct": 0.0,
+            "iqr_ms": 0.0016320012509822845,
+            "max_ms": 0.06147199869155884,
+            "mean_ms": 0.05077119991183281,
+            "median_ms": 0.04873599857091904,
+            "min_ms": 0.0469760000705719,
+            "n": 5,
+            "q1_ms": 0.047520000487565994,
+            "q3_ms": 0.04915200173854828,
+            "samples_file": "raw/scan_snapshots__warp_shuffle.json",
+            "sm_clock_after_mhz": 585.0,
+            "sm_clock_before_mhz": 585.0,
+            "throttle_flag": false,
+            "warmup_discarded": 3
+          },
+          "name": "warp_shuffle",
+          "notes": "__shfl_up_sync warp scan, 256 threads x 4 elements, warp totals scanned by warp 0; recursive carries",
+          "verified": true
+        },
+        {
+          "elements_per_s": 1931396809.759662,
+          "final_rel_err": 7.12082604078741e-15,
+          "gbs": 30.90234895615459,
+          "max_rel_diff_vs": {
+            "blelloch_shared": 6.181965793806708e-16,
+            "cub_device_scan": 8.805193746937052e-16,
+            "warp_shuffle": 6.53861093370612e-16
+          },
+          "max_rel_err": 1.3982089687533895e-14,
+          "ms": {
+            "clock_drop_pct": 0.0,
+            "iqr_ms": 0.0015680007636547089,
+            "max_ms": 0.0551999993622303,
+            "mean_ms": 0.052428799122571944,
+            "median_ms": 0.05177599936723709,
+            "min_ms": 0.050175998359918594,
+            "n": 5,
+            "q1_ms": 0.051711998879909515,
+            "q3_ms": 0.053279999643564224,
+            "samples_file": "raw/scan_snapshots__decoupled_lookback.json",
+            "sm_clock_after_mhz": 585.0,
+            "sm_clock_before_mhz": 585.0,
+            "throttle_flag": false,
+            "warmup_discarded": 3
+          },
+          "name": "decoupled_lookback",
+          "notes": "single pass, Merrill and Garland (2016): tiles of 256 x 8 claimed by an atomic counter, status words with release/acquire ordering, warp-wide look-back over 32 predecessors",
+          "verified": true
+        },
+        {
+          "elements_per_s": 2984718082.578598,
+          "final_rel_err": 7.12082604078741e-15,
+          "gbs": 47.75548932125757,
+          "max_rel_diff_vs": {
+            "blelloch_shared": 7.842540438903558e-16,
+            "decoupled_lookback": 8.805193746937052e-16,
+            "warp_shuffle": 8.297757560880673e-16
+          },
+          "max_rel_err": 1.3797611285311542e-14,
+          "ms": {
+            "clock_drop_pct": 0.0,
+            "iqr_ms": 0.0010880008339881897,
+            "max_ms": 0.03686400130391121,
+            "mean_ms": 0.03352320045232773,
+            "median_ms": 0.033504001796245575,
+            "min_ms": 0.030751999467611313,
+            "n": 5,
+            "q1_ms": 0.03270399942994118,
+            "q3_ms": 0.03379200026392937,
+            "samples_file": "raw/scan_snapshots__cub_device_scan.json",
+            "sm_clock_after_mhz": 585.0,
+            "sm_clock_before_mhz": 585.0,
+            "throttle_flag": false,
+            "warmup_discarded": 3
+          },
+          "name": "cub_device_scan",
+          "notes": "cub::DeviceScan::InclusiveSum, CUDA toolkit CUB, nvcc -O3 -arch=sm_75",
+          "verified": true
+        }
+      ],
+      "large": {
+        "bytes_per_element": 16,
+        "counting": "8 bytes read + 8 bytes written per element",
+        "dtype": "float64",
+        "implementations": [
+          {
+            "elements_per_s": 3616377759.5563855,
+            "final_rel_err": 2.2184458316960237e-14,
+            "gbs": 57.862044152902165,
+            "max_rel_diff_vs": {
+              "cub_device_scan": 1.2603309089833596e-15,
+              "decoupled_lookback": 8.94279660245362e-16,
+              "warp_shuffle": 6.150276671946049e-16
+            },
+            "max_rel_err": 5.259535976372301e-14,
+            "ms": {
+              "clock_drop_pct": 0.0,
+              "iqr_ms": 0.002079993486404419,
+              "max_ms": 0.29129600524902344,
+              "mean_ms": 0.28951680064201357,
+              "median_ms": 0.28995200991630554,
+              "min_ms": 0.28672000765800476,
+              "n": 5,
+              "q1_ms": 0.2887679934501648,
+              "q3_ms": 0.2908479869365692,
+              "samples_file": "raw/scan_large__blelloch_shared.json",
+              "sm_clock_after_mhz": 585.0,
+              "sm_clock_before_mhz": 585.0,
+              "throttle_flag": false,
+              "warmup_discarded": 3
+            },
+            "name": "blelloch_shared",
+            "notes": "work-efficient up-sweep/down-sweep, 1024 elements per block, bank-conflict padding; recursive carries",
+            "verified": true
+          },
+          {
+            "elements_per_s": 4922337266.889665,
+            "final_rel_err": 2.2184458316960237e-14,
+            "gbs": 78.75739627023464,
+            "max_rel_diff_vs": {
+              "blelloch_shared": 6.150276671946049e-16,
+              "cub_device_scan": 1.2560108724898702e-15,
+              "decoupled_lookback": 7.598048831028197e-16
+            },
+            "max_rel_err": 5.259535976372301e-14,
+            "ms": {
+              "clock_drop_pct": 0.0,
+              "iqr_ms": 0.0044160038232803345,
+              "max_ms": 0.23695999383926392,
+              "mean_ms": 0.21693439781665802,
+              "median_ms": 0.21302400529384613,
+              "min_ms": 0.20902399718761444,
+              "n": 5,
+              "q1_ms": 0.21062399446964264,
+              "q3_ms": 0.21503999829292297,
+              "samples_file": "raw/scan_large__warp_shuffle.json",
+              "sm_clock_after_mhz": 585.0,
+              "sm_clock_before_mhz": 585.0,
+              "throttle_flag": false,
+              "warmup_discarded": 3
+            },
+            "name": "warp_shuffle",
+            "notes": "__shfl_up_sync warp scan, 256 threads x 4 elements, warp totals scanned by warp 0; recursive carries",
+            "verified": true
+          },
+          {
+            "elements_per_s": 6539213462.49531,
+            "final_rel_err": 2.1962613733790634e-14,
+            "gbs": 104.62741539992496,
+            "max_rel_diff_vs": {
+              "blelloch_shared": 8.94279660245362e-16,
+              "cub_device_scan": 1.3696504873379536e-15,
+              "warp_shuffle": 7.598048831028197e-16
+            },
+            "max_rel_err": 5.2372523052544424e-14,
+            "ms": {
+              "clock_drop_pct": 0.0,
+              "iqr_ms": 0.001216009259223938,
+              "max_ms": 0.16233600676059723,
+              "mean_ms": 0.16036480367183686,
+              "median_ms": 0.16035200655460358,
+              "min_ms": 0.1576640009880066,
+              "n": 5,
+              "q1_ms": 0.16012799739837646,
+              "q3_ms": 0.1613440066576004,
+              "samples_file": "raw/scan_large__decoupled_lookback.json",
+              "sm_clock_after_mhz": 585.0,
+              "sm_clock_before_mhz": 585.0,
+              "throttle_flag": false,
+              "warmup_discarded": 3
+            },
+            "name": "decoupled_lookback",
+            "notes": "single pass, Merrill and Garland (2016): tiles of 256 x 8 claimed by an atomic counter, status words with release/acquire ordering, warp-wide look-back over 32 predecessors",
+            "verified": true
+          },
+          {
+            "elements_per_s": 7757575696.985913,
+            "final_rel_err": 2.2184458316960237e-14,
+            "gbs": 124.12121115177462,
+            "max_rel_diff_vs": {
+              "blelloch_shared": 1.2603309089833596e-15,
+              "decoupled_lookback": 1.3696504873379536e-15,
+              "warp_shuffle": 1.2560108724898702e-15
+            },
+            "max_rel_err": 5.2706211386751943e-14,
+            "ms": {
+              "clock_drop_pct": 0.0,
+              "iqr_ms": 0.00028799474239349365,
+              "max_ms": 0.1451839953660965,
+              "mean_ms": 0.1371968001127243,
+              "median_ms": 0.13516800105571747,
+              "min_ms": 0.13500800728797913,
+              "n": 5,
+              "q1_ms": 0.13516800105571747,
+              "q3_ms": 0.13545599579811096,
+              "samples_file": "raw/scan_large__cub_device_scan.json",
+              "sm_clock_after_mhz": 585.0,
+              "sm_clock_before_mhz": 585.0,
+              "throttle_flag": false,
+              "warmup_discarded": 3
+            },
+            "name": "cub_device_scan",
+            "notes": "cub::DeviceScan::InclusiveSum, CUDA toolkit CUB, nvcc -O3 -arch=sm_75",
+            "verified": true
+          }
+        ],
+        "lookback_vs_cub": {
+          "cub_ms": 0.13516800105571747,
+          "lookback_ms": 0.16035200655460358,
+          "lookback_over_cub": 1.1863163271054444,
+          "pct_slower_than_cub": 18.631632710544444
+        },
+        "n_elements": 1048576,
+        "winner": "cub_device_scan"
+      },
+      "lookback_check": {
+        "cases": [
+          {
+            "input": "integer",
+            "max_err": 0.0,
+            "measure": "exact",
+            "n": 1,
+            "passed": true
+          },
+          {
+            "input": "real",
+            "max_err": 0.0,
+            "measure": "relative to the running sum of |x|",
+            "n": 1,
+            "passed": true
+          },
+          {
+            "input": "integer",
+            "max_err": 0.0,
+            "measure": "exact",
+            "n": 7,
+            "passed": true
+          },
+          {
+            "input": "real",
+            "max_err": 0.0,
+            "measure": "relative to the running sum of |x|",
+            "n": 7,
+            "passed": true
+          },
+          {
+            "input": "integer",
+            "max_err": 0.0,
+            "measure": "exact",
+            "n": 2047,
+            "passed": true
+          },
+          {
+            "input": "real",
+            "max_err": 1.7627604167384427e-16,
+            "measure": "relative to the running sum of |x|",
+            "n": 2047,
+            "passed": true
+          },
+          {
+            "input": "integer",
+            "max_err": 0.0,
+            "measure": "exact",
+            "n": 2048,
+            "passed": true
+          },
+          {
+            "input": "real",
+            "max_err": 1.2725738944816396e-16,
+            "measure": "relative to the running sum of |x|",
+            "n": 2048,
+            "passed": true
+          },
+          {
+            "input": "integer",
+            "max_err": 0.0,
+            "measure": "exact",
+            "n": 2049,
+            "passed": true
+          },
+          {
+            "input": "real",
+            "max_err": 2.061369522708614e-16,
+            "measure": "relative to the running sum of |x|",
+            "n": 2049,
+            "passed": true
+          },
+          {
+            "input": "integer",
+            "max_err": 0.0,
+            "measure": "exact",
+            "n": 6149,
+            "passed": true
+          },
+          {
+            "input": "real",
+            "max_err": 1.436837380953994e-16,
+            "measure": "relative to the running sum of |x|",
+            "n": 6149,
+            "passed": true
+          },
+          {
+            "input": "integer",
+            "max_err": 0.0,
+            "measure": "exact",
+            "n": 100000,
+            "passed": true
+          },
+          {
+            "input": "real",
+            "max_err": 1.044148869896877e-16,
+            "measure": "relative to the running sum of |x|",
+            "n": 100000,
+            "passed": true
+          }
+        ],
+        "passed": true,
+        "repeat_failures": 0,
+        "repeat_n": 100000,
+        "repeats": 20,
+        "seconds": 0.32
+      },
+      "lookback_vs_cub": {
+        "cub_ms": 0.033504001796245575,
+        "lookback_ms": 0.05177599936723709,
+        "lookback_over_cub": 1.545367615549706,
+        "pct_slower_than_cub": 54.5367615549706
+      },
+      "n_elements": 100000,
+      "quick": true,
+      "rolling_book": {
+        "definition": "mean over the same product's snapshots with time in (t - 1 s, t]",
+        "max_abs_err_imbalance": 9.685754776000977e-08,
+        "max_rel_err_spread": 0.0,
+        "ms": {
+          "clock_drop_pct": 0.0,
+          "iqr_ms": 0.0015680044889450073,
+          "max_ms": 0.2526719868183136,
+          "mean_ms": 0.23804160058498383,
+          "median_ms": 0.234592005610466,
+          "min_ms": 0.23347200453281403,
+          "n": 5,
+          "q1_ms": 0.23395200073719025,
+          "q3_ms": 0.23552000522613525,
+          "samples_file": "raw/rolling_book__book_chain.json",
+          "sm_clock_after_mhz": 585.0,
+          "sm_clock_before_mhz": 585.0,
+          "throttle_flag": false,
+          "warmup_discarded": 3
+        },
+        "n_snapshots": 100000,
+        "scan": "cub",
+        "snapshots_per_s": 426271985.4403199,
+        "verified": true,
+        "window_s": 1.0
+      },
+      "rolling_vwap": {
+        "decimal_sample": 200,
+        "definition": "two inclusive double-double scans (ticks x size, size) over product-contiguous trades, windowed difference; time windows checked against math.fsum on sampled snapshots",
+        "max_rel_err_100": 2.415785351575878e-16,
+        "ms": {
+          "clock_drop_pct": 0.0,
+          "iqr_ms": 0.007231950759887695,
+          "max_ms": 0.6771199703216553,
+          "mean_ms": 0.6688639879226684,
+          "median_ms": 0.6670079827308655,
+          "min_ms": 0.6640639901161194,
+          "n": 5,
+          "q1_ms": 0.6644480228424072,
+          "q3_ms": 0.6716799736022949,
+          "samples_file": "raw/rolling_vwap__vwap_chain.json",
+          "sm_clock_after_mhz": 585.0,
+          "sm_clock_before_mhz": 585.0,
+          "throttle_flag": false,
+          "warmup_discarded": 3
+        },
+        "n_snapshots": 100000,
+        "n_trades": 100000,
+        "numpy_100_max_rel_err": 3.892951797682266e-11,
+        "scan": "double_double",
+        "time_windows": {
+          "10s": {
+            "coverage_pct": 99.993,
+            "float64_cumsum_max_rel_err": 9.012639521336294e-11,
+            "gpu_vs_numpy_cumsum_max_rel_err": 1.2448827595567228e-10,
+            "max_rel_err": 1.693313064781238e-16,
+            "nan_pattern_equal": true,
+            "reference": "math.fsum over each sampled window",
+            "sample": 2000
+          },
+          "1s": {
+            "coverage_pct": 79.60300000000001,
+            "float64_cumsum_max_rel_err": 7.2956890145424164e-09,
+            "gpu_vs_numpy_cumsum_max_rel_err": 9.134142656271785e-09,
+            "max_rel_err": 0.0,
+            "nan_pattern_equal": true,
+            "reference": "math.fsum over each sampled window",
+            "sample": 2000
+          }
+        },
+        "verified": true,
+        "verified_vs_metrics_py": true,
+        "windows": [
+          "100_trades",
+          "1s",
+          "10s"
+        ]
+      },
+      "series": "top-of-book bid notional per snapshot (ticks x size), float64",
+      "wall_seconds": 12.404366013000015,
+      "winner": "cub_device_scan"
+    }
+  },
+  "source": "synthetic",
+  "timings_s": {
+    "engine": 1.68,
+    "scans": 12.419
+  },
+  "updated_unix": 1792624924.1995542
+}

@@ -26,15 +26,15 @@
       "uploaded_at": "2026-10-21T19:03:40Z"
     }
   ],
-  "gpu_hours_used_estimate": 0.436,
+  "gpu_hours_used_estimate": 0.453,
   "kaggle_reported": {
-    "checked_at": "2026-10-21T23:19:06Z",
+    "checked_at": "2026-10-21T23:22:35Z",
     "gpu": {
-      "remaining_hours": 29.63,
+      "remaining_hours": 29.62,
       "total_hours": 30.0,
-      "used_hours": 0.37
+      "used_hours": 0.38
     },
-    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.37h  29.63h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
+    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.38h  29.62h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
     "tpu": {
       "remaining_hours": 20.0,
       "total_hours": 20.0,
@@ -43,7 +43,7 @@
   },
   "phase2": {
     "budget_gpu_hours": 6.0,
-    "gpu_hours_used_estimate": 0.182,
+    "gpu_hours_used_estimate": 0.199,
     "kaggle_used_hours_at_start": 0.2,
     "started_at": "2026-10-21T22:25:01Z"
   },
@@ -282,6 +282,29 @@
       "status": "complete",
       "timeout_minutes": 30,
       "wall_seconds": 99.52245855331421
+    },
+    {
+      "branch": "gpu-phase2",
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive-synth"
+      ],
+      "env": {
+        "SECTIONS": "scans"
+      },
+      "finished_at": "2026-10-21T23:22:31Z",
+      "git_sha": "8c0a7e7b55246a5365c5987680ff6d4fac37d95d",
+      "gpu_minutes": 1.04,
+      "gpu_name": "Tesla T4",
+      "job": "bench_quick",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+      "pushed_at": "2026-10-21T23:21:22Z",
+      "result_status": "complete",
+      "run_id": "bench_quick-20261021-232120",
+      "running_at": "2026-10-21T23:21:29Z",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 20,
+      "wall_seconds": 38.29413986206055
     }
   ]
 }
