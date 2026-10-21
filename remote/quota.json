@@ -1,18 +1,31 @@
 {
   "budget_gpu_hours": 20.0,
+  "datasets": [
+    {
+      "content_hash": "805644066b5d802da56706841a2ac40c600e4f856a0c1e5147b8e555d1cbfae3",
+      "id": "tanushbhatia/exchange-engine-archive-synth",
+      "mb": 145.3,
+      "n_snapshots": 300000,
+      "source": "synthetic",
+      "uploaded_at": "2026-10-21T09:17:01Z"
+    }
+  ],
   "gpu_hours_used_estimate": 0.0,
   "kaggle_reported": null,
   "runs": [
     {
       "datasets": [],
       "git_sha": "d063993e9c3975571502ca63b14d0d9ea84b3be7",
+      "gpu_name": "Tesla T4",
       "job": "probe",
       "kernel": "tanushbhatia/exchange-engine-gpu-probe",
       "pushed_at": "2026-10-21T09:06:04Z",
+      "result_status": "complete",
       "run_id": "probe-20261021-090601",
       "source": "synthetic",
       "status": "pushed",
-      "timeout_minutes": 20
+      "timeout_minutes": 20,
+      "wall_seconds": 23.992616653442383
     }
   ]
 }

@@ -1,0 +1,109 @@
+{
+  "nvidia-smi": {
+    "rc": 0,
+    "out": "------------------------------------------------------------------+\n| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n| N/A   57C    P8             11W /   70W |       3MiB /  15360MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n| N/A   53C    P8             11W /   70W |       3MiB /  15360MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+",
+    "err": ""
+  },
+  "nvcc --version": {
+    "rc": 0,
+    "out": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Fri_Feb_21_20:23:50_PST_2025\nCuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+    "err": ""
+  },
+  "nsys --version": {
+    "rc": 127,
+    "out": "",
+    "err": "/bin/sh: 1: nsys: not found"
+  },
+  "ncu --version": {
+    "rc": 0,
+    "out": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.1.1.0 (build 35528883) (public-release)",
+    "err": ""
+  },
+  "g++ --version | head -1": {
+    "rc": 0,
+    "out": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "err": ""
+  },
+  "which zstd tar sqlite3 cmake make": {
+    "rc": 1,
+    "out": "/usr/bin/tar\n/usr/local/bin/cmake\n/usr/bin/make",
+    "err": ""
+  },
+  "nproc": {
+    "rc": 0,
+    "out": "4",
+    "err": ""
+  },
+  "lscpu | grep -E 'Model name|Thread|Core|Socket|MHz|L3'": {
+    "rc": 0,
+    "out": "Model name:                              Intel(R) Xeon(R) CPU @ 2.00GHz\nThread(s) per core:                      2\nCore(s) per socket:                      2\nSocket(s):                               1\nL3 cache:                                38.5 MiB (1 instance)",
+    "err": ""
+  },
+  "free -g": {
+    "rc": 0,
+    "out": "total        used        free      shared  buff/cache   available\nMem:              31           1          25           0           5          29\nSwap:              0           0           0",
+    "err": ""
+  },
+  "df -h /kaggle/working /tmp": {
+    "rc": 0,
+    "out": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/loop2       20G  144K   20G   1% /kaggle/working\noverlay         8.0T  7.0T  1.1T  87% /",
+    "err": ""
+  },
+  "pip list 2>/dev/null | grep -i -E '^(cupy|numpy|numba|zstandard|scipy|pandas|pybind11) '": {
+    "rc": 0,
+    "out": "numba                                 0.61.2\nnumpy                                 2.1.3\npandas                                2.3.3\npybind11                              3.1.0\nscipy                                 1.16.3\nzstandard                             0.25.0",
+    "err": ""
+  },
+  "ls /usr/local/cuda/include/cub | head -3": {
+    "rc": 0,
+    "out": "agent\nblock\ncmake",
+    "err": ""
+  },
+  "ls /usr/local/cuda/bin | tr '\\n' ' '": {
+    "rc": 0,
+    "out": "bin2c compute-sanitizer crt cudafe++ cuda-gdb cuda-gdb-minimal cuda-gdb-python3.10-tui cuda-gdb-python3.11-tui cuda-gdb-python3.12-tui cuda-gdb-python3.8-tui cuda-gdb-python3.9-tui cuda-gdbserver cu++filt cuobjdump fatbinary ncu ncu-ui nvcc __nvcc_device_query nvcc.profile nvdisasm nvlink nvprof nvprune ptxas",
+    "err": ""
+  },
+  "ls /opt/nvidia 2>/dev/null": {
+    "rc": 0,
+    "out": "entrypoint.d\nnsight-compute\nnvidia_entrypoint.sh",
+    "err": ""
+  },
+  "cat /proc/sys/kernel/perf_event_paranoid": {
+    "rc": 0,
+    "out": "2",
+    "err": ""
+  },
+  "python -c \"import cupy; p=cupy.cuda.runtime.getDeviceProperties(0); print({k:(v if not isinstance(v,bytes) else v.decode()) for k,v in p.items() if k in ('name','multiProcessorCount','totalGlobalMem','sharedMemPerMultiprocessor','clockRate','memoryClockRate','memoryBusWidth','l2CacheSize','major','minor')})\"": {
+    "rc": 0,
+    "out": "{'name': 'Tesla T4', 'totalGlobalMem': 15636037632, 'clockRate': 1590000, 'major': 7, 'minor': 5, 'multiProcessorCount': 40, 'memoryClockRate': 5001000, 'memoryBusWidth': 256, 'l2CacheSize': 4194304, 'sharedMemPerMultiprocessor': 65536}",
+    "err": ""
+  },
+  "bw": {
+    "rc": 0,
+    "out": "copy kernel: 9.403 ms -> 228.4 GB/s (read+write)\ncudaMemcpy D2D: 8.900 ms -> 241.3 GB/s (read+write)\ndevice: Tesla T4 SMs=40 sharedPerSM=65536 memClock=5001000 kHz bus=256 bits -> theoretical 320.1 GB/s",
+    "err": ""
+  },
+  "nsys": {
+    "profile": [
+      0,
+      "/bin/sh: 1: nsys: not found",
+      ""
+    ],
+    "stats": [
+      0,
+      "/bin/sh: 1: nsys: not found",
+      ""
+    ],
+    "sqlite": [
+      0,
+      "/bin/sh: 1: nsys: not found\n[]",
+      ""
+    ]
+  },
+  "ncu": {
+    "rc": 0,
+    "out": "==PROF== Connected to process 718 (/usr/bin/python3.13)\n==ERROR== ERR_NVGPUCTRPERM - The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0. For instructions on enabling permissions and to get more information see https://developer.nvidia.com/ERR_NVGPUCTRPERM\n==PROF== Disconnected from process 718",
+    "err": ""
+  }
+}

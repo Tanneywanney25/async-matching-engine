@@ -185,7 +185,7 @@ def push(spec: JobSpec, run_id: Optional[str] = None) -> str:
 
 def status(job_name: str) -> str:
     out = kaggle("kernels", "status", kernel_id(job_name), check=False)
-    m = re.search(r'status\s+"?([A-Za-z]+)"?', out)
+    m = re.search(r'status\s+"?(?:KernelWorkerStatus\.)?([A-Za-z]+)"?', out)
     return (m.group(1) if m else out.strip()).lower()
 
 

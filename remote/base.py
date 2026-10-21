@@ -136,20 +136,40 @@ try:
 except Exception as e:  # noqa: BLE001
     env["numpy_error"] = repr(e)
 
-# 3. Nsight Systems: install the CLI from NVIDIA's repository if it is missing.
-if not env["nsys"] or "not found" in env["nsys"]:
-    log("nsys missing; installing nsight-systems-cli from NVIDIA's apt repository")
-    rc, out, err = sh("apt-get update -qq && apt-get install -y -qq nsight-systems-cli 2>&1 | tail -3", timeout=900)
-    if rc != 0:
-        sh("wget -q https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb -O /tmp/k.deb && dpkg -i /tmp/k.deb && apt-get update -qq && apt-get install -y -qq nsight-systems-cli 2>&1 | tail -3", timeout=900)
-    rc, out, err = sh("nsys --version || ls /opt/nvidia/nsight-systems/*/bin/nsys")
-    if rc != 0:
-        rc2, path, _ = sh("ls -d /opt/nvidia/nsight-systems/*/bin 2>/dev/null | head -1")
-        if path:
-            os.environ["PATH"] = path + ":" + os.environ["PATH"]
-            out = sh("nsys --version")[1]
-    env["nsys"] = out
-    env["nsys_installed_here"] = True
+# 3. Nsight Systems: install from NVIDIA's CUDA apt repository if it is missing (Kaggle's image ships ncu but not nsys).
+def find_nsys():
+    rc_, p_, _ = sh("command -v nsys || find /opt/nvidia /usr/local -name nsys -type f 2>/dev/null | head -1")
+    return p_.splitlines()[0].strip() if p_ else ""
+
+nsys_path = find_nsys()
+if not nsys_path:
+    log("nsys missing; installing from NVIDIA's apt repository")
+    steps = [
+        "DEBIAN_FRONTEND=noninteractive apt-get update 2>&1 | tail -2",
+        "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends cuda-nsight-systems-12-8 2>&1 | tail -3",
+    ]
+    for step in steps:
+        rc_, o_, e_ = sh(step, timeout=1200)
+        log(f"  [{rc_}] {step[:60]}: {(o_ or e_)[-200:]}")
+    nsys_path = find_nsys()
+    if not nsys_path:
+        steps = [
+            "wget -q https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb -O /tmp/cuda-keyring.deb && dpkg -i /tmp/cuda-keyring.deb 2>&1 | tail -1",
+            "DEBIAN_FRONTEND=noninteractive apt-get update 2>&1 | tail -2",
+            "PKG=$(apt-cache search nsight-systems | awk '{{print $1}}' | grep -E '^nsight-systems-20' | sort -V | tail -1); echo PKG=$PKG; DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends ${{PKG:-cuda-nsight-systems-12-8}} 2>&1 | tail -3",
+        ]
+        for step in steps:
+            rc_, o_, e_ = sh(step, timeout=1200)
+            log(f"  [{rc_}] {step[:60]}: {(o_ or e_)[-200:]}")
+        nsys_path = find_nsys()
+    env["nsys_installed_here"] = bool(nsys_path)
+if nsys_path:
+    os.environ["PATH"] = os.path.dirname(nsys_path) + ":" + os.environ["PATH"]
+    env["nsys"] = sh("nsys --version")[1]
+    env["nsys_path"] = nsys_path
+else:
+    env["nsys"] = ""
+    log("WARNING: Nsight Systems unavailable; profiling sections will record that")
 log("env:", json.dumps({{k: env[k] for k in ("gpu_line", "nvcc", "nsys", "gxx", "cpu_model", "cpu_cores", "cupy", "numpy") if k in env}}))
 env["gpu_state_at_start"] = gpu_state()
 json.dump(env, open(f"{{OUT}}/env.json", "w"), indent=2, default=str)
