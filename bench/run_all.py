@@ -6,7 +6,7 @@
                             [--budget-minutes M]
 
 Sections run in this order, each through ``bench.bench_<name>.run(bench, arch, quick)``:
-``ladder, scans, precision, layout, slippage, ofi, pipeline``; then the matching-engine
+``ladder, scans, precision, layout, slippage, ofi, pipeline, resources``; then the matching-engine
 latency benchmark runs as a subprocess on the host CPU. A section that raises
 (``ImportError`` for a module that does not exist yet included) is recorded in
 ``metrics["errors"]`` as ``{"section", "error"}`` and the job moves on, and
@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import os
 import platform
 import shutil
 import subprocess
@@ -37,7 +38,8 @@ from typing import List, Optional, Sequence, Tuple
 
 from bench.common import MIN_ITERS, REPO_ROOT, Bench, load_archive
 
-GPU_SECTIONS: Tuple[str, ...] = ("ladder", "scans", "precision", "layout", "slippage", "ofi", "pipeline")
+# ``resources`` stays last: it reads the launch configurations the other sections recorded.
+GPU_SECTIONS: Tuple[str, ...] = ("ladder", "scans", "precision", "layout", "slippage", "ofi", "pipeline", "resources")
 QUICK_ITERS = 5
 ENGINE_RAW_NAME = "engine_latency_us.json"
 EXIT_ARCHIVE = 2
@@ -394,6 +396,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return EXIT_ARCHIVE
 
     bench.metrics["gpu"] = gpu_block()
+    # Kernel launch configurations, from this process and from the Nsight Systems children.
+    os.environ["BENCH_LAUNCH_LOG_DIR"] = str(bench.raw_dir / "launches")
     errors: List[dict] = bench.metrics.setdefault("errors", [])
     rerun = set(sections) | (set() if args.skip_engine else {"engine"})
     errors[:] = [e for e in errors if e.get("section") not in rerun]
