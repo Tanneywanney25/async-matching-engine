@@ -9,3 +9,18 @@ extern "C" __global__ void copy_int4(const int4* __restrict__ src, int4* __restr
         dst[i] = src[i];
     }
 }
+
+// Read-only streaming kernel: the ceiling for read-dominated kernels. A copy splits DRAM time
+// between reads and writes (and pays the bus turnaround), so a kernel that mostly reads can beat
+// it; this measures the read side alone. Each thread folds its loads into one word and writes it
+// once (grid * block * 4 bytes of writes, negligible), so the loads cannot be optimized away.
+extern "C" __global__ void read_int4(const int4* __restrict__ src, long long n, unsigned int* __restrict__ sink) {
+    const long long tid = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+    const long long step = (long long)gridDim.x * blockDim.x;
+    unsigned int acc = 0u;
+    for (long long i = tid; i < n; i += step) {
+        const int4 v = src[i];
+        acc ^= (unsigned int)(v.x ^ v.y ^ v.z ^ v.w);
+    }
+    sink[tid] = acc;
+}

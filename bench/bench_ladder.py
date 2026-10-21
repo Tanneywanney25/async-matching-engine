@@ -74,6 +74,8 @@ def measure_bandwidth(bench: Bench, quick: bool) -> dict:
     dst = cp.empty_like(src)
     module = raw_module(["copy.cu"])
     copy = module.get_function("copy_int4")
+    read = module.get_function("read_int4")
+    sink = cp.empty(COPY_GRID * COPY_BLOCK, dtype=cp.uint32)
     stream = cp.cuda.get_current_stream()
     n_int4 = np.int64(nbytes // 16)
     rt = cp.cuda.runtime
@@ -84,25 +86,36 @@ def measure_bandwidth(bench: Bench, quick: bool) -> dict:
     def memcpy() -> None:
         rt.memcpyAsync(dst.data.ptr, src.data.ptr, nbytes, rt.memcpyDeviceToDevice, stream.ptr)
 
+    def read_only() -> None:
+        read((COPY_GRID,), (COPY_BLOCK,), (src, n_int4, sink))
+
     kernel()
     stream.synchronize()
     if not bool((dst[:1024] == 1).all()):
         raise RuntimeError("copy kernel produced wrong data")
     res = bench.block("bandwidth", {"copy_kernel": lambda: event_time_ms(stream, kernel),
-                                    "cudamemcpy_d2d": lambda: event_time_ms(stream, memcpy)})
-    del src, dst
+                                    "cudamemcpy_d2d": lambda: event_time_ms(stream, memcpy),
+                                    "read_kernel": lambda: event_time_ms(stream, read_only)})
+    del src, dst, sink
     cp.get_default_memory_pool().free_all_blocks()
     k_gbs = 2 * nbytes / (res["copy_kernel"]["median_ms"] * 1e-3) / 1e9
     m_gbs = 2 * nbytes / (res["cudamemcpy_d2d"]["median_ms"] * 1e-3) / 1e9
+    r_gbs = nbytes / (res["read_kernel"]["median_ms"] * 1e-3) / 1e9
+    ceilings = {"copy_kernel": k_gbs, "cudamemcpy": m_gbs, "read_kernel": r_gbs}
     section = {
         "bytes": nbytes, "copy_kernel": res["copy_kernel"], "cudamemcpy_d2d": res["cudamemcpy_d2d"],
-        "copy_kernel_gbs": k_gbs, "cudamemcpy_gbs": m_gbs, "ceiling_gbs": max(k_gbs, m_gbs),
+        "read_kernel": res["read_kernel"], "read_kernel_gbs": r_gbs,
+        "copy_ceiling_gbs": max(k_gbs, m_gbs), "ceiling_kind": max(ceilings, key=ceilings.get),
+        "copy_kernel_gbs": k_gbs, "cudamemcpy_gbs": m_gbs, "ceiling_gbs": max(ceilings.values()),
         "theoretical_gbs": device_theoretical_gbs(), "theoretical_spec_gbs": T4_THEORETICAL_BW_GBS,
-        "counting": "read + write bytes (2 x buffer) per copy",
+        "counting": "copies: read + write bytes (2 x buffer); read kernel: bytes read (1 x buffer)",
+        "ceiling_rule": "the highest of the three measured figures; the feature kernels read ~95% of their traffic, "
+                        "so a copy (half writes) understates what they can reach",
         "copy_launch": {"grid": COPY_GRID, "block": COPY_BLOCK, "load_width_bits": 128},
     }
     bench.section("bandwidth", section)
-    log(f"bandwidth: kernel {k_gbs:.1f} GB/s, cudaMemcpy {m_gbs:.1f} GB/s, theoretical {section['theoretical_gbs']:.1f}")
+    log(f"bandwidth: copy kernel {k_gbs:.1f} GB/s, cudaMemcpy {m_gbs:.1f} GB/s, read-only {r_gbs:.1f} GB/s, "
+        f"theoretical {section['theoretical_gbs']:.1f}")
     return section
 
 
