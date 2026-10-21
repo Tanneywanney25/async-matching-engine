@@ -30,7 +30,7 @@
   },
   "kaggle": {
     "cli": "2.2.4 (system Python 3.12)",
-    "auth": "KGAT_ access token at ~/.kaggle/access_token (never printed or committed)",
+    "auth": "new-style Kaggle access token at ~/.kaggle/access_token (never printed or committed)",
     "kernels_list_mine": "ok (2 existing kernels listed)",
     "account": "tanushbhatia"
   },

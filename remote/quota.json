@@ -1,0 +1,18 @@
+{
+  "budget_gpu_hours": 20.0,
+  "gpu_hours_used_estimate": 0.0,
+  "kaggle_reported": null,
+  "runs": [
+    {
+      "datasets": [],
+      "git_sha": "d063993e9c3975571502ca63b14d0d9ea84b3be7",
+      "job": "probe",
+      "kernel": "tanushbhatia/exchange-engine-gpu-probe",
+      "pushed_at": "2026-10-21T09:06:04Z",
+      "run_id": "probe-20261021-090601",
+      "source": "synthetic",
+      "status": "pushed",
+      "timeout_minutes": 20
+    }
+  ]
+}
