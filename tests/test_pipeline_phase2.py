@@ -59,3 +59,9 @@ def test_two_card_split_covers_every_snapshot_once() -> None:
     assert halves[0][0] == 0 and halves[-1][1] == n and halves[0][1] == halves[1][0]
     per_device = [bp.chunk_bounds(e - s, 8) for s, e in halves]
     assert sum(e - s for part in per_device for s, e in part) == n
+
+
+def test_parse_topology_ignores_the_ansi_underline_on_kaggle() -> None:
+    real = "\t\x1b[4mGPU0\tGPU1\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\x1b[0m\nGPU0\t X \tPHB\t0-3\t0\t\tN/A\nGPU1\tPHB\t X \t0-3\t0\t\tN/A\n"
+    t = bp.parse_topology(real)
+    assert t["links"] == {"GPU0-GPU1": "PHB", "GPU1-GPU0": "PHB"} and t["cpu_affinity"]["GPU0"] == "0-3"

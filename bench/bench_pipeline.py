@@ -595,6 +595,7 @@ def parse_topology(text: str) -> dict:
     """
     import re
 
+    text = re.sub(r"\x1b\[[0-9;]*m", "", text)  # nvidia-smi underlines the header row with ANSI escapes
     lines = [ln.rstrip() for ln in text.splitlines() if ln.strip()]
     if not lines:
         return {}
