@@ -26,15 +26,15 @@
       "uploaded_at": "2026-10-21T19:03:40Z"
     }
   ],
-  "gpu_hours_used_estimate": 0.212,
+  "gpu_hours_used_estimate": 0.247,
   "kaggle_reported": {
-    "checked_at": "2026-10-21T19:14:46Z",
+    "checked_at": "2026-10-21T19:25:27Z",
     "gpu": {
-      "remaining_hours": 29.83,
+      "remaining_hours": 29.8,
       "total_hours": 30.0,
-      "used_hours": 0.17
+      "used_hours": 0.2
     },
-    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.17h  29.83h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
+    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.20h  29.80h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
     "tpu": {
       "remaining_hours": 20.0,
       "total_hours": 20.0,
@@ -167,6 +167,25 @@
       "status": "complete",
       "timeout_minutes": 45,
       "wall_seconds": 260.3661403656006
+    },
+    {
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive"
+      ],
+      "finished_at": "2026-10-21T19:21:37Z",
+      "git_sha": "efd6932b58333af977a4c1b4a4668187e2157de7",
+      "gpu_minutes": 2.1,
+      "gpu_name": "Tesla T4",
+      "job": "bench_rerun",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-rerun",
+      "pushed_at": "2026-10-21T19:19:26Z",
+      "result_status": "complete",
+      "run_id": "bench_rerun-20261021-191923",
+      "running_at": "2026-10-21T19:19:31Z",
+      "source": "real",
+      "status": "complete",
+      "timeout_minutes": 45,
+      "wall_seconds": 108.51989579200745
     }
   ]
 }
