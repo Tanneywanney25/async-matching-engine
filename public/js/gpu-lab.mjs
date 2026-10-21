@@ -80,7 +80,7 @@ function renderTimeline(data) {
   const p = pipelineSegments(get(data, "pipeline"));
   const src = get(data, "timeline_svg");
   if (src) $("gpu-timeline-img").src = src;
-  const bar = p.segments.map((s) => `<span class="seg ${s.cls}" style="width:${s.pct.toFixed(2)}%" title="${esc(s.text)}"></span>`).join("");
+  const bar = p.segments.map((s) => `<span class="pipe-seg ${s.cls}" style="width:${s.pct.toFixed(2)}%" title="${esc(s.text)}"></span>`).join("");
   $("gpu-pipeline").innerHTML = `<div class="seg-bar" aria-hidden="true">${bar}</div>` +
     `<ul class="seg-legend">${p.segments.map((s) => `<li class="${s.cls}">${esc(s.text)}</li>`).join("")}</ul>` +
     `<p class="small">Overlapped ${esc(fmtMs(p.overlappedMs))} vs serial ${esc(fmtMs(p.serialMs))}; transfers ${esc(fmtPct(p.transferSharePct))} of stage time. ${esc(p.consequence)}</p>`;
