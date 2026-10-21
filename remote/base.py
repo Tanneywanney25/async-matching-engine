@@ -38,8 +38,9 @@ class JobSpec:
     env: Dict[str, str] = field(default_factory=dict)  # set in os.environ before the body runs
 
 
-def git(*args: str) -> str:
-    return subprocess.run(["git", *args], cwd=REPO_ROOT, capture_output=True, text=True, check=True).stdout.strip()
+def git(*args: str, strip: bool = True) -> str:
+    out = subprocess.run(["git", *args], cwd=REPO_ROOT, capture_output=True, text=True, check=True).stdout
+    return out.strip() if strip else out.rstrip("\n")
 
 
 def git_sha() -> str:
@@ -69,8 +70,9 @@ def pushed_sha_problem(branch: str, sha: str) -> Optional[str]:
         return f"branch {branch} is not on origin: git push -u origin {branch}"
     if remote[0] != sha:
         return f"origin/{branch} is at {remote[0][:12]} but HEAD is {sha[:12]}: push first"
-    dirty = [ln[3:] for ln in git("status", "--porcelain", "--untracked-files=no").splitlines()
-             if not ln[3:].startswith(UNSHIPPED)]
+    # porcelain lines are "XY path": the leading status column may be a space, so never strip it
+    dirty = [ln[3:] for ln in git("status", "--porcelain", "--untracked-files=no", strip=False).splitlines()
+             if ln.strip() and not ln[3:].startswith(UNSHIPPED)]
     if dirty:
         return "uncommitted changes the job would not see: " + ", ".join(dirty[:8])
     return None

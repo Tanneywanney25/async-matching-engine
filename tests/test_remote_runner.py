@@ -12,7 +12,7 @@ from remote.base import JobSpec
 
 
 def _fake_git(remote_sha: str, status: str = "", branch: str = "gpu-phase2"):
-    def git(*args: str) -> str:
+    def git(*args: str, strip: bool = True) -> str:
         if args[0] == "ls-remote":
             return f"{remote_sha}\trefs/heads/{branch}" if remote_sha else ""
         if args[0] == "status":
@@ -89,3 +89,21 @@ def test_every_job_composes_into_valid_python(job: str) -> None:
 
     spec = JobSpec(name=job, body=kaggle.load_job(job), branch="gpu-phase2", env={"SECTIONS": "resources"})
     ast.parse(kaggle.compose(spec, f"{job}-test", "e" * 40))
+
+
+def test_porcelain_paths_keep_their_first_letter(monkeypatch) -> None:
+    """The real helper with real `git status --porcelain` text: a leading space must survive."""
+    sha = "a" * 40
+    calls = []
+
+    def run(cmd, **kwargs):
+        import subprocess
+
+        calls.append(cmd)
+        out = f"{sha}\trefs/heads/b\n" if cmd[1] == "ls-remote" else " M results/x.json\n M scripts/fuzz_engine.py\n"
+        return subprocess.CompletedProcess(cmd, 0, out, "")
+
+    monkeypatch.setattr(base.subprocess, "run", run)
+    problem = base.pushed_sha_problem("b", sha)
+    assert problem is not None and "scripts/fuzz_engine.py" in problem and "cripts" not in problem.replace("scripts", "")
+    assert "results/x.json" not in problem
