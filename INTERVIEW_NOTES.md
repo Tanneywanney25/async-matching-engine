@@ -62,7 +62,7 @@ Clarity and Decimal exactness. On the job's host CPU `add_order` p99 was 32.21 m
 
 ### 15. Why integer ticks?
 
-A float32 price near $100,000 cannot represent a one-cent spread; int32 ticks make every price comparison exact.
+At the archive's highest price, $84,856.07, neighbouring float32 values are 0.78 cents apart, so a one-cent spread cannot be represented exactly; int32 ticks make every price comparison exact.
 
 ## Three things that went wrong
 

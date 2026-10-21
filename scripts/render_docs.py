@@ -547,15 +547,15 @@ def update_readme(text: str, r: Renderer) -> str:
 # -- DESIGN ------------------------------------------------------------------- #
 
 
-def float32_spacing_sentence(r: Renderer) -> str:
-    """The float32 spacing at the archive's highest top-of-book price, derived from the precision study.
+def float32_spacing(r: Renderer) -> Optional[Tuple[str, str, str]]:
+    """``(price, spacing in cents, spacing as % of a tick)`` at the archive's highest top-of-book price.
 
     ``tolerance_rel`` is a tenth of a tick over the highest price in ticks, so that price is
     ``0.1 / tolerance_rel`` ticks of one cent; ``numpy.spacing`` gives the float32 step there.
     """
     tol = r.get("precision", "tolerance_rel")
     if not tol:
-        return "Near the top of the recorded prices a float32 cannot hold every cent,"
+        return None
     import numpy as np
     ticks = round(0.1 / float(tol))
     dollars = ticks * 0.01
@@ -564,8 +564,15 @@ def float32_spacing_sentence(r: Renderer) -> str:
     price = "$" + r.record(f"{dollars:,.2f}", run_id, path + " -> 0.1 / tolerance_rel ticks of $0.01", tol)
     step = r.record(f"{cents:.2f}", run_id, path + " -> numpy.spacing(float32(price)) in cents", tol)
     share = r.record(f"{cents * 100:.0f}", run_id, path + " -> spacing as % of the one-cent tick", tol)
-    return (f"At the archive's highest top-of-book price, {price}, a float32 has a spacing of {step} cents, "
-            f"{share}% of the one-cent tick,")
+    return price, step, share
+
+
+def float32_spacing_sentence(r: Renderer) -> str:
+    sp = float32_spacing(r)
+    if sp is None:
+        return "Near the top of the recorded prices a float32 cannot hold every cent,"
+    price, step, share = sp
+    return f"At the archive's highest top-of-book price, {price}, a float32 has a spacing of {step} cents, {share}% of the one-cent tick,"
 
 
 def design_md(r: Renderer) -> str:
@@ -699,8 +706,11 @@ def interview_md(r: Renderer, decisions: str) -> str:
         qa.append(("Why is the matching engine in Python, and how fast is it?",
                    f"Clarity and Decimal exactness. On the job's host CPU `add_order` p99 was {r.fmt('engine', 'add_order.p99_us', 'us')} "
                    "microseconds for the matching path alone; the GPU would add a PCIe round trip on top."))
+    sp = float32_spacing(r)
     qa.append(("Why integer ticks?",
-               "A float32 price near $100,000 cannot represent a one-cent spread; int32 ticks make every price comparison exact."))
+               (f"At the archive's highest price, {sp[0]}, neighbouring float32 values are {sp[1]} cents apart, so a one-cent "
+                "spread cannot be represented exactly" if sp else "A float32 price near the top of the archive cannot represent a "
+                "one-cent spread exactly") + "; int32 ticks make every price comparison exact.")),
     qa = qa[:15]
     out = ["# Interview notes", "", "Rendered from the measured numbers by `scripts/render_docs.py`.", "", "## Questions", ""]
     for i, (q, a) in enumerate(qa, 1):
@@ -789,7 +799,7 @@ def bullets_md(r: Renderer) -> str:
            "Rendered by `scripts/render_docs.py` from real-data T4 results; `scripts/check_bullets.py` checks the two-line "
            "length rule and the style rules. Sources: [BENCHMARKS.md](BENCHMARKS.md).", ""]
     for key, text in bullets:
-        out += [f"## {titles[key]}", "", f"<!-- bullet:{key} -->", text, ""]
+        out += [f"## {r.record(titles[key], r.latest.id, 'bullet_index', key)}", "", f"<!-- bullet:{key} -->", text, ""]
     return "\n".join(out)
 
 

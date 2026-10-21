@@ -1,5 +1,5 @@
 {
- "generated_unix": 1792622180.726887,
+ "generated_unix": 1792622240.7224455,
  "tokens": {
   "0": [
    {
@@ -653,6 +653,12 @@
     "path": "precision.tolerance_rel -> numpy.spacing(float32(price)) in cents",
     "run_id": "bench_rerun-20261021-191923",
     "value": 1.1784660779128707e-08
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "precision.tolerance_rel -> numpy.spacing(float32(price)) in cents",
+    "run_id": "bench_rerun-20261021-191923",
+    "value": 1.1784660779128707e-08
    }
   ],
   "0.899": [
@@ -681,6 +687,12 @@
     "path": "question_index",
     "run_id": "bench_rerun-20261021-191923",
     "value": 1
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "bullet_index",
+    "run_id": "bench_rerun-20261021-191923",
+    "value": "1"
    }
   ],
   "1,000": [
@@ -1601,6 +1613,12 @@
     "path": "question_index",
     "run_id": "bench_rerun-20261021-191923",
     "value": 2
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "bullet_index",
+    "run_id": "bench_rerun-20261021-191923",
+    "value": "2"
    }
   ],
   "2,000": [
@@ -2235,6 +2253,12 @@
     "path": "question_index",
     "run_id": "bench_rerun-20261021-191923",
     "value": 3
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "bullet_index",
+    "run_id": "bench_rerun-20261021-191923",
+    "value": "3"
    }
   ],
   "3,648": [
@@ -3071,6 +3095,12 @@
     "path": "precision.tolerance_rel -> spacing as % of the one-cent tick",
     "run_id": "bench_rerun-20261021-191923",
     "value": 1.1784660779128707e-08
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "precision.tolerance_rel -> spacing as % of the one-cent tick",
+    "run_id": "bench_rerun-20261021-191923",
+    "value": 1.1784660779128707e-08
    }
   ],
   "78.5": [
@@ -3158,6 +3188,12 @@
   "84,856.07": [
    {
     "doc": "DESIGN.md",
+    "path": "precision.tolerance_rel -> 0.1 / tolerance_rel ticks of $0.01",
+    "run_id": "bench_rerun-20261021-191923",
+    "value": 1.1784660779128707e-08
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
     "path": "precision.tolerance_rel -> 0.1 / tolerance_rel ticks of $0.01",
     "run_id": "bench_rerun-20261021-191923",
     "value": 1.1784660779128707e-08
