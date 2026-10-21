@@ -13,9 +13,11 @@ Run the API with::
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from contextlib import asynccontextmanager
 from decimal import Decimal, InvalidOperation
+from pathlib import Path
 from typing import Dict, List, Optional
 
 from .models import Fill, Order, OrderType, Side
@@ -132,6 +134,18 @@ def get_feed() -> "CoinbaseFeed":
 
         _feed = CoinbaseFeed(PRODUCT_IDS)
     return _feed
+
+
+ANALYTICS_PATH = Path(__file__).resolve().parents[2] / "public" / "data" / "gpu_lab.json"
+
+
+def load_analytics(path: Optional[Path] = None) -> Optional[Dict[str, object]]:
+    """Parsed GPU analytics JSON, or ``None`` when it has not been published."""
+    target = Path(path) if path is not None else ANALYTICS_PATH
+    try:
+        return json.loads(target.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
 
 
 def _levels_to_json(levels: List) -> List[Dict[str, str]]:
@@ -265,6 +279,14 @@ def create_app() -> "FastAPI":
                 for t in trades
             ],
         }
+
+    @app.get("/analytics")
+    async def get_analytics() -> Dict[str, object]:
+        """GPU analytics results (``public/data/gpu_lab.json``) rendered from real T4 runs."""
+        data = load_analytics()
+        if data is None:
+            raise HTTPException(status_code=404, detail="analytics not published")
+        return data
 
     @app.get("/metrics")
     async def get_metrics(product_id: str = Query("BTC-USD")) -> Dict[str, object]:

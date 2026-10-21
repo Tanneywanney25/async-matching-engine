@@ -797,7 +797,7 @@ def gpu_lab_json(r: Renderer) -> dict:
     for name, (run, data) in sorted(r.sections.items()):
         for path, m in walk_measurements(data):
             bench_rows.append({"section": name, "name": path, "metric": "median", "value": m["median_ms"], "unit": "ms",
-                               "run_id": run.id, "raw": GITHUB + f"results/{run.id}/{m.get('samples_file', 'metrics.json')}"})
+                               "run_id": run.id, "raw": f"results/{run.id}/{m.get('samples_file', 'metrics.json')}"})
     out["benchmarks"] = bench_rows
     if r.has("engine"):
         out["engine"] = {"p99_us": g("engine", "add_order.p99_us"), "p50_us": g("engine", "add_order.p50_us"),
