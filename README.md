@@ -62,10 +62,18 @@ synthetic orders → engine.py (OrderBook)      hypothetical order → core.mjs
 
 ```
 src/exchange_engine/   models · orderbook · feed · engine · dashboard · metrics
-tests/                 pytest: orderbook, metrics, engine, feed, models, api
-tests/frontend/        node:test for the browser core logic
-scripts/               benchmark.py (100k orders) · replay.py (offline)
-public/                static Vercel dashboard (index.html, css, js/*.mjs)
+                       recorder · archive · reference_engine
+tests/                 pytest: orderbook, metrics, engine, feed, models, api, archive,
+                       properties (Hypothesis), differential fuzzer, references, docs
+tests/frontend/        node:test for the browser core and GPU Lab logic
+scripts/               benchmark · replay · record · build_archive · synth_archive ·
+                       fuzz_engine · render_docs · check_numbers · check_bullets
+cuda/                  CUDA kernels (NVRTC) and the CUB wrapper (nvcc)
+cpu/                   C++ baseline for the feature kernels
+bench/                 benchmark harness, CPU references, run_all, reproduce
+remote/                Kaggle T4 runner, job bodies, Colab fallback
+results/               raw results of every remote run (manifests, samples, profiles)
+public/                static Vercel dashboard (index.html, css, js/*.mjs, data/)
 api/index.py           optional Vercel Python serverless order simulator
 ```
 
@@ -94,6 +102,7 @@ python scripts/replay.py --steps 200                # offline synthetic feed
 | GET    | `/book`    | Top-N bid/ask levels from the live feed mirror.  |
 | GET    | `/trades`  | Recent trades from the feed.                     |
 | GET    | `/metrics` | Spread, mid price, VWAP, imbalance.              |
+| GET    | `/analytics` | GPU Lab results (`public/data/gpu_lab.json`).  |
 
 ```bash
 curl -X POST localhost:8000/order -H 'content-type: application/json' \
@@ -107,8 +116,7 @@ pytest                              # Python suite
 node --test tests/frontend/core.test.mjs   # browser core logic
 ```
 
-Measured on this machine (see environment below): **53 Python tests** and
-**12 frontend tests** pass.
+CI runs both suites on every push; GPU tests are marked and skipped where `nvidia-smi` is absent.
 
 ## Benchmark
 

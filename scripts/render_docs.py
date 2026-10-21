@@ -288,7 +288,12 @@ def benchmarks_md(r: Renderer) -> str:
                 "| Measurement | Median ms (IQR) | GB/s (read + write) | Raw |", "|---|---:|---:|---|",
                 f"| Device-to-device copy kernel, 128-bit loads | {r.fmt_m('bandwidth', 'copy_kernel')} | {r.fmt('bandwidth', 'copy_kernel_gbs', 'gbs')} | {r.raw_link('bandwidth', r.get('bandwidth', 'copy_kernel.samples_file'))} |",
                 f"| `cudaMemcpy` device to device | {r.fmt_m('bandwidth', 'cudamemcpy_d2d')} | {r.fmt('bandwidth', 'cudamemcpy_gbs', 'gbs')} | {r.raw_link('bandwidth', r.get('bandwidth', 'cudamemcpy_d2d.samples_file'))} |",
-                "", f"Buffer size {r.fmt('bandwidth', 'bytes', 'int')} bytes. Measured ceiling {r.fmt('bandwidth', 'ceiling_gbs', 'gbs')} GB/s, "
+                *([f"| Read-only streaming kernel, 128-bit loads (bytes read) | {r.fmt_m('bandwidth', 'read_kernel')} | {r.fmt('bandwidth', 'read_kernel_gbs', 'gbs')} | {r.raw_link('bandwidth', r.get('bandwidth', 'read_kernel.samples_file'))} |"]
+                  if r.get('bandwidth', 'read_kernel') else []),
+                "", "A copy spends half its DRAM time writing and pays the read/write turnaround; the feature kernels read about "
+                "seventeen bytes for every one they write, so the read-only figure is the fair ceiling for them and the highest "
+                "measured figure is used.", "",
+                f"Buffer size {r.fmt('bandwidth', 'bytes', 'int')} bytes. Measured ceiling {r.fmt('bandwidth', 'ceiling_gbs', 'gbs')} GB/s, "
                 f"{r.fmt('bandwidth', 'ceiling_gbs', 'pct', 100.0 / (r.get('bandwidth', 'theoretical_gbs') or 1))}% of the "
                 f"{r.fmt('bandwidth', 'theoretical_gbs', 'gbs')} GB/s theoretical figure.", ""]
     if r.has("ladder"):
@@ -343,7 +348,10 @@ def benchmarks_md(r: Renderer) -> str:
                 f"- Rolling volume-weighted average price over {r.fmt('scans', 'rolling_vwap.n_trades', 'int')} trades (100-trade window, and "
                 f"time windows sampled at {r.fmt('scans', 'rolling_vwap.n_snapshots', 'int')} snapshots): {r.fmt_m('scans', 'rolling_vwap.ms')} ms "
                 f"for the whole chain; maximum relative error against `metrics.rolling_vwap` in Decimal "
-                f"{r.fmt('scans', 'rolling_vwap.max_rel_err_100', 'sci')} over {r.fmt('scans', 'rolling_vwap.decimal_sample', 'int')} sampled trades.",
+                f"{r.fmt('scans', 'rolling_vwap.max_rel_err_100', 'sci')} over {r.fmt('scans', 'rolling_vwap.decimal_sample', 'int')} sampled trades. "
+                f"Prefixes are double-double; against `math.fsum` window sums at {r.fmt('scans', 'rolling_vwap.time_windows.1s.sample', 'int')} sampled "
+                f"snapshots the one-second window's maximum relative error is {r.fmt('scans', 'rolling_vwap.time_windows.1s.max_rel_err', 'sci')} "
+                f"(a plain float64 cumulative sum reaches {r.fmt('scans', 'rolling_vwap.time_windows.1s.float64_cumsum_max_rel_err', 'sci')}).",
                 f"- Rolling one-second mean spread and imbalance over {r.fmt('scans', 'rolling_book.n_snapshots', 'int')} snapshots: "
                 f"{r.fmt_m('scans', 'rolling_book.ms')} ms, {r.fmt('scans', 'rolling_book.snapshots_per_s', 'millions')} million snapshots per second.", ""]
     if r.has("precision"):
@@ -450,6 +458,10 @@ def readme_gpu_section(r: Renderer) -> str:
     if r.has("slippage"):
         lines.append(f"- The warp-cooperative execution-cost kernel prices {r.fmt('slippage', 'warp.orders_per_s', 'billions')} billion simulated "
                      f"orders per second, {r.fmt('slippage', 'speedup_warp_vs_naive', 'x')} times the divergent thread-per-order walk.")
+    if r.has("ofi"):
+        lines.append(f"- Ten-level order flow imbalance has essentially no out-of-sample power for the next second's mid move "
+                     f"(R squared {r.fmt('ofi', 'per_product.BTC-USD.h1s.r2_oos', 'r2')} for BTC-USD), as expected of a liquid market; "
+                     "it is reported as a description, not a signal.")
     if r.has("pipeline"):
         lines.append(f"- Transfers take {r.fmt('pipeline', 'transfer_share_pct', 'pct')}% of the pipeline's stage time even with three overlapping "
                      "streams, so the archive should stay resident on the card and every analysis should run in one residency.")
