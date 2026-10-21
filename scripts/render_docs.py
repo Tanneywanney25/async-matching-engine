@@ -202,6 +202,12 @@ def format_value(x: float, kind: str) -> str:
 # --------------------------------------------------------------------------- #
 
 
+def ceiling_words(r: "Renderer") -> str:
+    kind = r.get("bandwidth", "ceiling_kind")
+    return {"read_kernel": "measured read-bandwidth ceiling", "cudamemcpy": "measured cudaMemcpy ceiling",
+            "copy_kernel": "measured copy ceiling"}.get(kind, "measured bandwidth ceiling")
+
+
 def rung_label(name: str) -> str:
     return {"v0_aos": "v0 array-of-structures, one kernel per metric", "v1_soa": "v1 structure-of-arrays, one kernel per metric",
             "v2_soa_fused": "v2 structure-of-arrays, fused", "v3_soa_fused_vec4": "v3 fused, 128-bit loads",
@@ -262,11 +268,13 @@ def ladder_rows(r: Renderer) -> List[Tuple[int, dict]]:
 
 
 def ladder_table(r: Renderer, with_raw: bool = True) -> str:
-    rows = ["| Rung | Per-kernel median ms (IQR) | End to end ms | Effective GB/s | % of measured ceiling | % of theoretical | Block | Verified |" + (" Raw |" if with_raw else ""),
-            "|---|---:|---:|---:|---:|---:|---:|:---:|" + ("---|" if with_raw else "")]
+    rows = ["| Rung | Per-kernel median ms (IQR) | End to end ms" + (" | End to end, pageable ms" if with_raw else "")
+            + " | Effective GB/s | % of measured ceiling | % of theoretical | Block | Verified |" + (" Raw |" if with_raw else ""),
+            "|---|---:|---:|" + ("---:|" if with_raw else "") + "---:|---:|---:|---:|:---:|" + ("---|" if with_raw else "")]
     for i, rung in ladder_rows(r):
         p = f"rungs.{i}"
-        line = (f"| {rung_label(rung['name'])} | {r.fmt_m('ladder', f'{p}.kernel_ms')} | {r.fmt('ladder', f'{p}.e2e_ms.median_ms', 'ms')} | "
+        pageable = f"{r.fmt('ladder', f'{p}.e2e_pageable_ms.median_ms', 'ms')} | " if with_raw else ""
+        line = (f"| {rung_label(rung['name'])} | {r.fmt_m('ladder', f'{p}.kernel_ms')} | {r.fmt('ladder', f'{p}.e2e_ms.median_ms', 'ms')} | {pageable}"
                 f"{r.fmt('ladder', f'{p}.effective_bw_gbs', 'gbs')} | {r.fmt('ladder', f'{p}.pct_of_ceiling', 'pct')} | "
                 f"{r.fmt('ladder', f'{p}.pct_of_theoretical', 'pct')} | {r.fmt('ladder', f'{p}.block_size', 'int')} | "
                 f"{'yes' if rung.get('verified') else 'NO'} |")
@@ -301,7 +309,8 @@ def benchmarks_md(r: Renderer) -> str:
                 f"{r.fmt('ladder', 'n_snapshots', 'int')} snapshots x {r.fmt('ladder', 'levels', 'int')} levels. Effective bandwidth counts the "
                 f"minimum traffic, {r.fmt('ladder', 'bytes_min_io_per_snapshot', 'int')} bytes per snapshot (every level's sizes, the top-of-book "
                 "prices, the product id and six outputs). Per-kernel time is CUDA events around the launches only; end to end "
-                "includes the host-to-device copy of the inputs from pageable memory and the copy back of the outputs.", "",
+                "is wall clock including the host-to-device copy of exactly the inputs the kernels read and the copy back of the "
+                "six outputs, from pinned host buffers, with the same from pageable NumPy memory beside it.", "",
                 ladder_table(r), ""]
         sweep = r.get("ladder", "sweep.table", []) or []
         if sweep:
@@ -329,7 +338,8 @@ def benchmarks_md(r: Renderer) -> str:
                 f"than single-threaded C++, {r.fmt('ladder', sp + '.kernel_vs_cpp_omp', 'x')} times faster than C++ with OpenMP on every core and "
                 f"{r.fmt('ladder', sp + '.kernel_vs_cupy', 'x')} times faster than the CuPy chain. End to end, transfers included, it is "
                 f"{r.fmt('ladder', sp + '.e2e_vs_numpy', 'x')} times faster than NumPy and {r.fmt('ladder', sp + '.e2e_vs_cupy', 'x')} times "
-                "faster than the CuPy chain with its own transfers.", ""]
+                "faster than the CuPy chain with its own transfers. From pageable memory the end-to-end advantage over NumPy "
+                f"shrinks to {r.fmt('ladder', sp + '.e2e_vs_numpy_pageable', 'x')} times.", ""]
     if r.has("scans"):
         out += ["## Prefix scans", ""]
         for key, title in (("", "Archive-length series"), ("large.", "Large series")):
@@ -367,8 +377,8 @@ def benchmarks_md(r: Renderer) -> str:
                 "time against float32 naive.", ""]
     if r.has("layout"):
         out += ["## Layout under Nsight Systems", "",
-                f"Total GPU time of the four book-level kernels over {r.fmt('layout', 'iters', 'int')} iterations each, from `nsys stats "
-                "--report cuda_gpu_kern_sum`.", "",
+                f"Total GPU time of the four book-level kernels over {r.fmt('layout', 'iters', 'int')} timed passes plus the same warmup "
+                "passes in both layouts, from `nsys stats --report cuda_gpu_kern_sum`.", "",
                 "| Kernel | Array-of-structures ms | Structure-of-arrays ms | Reduction % |", "|---|---:|---:|---:|"]
         for i, _k in enumerate(r.get("layout", "kernels", []) or []):
             p = f"kernels.{i}"
@@ -447,14 +457,15 @@ def readme_gpu_section(r: Renderer) -> str:
     lines += ["### Key findings", ""]
     if r.has("ladder"):
         lines.append(f"- The fused, vectorized feature kernel reaches {r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_ceiling', 'pct')}% of the "
-                     f"measured copy ceiling and is {r.fmt('ladder', sp + '.kernel_vs_cpp_single', 'x')} times faster than single-threaded C++ per "
+                     f"{ceiling_words(r)} and is {r.fmt('ladder', sp + '.kernel_vs_cpp_single', 'x')} times faster than single-threaded C++ per "
                      f"kernel, but only {r.fmt('ladder', sp + '.e2e_vs_numpy', 'x')} times faster than NumPy once transfers are counted.")
     if r.has("layout"):
         lines.append(f"- Moving the book levels from array-of-structures to structure-of-arrays order cut total kernel time by "
                      f"{r.fmt('layout', 'reduction_pct', 'pct')}% in the Nsight Systems profiles.")
     if r.has("precision"):
-        lines.append(f"- Float32 prefix sums lose rolling windows to cancellation: maximum relative window error "
-                     f"{r.fmt('precision', 'variants.0.max_rel_err', 'sci')}; production uses `{r.get('precision', 'production_choice')}`.")
+        lines.append(f"- Rolling windows built from prefix sums cancel: the worst float32 window was off by "
+                     f"{r.fmt('precision', 'variants.0.max_rel_err', 'sci')} of its value and even float64 reached "
+                     f"{r.fmt('precision', 'variants.1.max_rel_err', 'sci')}, above a tenth of a tick, so production uses a double-double scan.")
     if r.has("slippage"):
         lines.append(f"- The warp-cooperative execution-cost kernel prices {r.fmt('slippage', 'warp.orders_per_s', 'billions')} billion simulated "
                      f"orders per second, {r.fmt('slippage', 'speedup_warp_vs_naive', 'x')} times the divergent thread-per-order walk.")
@@ -541,9 +552,18 @@ def design_md(r: Renderer) -> str:
         "counts; spreads and level indices are exact integers on the device, sizes stay float32, and the microprice is kept as "
         "an offset from the mid so float32 does not lose it.", "",
         "## Scan precision", "",
-        (f"Rolling windows formed as the difference of two prefix sums cancel catastrophically in float32: over "
-         f"{r.fmt('precision', 'n', 'int')} values the maximum relative window error of the naive float32 scan was "
-         f"{r.fmt('precision', 'variants.0.max_rel_err', 'sci')}. {r.get('precision', 'rationale', '')}" if r.has("precision") else ""), "",
+        (f"A rolling window formed as the difference of two prefix sums cancels: the prefix grows with the stream while the "
+         f"window does not. Over {r.fmt('precision', 'n', 'int')} top-of-book notionals the worst float32 window was off by "
+         f"{r.fmt('precision', 'variants.0.max_rel_err', 'sci')} of its own value, Kahan-compensated float32 by "
+         f"{r.fmt('precision', 'variants.2.max_rel_err', 'sci')}, block-rebased float32 by {r.fmt('precision', 'variants.3.max_rel_err', 'sci')} "
+         f"and even float64 by {r.fmt('precision', 'variants.1.max_rel_err', 'sci')}, above the budget of a tenth of a tick at the largest "
+         f"price ({r.fmt('precision', 'tolerance_rel', 'sci')} relative). A double-double prefix (an unevaluated hi + lo pair built with "
+         "TwoSum, exclusive prefixes shuffled rather than subtracted) is the only design inside it: its windows match the exact "
+         "integer reference after rounding. It costs "
+         f"{r.fmt('precision', 'variants.4.ms.median_ms', 'ms')} ms against {r.fmt('precision', 'variants.0.ms.median_ms', 'ms')} ms for "
+         "float32 per pass, negligible next to moving the data, so the rolling VWAP uses it; its one-second windows match "
+         f"`math.fsum` exactly where a float64 cumulative sum is off by up to "
+         f"{r.fmt('scans', 'rolling_vwap.time_windows.1s.float64_cumsum_max_rel_err', 'sci')}." if r.has("precision") else ""), "",
         "## Structure-of-arrays book levels", "",
         (f"Level-major storage lets a warp read 32 consecutive snapshots of one level in one transaction. In Nsight Systems the "
          f"same four kernels took {r.fmt('layout', 'aos_total_kernel_ms', 'ms')} ms in array-of-structures order and "
@@ -571,13 +591,15 @@ def design_md(r: Renderer) -> str:
 
 def went_wrong(decisions: str) -> List[str]:
     lines = [ln[2:].strip() for ln in decisions.splitlines() if ln.startswith("- ")]
-    tagged = [ln for ln in lines if "[went-wrong]" in ln]
+    tagged = [ln for ln in lines if "[biggest]" in ln] + [ln for ln in lines if "[went-wrong]" in ln and "[biggest]" not in ln]
     if len(tagged) < 3:
         tagged += [ln for ln in reversed(lines) if ln not in tagged and re.search(r"failed|fix|fallback", ln, re.I)]
     out = []
     for ln in tagged[:3]:
-        ln = re.sub(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2} ", "", ln).replace("[went-wrong] ", "")
-        out.append(NUM_RE.sub(lambda m: f"`{m.group(0)}`", ln))
+        ln = re.sub(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2} ", "", ln).replace("[went-wrong] ", "").replace("[biggest] ", "")
+        parts = ln.split("`")  # even indices are prose, odd ones are existing code spans
+        out.append("`".join(NUM_RE.sub(lambda m: f"`{m.group(0)}`", part) if i % 2 == 0 else part
+                            for i, part in enumerate(parts)))
     return out
 
 
@@ -592,8 +614,8 @@ def interview_md(r: Renderer, decisions: str) -> str:
              "adds per byte, so the copy dominates; that is why analyses run in one residency."),
             ("How close to the hardware limit is the best feature kernel?",
              f"{r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.effective_bw_gbs', 'gbs')} GB/s of minimum traffic, "
-             f"{r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_ceiling', 'pct')}% of the {r.fmt('bandwidth', 'ceiling_gbs', 'gbs')} GB/s a copy "
-             f"kernel achieves and {r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_theoretical', 'pct')}% of the theoretical figure."),
+             f"{r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_ceiling', 'pct')}% of the {r.fmt('bandwidth', 'ceiling_gbs', 'gbs')} GB/s "
+             "the read-only streaming kernel achieves (a copy is slower because half its traffic is writes) and {r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_theoretical', 'pct')}% of the theoretical figure."),
             ("What did each rung of the ladder buy?",
              "Array-of-structures to structure-of-arrays fixes coalescing, fusion removes repeated passes over the same sizes, "
              "128-bit loads cut instruction count, and the sweep picks the launch shape; the table in BENCHMARKS.md has each rung's median."),
@@ -616,10 +638,11 @@ def interview_md(r: Renderer, decisions: str) -> str:
                ("How do you know the rolling price is right?",
                 f"Against `metrics.rolling_vwap` in Decimal on sampled trades: maximum relative error {r.fmt('scans', 'rolling_vwap.max_rel_err_100', 'sci')}.")]
     if r.has("precision"):
-        qa.append(("Why not float32 for the prefix sums?",
-                   f"Window error reached {r.fmt('precision', 'variants.0.max_rel_err', 'sci')} relative in float32; the production choice "
-                   f"`{r.get('precision', 'production_choice')}` stays within a tenth of a tick at "
-                   f"{r.fmt('precision', 'cost_vs_float32_naive_pct', 'pct')}% extra time."))
+        qa.append(("Why not float32, or even float64, for the prefix sums?",
+                   f"Window error reached {r.fmt('precision', 'variants.0.max_rel_err', 'sci')} relative in float32 and "
+                   f"{r.fmt('precision', 'variants.1.max_rel_err', 'sci')} in float64, both above a tenth of a tick; the double-double "
+                   f"scan stays inside it at {r.fmt('precision', 'cost_vs_float32_naive_pct', 'pct')}% extra time over float32, "
+                   "which is still a few milliseconds."))
     if r.has("slippage"):
         qa += [("What is divergence and how big was it here?",
                 f"Lanes of a warp taking different branch paths serialize. The thread-per-order walk lost "
@@ -635,8 +658,10 @@ def interview_md(r: Renderer, decisions: str) -> str:
                    f"{r.fmt('pipeline', 'transfer_share_pct', 'pct')}% of stage time."))
     if r.has("ofi"):
         qa.append(("Does order flow imbalance predict anything?",
-                   f"It explains part of short-horizon mid changes out of sample (R squared "
-                   f"{r.fmt('ofi', 'per_product.BTC-USD.h1s.r2_oos', 'r2')} for BTC-USD at one second), which is a description, not a strategy."))
+                   f"Not the future mid at these horizons: out of sample the fit is no better than the mean (R squared "
+                   f"{r.fmt('ofi', 'per_product.BTC-USD.h1s.r2_oos', 'r2')} for BTC-USD at one second, "
+                   f"{r.fmt('ofi', 'per_product.BTC-USD.h10s.r2_oos', 'r2')} at ten), which is what a liquid market should show; the "
+                   "study is a description, not a strategy."))
     if r.has("engine"):
         qa.append(("Why is the matching engine in Python, and how fast is it?",
                    f"Clarity and Decimal exactness. On the job's host CPU `add_order` p99 was {r.fmt('engine', 'add_order.p99_us', 'us')} "
@@ -688,10 +713,11 @@ def bullet_specs(r: Renderer) -> List[Tuple[str, List[List[str]]]]:
                [f"benchmarked across {orders} orders at {D} microseconds 99th-percentile latency.",
                 f"benchmarked across {orders} orders at {D} microseconds of 99th-percentile latency.",
                 f"benchmarked over {orders} orders at {D} microseconds 99th-percentile latency."]]),
-        ("4", [["Tuned ", "Optimized ", "Took "], ["a fused CUDA feature kernel on an NVIDIA T4 ", "a fused CUDA book feature kernel on an NVIDIA T4 "],
+        ("4", [["Took ", "Tuned "], ["CUDA order book feature kernels on an NVIDIA T4 ", "CUDA book feature kernels on an NVIDIA T4 "],
                [f"from {v0} to {gbs} gigabytes per second of effective bandwidth, ",
                 f"from {v0} to {gbs} gigabytes per second of effective memory bandwidth, "],
-               [f"{pct}% of the measured copy ceiling, ", f"or {pct}% of the measured copy ceiling, "],
+               [f"{pct}% of the measured memory ceiling, ", f"or {pct}% of the measured memory ceiling, ",
+                f"{pct}% of the measured bandwidth ceiling, "],
                ["with structure-of-arrays levels and 128-bit loads.", "using structure-of-arrays levels and 128-bit loads.",
                 "with structure-of-arrays book levels and 128-bit loads.", "by moving book levels to structure-of-arrays order.",
                 "with structure-of-arrays book levels and vectorized 128-bit loads."]]),
