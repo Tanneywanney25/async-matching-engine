@@ -62,7 +62,7 @@ def profile(out_dir: Path, archive_dir: Path, iters: int = 30, n_limit: int = 0)
         if proc.returncode != 0 or not rep.exists():
             section["error"] = f"nsys profile {layout} exited {proc.returncode}: {(proc.stderr or proc.stdout)[-800:]}"
             return section
-        stats = _run([nsys, "stats", "--report", "cuda_gpu_kern_sum", "--format", "csv",
+        stats = _run([nsys, "stats", "--force-export=true", "--report", "cuda_gpu_kern_sum", "--format", "csv",
                       "--output", str(prof / layout), str(rep)], log_path)
         csvs = sorted(prof.glob(f"{layout}*cuda_gpu_kern_sum*.csv"))
         if stats.returncode != 0 or not csvs:

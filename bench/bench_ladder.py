@@ -106,6 +106,16 @@ def measure_bandwidth(bench: Bench, quick: bool) -> dict:
     return section
 
 
+def pinned_copy(arr: np.ndarray) -> np.ndarray:
+    """A page-locked host copy of ``arr`` (CuPy pinned memory viewed as a NumPy array)."""
+    cp = cupy()
+    arr = np.ascontiguousarray(arr)
+    mem = cp.cuda.alloc_pinned_memory(max(1, arr.nbytes))
+    out = np.frombuffer(mem, dtype=arr.dtype, count=arr.size).reshape(arr.shape)
+    out[...] = arr
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # C++ baseline
 # --------------------------------------------------------------------------- #
@@ -191,6 +201,13 @@ class Ladder:
         self.d_aos = cp.asarray(self.h_aos)
         self.out = {name: cp.empty(ns, dtype=ref.OUTPUT_DTYPES[name]) for name in ref.OUTPUTS}
         self.h_out = {name: np.empty(ns, dtype=ref.OUTPUT_DTYPES[name]) for name in ref.OUTPUTS}
+        # Pinned (page-locked) copies of exactly what the kernels read and write, for the pinned
+        # end-to-end variant; the staging copy into them is not timed (the NumPy baseline's
+        # inputs are also already in memory).
+        self.pin = {"bid_sz": pinned_copy(self.hp["bid_sz"]), "ask_sz": pinned_copy(self.hp["ask_sz"]),
+                    "bid_px0": pinned_copy(self.hp["bid_px"][0]), "ask_px0": pinned_copy(self.hp["ask_px"][0]),
+                    "product": pinned_copy(self.hp_prod), "aos": pinned_copy(self.h_aos)}
+        self.pin_out = {name: pinned_copy(np.empty(ns, dtype=ref.OUTPUT_DTYPES[name])) for name in ref.OUTPUTS}
         self.mod = raw_module(["features.cu"])
         self.k = {name: self.mod.get_function(name) for name in (
             "v0_spread", "v0_depth", "v0_imbalance", "v0_microprice", "v1_spread", "v1_depth", "v1_imbalance",
@@ -245,31 +262,36 @@ class Ladder:
 
     # -- end to end ---------------------------------------------------------- #
 
-    def upload_soa(self) -> None:
+    def upload_soa(self, pinned: bool = False) -> None:
         """Host-to-device copy of exactly what the SoA kernels read."""
-        self.d["bid_sz"].set(self.hp["bid_sz"])
-        self.d["ask_sz"].set(self.hp["ask_sz"])
-        self.d["bid_px"][0].set(self.hp["bid_px"][0])
-        self.d["ask_px"][0].set(self.hp["ask_px"][0])
-        self.d_prod.set(self.hp_prod)
+        if pinned:
+            src = (self.pin["bid_sz"], self.pin["ask_sz"], self.pin["bid_px0"], self.pin["ask_px0"], self.pin["product"])
+        else:
+            src = (self.hp["bid_sz"], self.hp["ask_sz"], self.hp["bid_px"][0], self.hp["ask_px"][0], self.hp_prod)
+        self.d["bid_sz"].set(src[0])
+        self.d["ask_sz"].set(src[1])
+        self.d["bid_px"][0].set(src[2])
+        self.d["ask_px"][0].set(src[3])
+        self.d_prod.set(src[4])
 
-    def download(self) -> None:
+    def download(self, pinned: bool = False) -> None:
+        dst = self.pin_out if pinned else self.h_out
         for name in ref.OUTPUTS:
-            self.out[name].get(out=self.h_out[name])
+            self.out[name].get(out=dst[name])
 
-    def e2e(self, rung: str) -> Callable[[], None]:
+    def e2e(self, rung: str, pinned: bool = False) -> Callable[[], None]:
         launch = self.launcher(rung)
         if rung == "v0_aos":
             def run() -> None:
-                self.d_aos.set(self.h_aos)
-                self.d_prod.set(self.hp_prod)
+                self.d_aos.set(self.pin["aos"] if pinned else self.h_aos)
+                self.d_prod.set(self.pin["product"] if pinned else self.hp_prod)
                 launch()
-                self.download()
+                self.download(pinned)
         else:
             def run() -> None:
-                self.upload_soa()
+                self.upload_soa(pinned)
                 launch()
-                self.download()
+                self.download(pinned)
         return run
 
     # -- verification -------------------------------------------------------- #
@@ -389,7 +411,9 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     kres = bench.block("ladder_kernel", kernel_variants)
 
     # 5. end-to-end block: every rung with transfers, CuPy with transfers, NumPy and C++ (wall clock)
-    e2e_variants = {f"{name}_e2e": (lambda name=name: wall_time_ms(lad.e2e(name))) for name, _, _ in RUNGS}
+    e2e_variants = {f"{name}_e2e": (lambda name=name: wall_time_ms(lad.e2e(name, pinned=True))) for name, _, _ in RUNGS}
+    e2e_variants.update({f"{name}_e2e_pageable": (lambda name=name: wall_time_ms(lad.e2e(name, pinned=False)))
+                         for name, _, _ in RUNGS})
     e2e_variants["cupy_e2e"] = lambda: wall_time_ms(cupy_e2e)
     e2e_variants["numpy"] = timed_cpu(lambda: ref.features_numpy(lad.h["bid_px"], lad.h["bid_sz"], lad.h["ask_px"],
                                                                  lad.h["ask_sz"], lad.h_prod, lad.tick))
@@ -407,6 +431,7 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
                             else (BLOCK, lad.grid3 if name.startswith("v3") else lad.grid1))
         rungs.append({
             "name": name, "label": label, "kernel_ms": km, "e2e_ms": eres[f"{name}_e2e"],
+            "e2e_pageable_ms": eres[f"{name}_e2e_pageable"],
             "effective_bw_gbs": eff, "pct_of_ceiling": eff / ceiling * 100.0,
             "pct_of_theoretical": eff / theoretical * 100.0, "block_size": int(block_size), "grid": int(grid),
             "launches_per_pass": launches, "verified": verification[name]["verified"],
@@ -418,10 +443,12 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
         })
     best_rung = min(rungs, key=lambda r: r["kernel_ms"]["median_ms"])
     bk, be = best_rung["kernel_ms"]["median_ms"], best_rung["e2e_ms"]["median_ms"]
+    bep = best_rung["e2e_pageable_ms"]["median_ms"]
     speedups = {"best_rung": best_rung["name"],
                 "e2e_vs_numpy": eres["numpy"]["median_ms"] / be,
+                "e2e_vs_numpy_pageable": eres["numpy"]["median_ms"] / bep,
                 "kernel_vs_cupy": kres["cupy_chain"]["median_ms"] / bk,
-                "e2e_vs_cupy": eres["cupy_e2e"]["median_ms"] / be,
+                "e2e_vs_cupy": eres["cupy_e2e"]["median_ms"] / bep,
                 "v0_to_best_kernel": rungs[0]["kernel_ms"]["median_ms"] / bk}
     if lib is not None:
         speedups["kernel_vs_cpp_single"] = eres["cpp_single"]["median_ms"] / bk
@@ -437,8 +464,10 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
         "speedups": speedups, "outputs": list(ref.OUTPUTS),
         "ceiling_gbs": ceiling, "theoretical_gbs": theoretical,
         "timing": {"kernel": "CUDA events around the launch(es) of one full pass, no transfers",
-                   "e2e": "wall clock: host-to-device copy of exactly the inputs the kernels read, from pageable "
-                          "NumPy memory, the launch(es), and the device-to-host copy of the six outputs"},
+                   "e2e": "wall clock: host-to-device copy of exactly the inputs the kernels read from pinned host "
+                          "buffers, the launch(es), and the device-to-host copy of the six outputs into pinned buffers",
+                   "e2e_pageable": "the same from pageable NumPy memory (cudaMemcpy stages through a bounce buffer)",
+                   "e2e_vs_cupy": "both from pageable memory"},
         "wall_seconds": time.perf_counter() - t0,
     })
     bench.section("baselines", {

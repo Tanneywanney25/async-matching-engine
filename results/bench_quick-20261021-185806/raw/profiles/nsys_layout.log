@@ -1,0 +1,186 @@
+$ /opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/nsys profile --trace=cuda,nvtx --stats=true --force-overwrite true -o /kaggle/working/results/bench_quick-20261021-185806/raw/profiles/aos /usr/bin/python3 bench/bench_layout.py --layout aos --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth --iters 5 --n 100000
+[exit 0]
+LAYOUT_RESULT {"layout": "aos", "n": 100000, "levels": 50, "iters": 5, "verified": true, "event_median_ms": {"spread": 0.09804800152778625, "depth": 0.9298239946365356, "imbalance": 0.2197439968585968, "cumdepth": 12.066080093383789}, "event_total_median_ms": 13.313696086406708}
+Collecting data...
+Generating '/tmp/nsys-report-d8c3.qdstrm'
+
+[1/7] [0%                          ] aos.nsys-rep
+[1/7] [0%                          ] aos.nsys-rep
+[1/7] [================68%         ] aos.nsys-rep
+[1/7] [=================74%        ] aos.nsys-rep
+[1/7] [===================80%      ] aos.nsys-rep
+[1/7] [===================81%      ] aos.nsys-rep
+[1/7] [===================82%      ] aos.nsys-rep
+[1/7] [====================83%     ] aos.nsys-rep
+[1/7] [====================84%     ] aos.nsys-rep
+[1/7] [====================85%     ] aos.nsys-rep
+[1/7] [========================100%] aos.nsys-rep
+[1/7] [========================100%] aos.nsys-rep
+
+[2/7] [0%                          ] aos.sqlite
+[2/7] [1%                          ] aos.sqlite
+[2/7] [2%                          ] aos.sqlite
+[2/7] [3%                          ] aos.sqlite
+[2/7] [4%                          ] aos.sqlite
+[2/7] [5%                          ] aos.sqlite
+[2/7] [6%                          ] aos.sqlite
+[2/7] [7%                          ] aos.sqlite
+[2/7] [8%                          ] aos.sqlite
+[2/7] [9%                          ] aos.sqlite
+[2/7] [10%                         ] aos.sqlite
+[2/7] [11%                         ] aos.sqlite
+[2/7] [12%                         ] aos.sqlite
+[2/7] [13%                         ] aos.sqlite
+[2/7] [14%                         ] aos.sqlite
+[2/7] [=15%                        ] aos.sqlite
+[2/7] [=16%                        ] aos.sqlite
+[2/7] [=17%                        ] aos.sqlite
+[2/7] [==18%                       ] aos.sqlite
+[2/7] [==19%                       ] aos.sqlite
+[2/7] [==20%                       ] aos.sqlite
+[2/7] [==21%                       ] aos.sqlite
+[2/7] [===22%                      ] aos.sqlite
+[2/7] [===23%                      ] aos.sqlite
+[2/7] [===24%                      ] aos.sqlite
+[2/7] [====25%                     ] aos.sqlite
+[2/7] [====26%                     ] aos.sqlite
+[2/7] [====27%                     ] aos.sqlite
+[2/7] [====28%                     ] aos.sqlite
+[2/7] [=====29%                    ] aos.sqlite
+[2/7] [=====30%                    ] aos.sqlite
+[2/7] [=====31%                    ] aos.sqlite
+[2/7] [=====32%                    ] aos.sqlite
+[2/7] [======33%                   ] aos.sqlite
+[2/7] [======34%                   ] aos.sqlite
+[2/7] [======35%                   ] aos.sqlite
+[2/7] [=======36%                  ] aos.sqlite
+[2/7] [=======37%                  ] aos.sqlite
+[2/7] [=======38%                  ] aos.sqlite
+[2/7] [=======39%                  ] aos.sqlite
+[2/7] [========40%                 ] aos.sqlite
+[2/7] [========41%                 ] aos.sqlite
+[2/7] [========42%                 ] aos.sqlite
+[2/7] [=========43%                ] aos.sqlite
+[2/7] [=========44%                ] aos.sqlite
+[2/7] [=========45%                ] aos.sqlite
+[2/7] [=========46%                ] aos.sqlite
+[2/7] [==========47%               ] aos.sqlite
+[2/7] [==========48%               ] aos.sqlite
+[2/7] [==========49%               ] aos.sqlite
+[2/7] [===========50%              ] aos.sqlite
+[2/7] [===========51%              ] aos.sqlite
+[2/7] [===========52%              ] aos.sqlite
+[2/7] [===========53%              ] aos.sqlite
+[2/7] [============54%             ] aos.sqlite
+[2/7] [============55%             ] aos.sqlite
+[2/7] [============56%             ] aos.sqlite
+[2/7] [============57%             ] aos.sqlite
+[2/7] [=============58%            ] aos.sqlite
+[2/7] [=============59%            ] aos.sqlite
+[2/7] [=============60%            ] aos.sqlite
+[2/7] [==============61%           ] aos.sqlite
+[2/7] [==============62%           ] aos.sqlite
+[2/7] [==============63%           ] aos.sqlite
+[2/7] [==============64%           ] aos.sqlite
+[2/7] [===============65%          ] aos.sqlite
+[2/7] [===============66%          ] aos.sqlite
+[2/7] [===============67%          ] aos.sqlite
+[2/7] [================68%         ] aos.sqlite
+[2/7] [================69%         ] aos.sqlite
+[2/7] [================70%         ] aos.sqlite
+[2/7] [================71%         ] aos.sqlite
+[2/7] [=================72%        ] aos.sqlite
+[2/7] [=================73%        ] aos.sqlite
+[2/7] [=================74%        ] aos.sqlite
+[2/7] [==================75%       ] aos.sqlite
+[2/7] [==================76%       ] aos.sqlite
+[2/7] [==================77%       ] aos.sqlite
+[2/7] [==================78%       ] aos.sqlite
+[2/7] [===================79%      ] aos.sqlite
+[2/7] [===================80%      ] aos.sqlite
+[2/7] [===================81%      ] aos.sqlite
+[2/7] [===================82%      ] aos.sqlite
+[2/7] [====================83%     ] aos.sqlite
+[2/7] [====================84%     ] aos.sqlite
+[2/7] [====================85%     ] aos.sqlite
+[2/7] [=====================86%    ] aos.sqlite
+[2/7] [=====================87%    ] aos.sqlite
+[2/7] [=====================88%    ] aos.sqlite
+[2/7] [=====================89%    ] aos.sqlite
+[2/7] [======================90%   ] aos.sqlite
+[2/7] [======================91%   ] aos.sqlite
+[2/7] [======================92%   ] aos.sqlite
+[2/7] [=======================93%  ] aos.sqlite
+[2/7] [=======================94%  ] aos.sqlite
+[2/7] [=======================95%  ] aos.sqlite
+[2/7] [=======================96%  ] aos.sqlite
+[2/7] [========================97% ] aos.sqlite
+[2/7] [========================98% ] aos.sqlite
+[2/7] [========================99% ] aos.sqlite
+[2/7] [========================100%] aos.sqlite
+[2/7] [========================100%] aos.sqlite
+[3/7] Executing 'nvtx_sum' stats report
+
+ Time (%)  Total Time (ns)  Instances  Avg (ns)   Med (ns)   Min (ns)  Max (ns)  StdDev (ns)   Style      Range   
+ --------  ---------------  ---------  ---------  ---------  --------  --------  -----------  -------  -----------
+    100.0          466,551          1  466,551.0  466,551.0   466,551   466,551          0.0  PushPop  :layout_aos
+
+[4/7] Executing 'cuda_api_sum' stats report
+
+ Time (%)  Total Time (ns)  Num Calls    Avg (ns)      Med (ns)     Min (ns)    Max (ns)   StdDev (ns)               Name            
+ --------  ---------------  ---------  ------------  ------------  ----------  ----------  ------------  ----------------------------
+     62.1      111,383,542          2  55,691,771.0  55,691,771.0  45,299,273  66,084,269  14,697,211.6  cudaDeviceSynchronize       
+     36.9       66,222,629          1  66,222,629.0  66,222,629.0  66,222,629  66,222,629           0.0  cudaHostAlloc               
+      0.4          799,847          7     114,263.9     110,615.0       2,673     267,434     117,578.1  cudaMalloc                  
+      0.2          333,104          4      83,276.0      78,307.0      32,665     143,825      52,798.3  cudaMemcpyAsync             
+      0.1          204,228         32       6,382.1       4,466.5       3,619      38,477       6,546.9  cuLaunchKernel              
+      0.1          182,323         41       4,446.9       2,968.0       2,173      32,310       5,299.5  cudaEventRecord             
+      0.1           95,480          1      95,480.0      95,480.0      95,480      95,480           0.0  cuModuleLoadData            
+      0.0           70,539          1      70,539.0      70,539.0      70,539      70,539           0.0  cuModuleUnload              
+      0.0           57,602          1      57,602.0      57,602.0      57,602      57,602           0.0  cudaMemGetInfo              
+      0.0           48,824         41       1,190.8         910.0         495       8,605       1,420.7  cudaEventCreateWithFlags    
+      0.0           28,761         40         719.0         514.0         381       8,613       1,284.1  cudaEventDestroy            
+      0.0           24,175          4       6,043.8       1,762.5       1,546      19,104       8,707.5  cudaStreamIsCapturing_v10000
+      0.0           19,174          3       6,391.3       3,575.0       2,836      12,763       5,530.4  cudaStreamSynchronize       
+      0.0            5,405          1       5,405.0       5,405.0       5,405       5,405           0.0  cudaEventQuery              
+      0.0              563          1         563.0         563.0         563         563           0.0  cuModuleGetLoadingMode      
+
+[5/7] Executing 'cuda_gpu_kern_sum' stats report
+
+ Time (%)  Total Time (ns)  Instances    Avg (ns)      Med (ns)     Min (ns)    Max (ns)   StdDev (ns)          Name        
+ --------  ---------------  ---------  ------------  ------------  ----------  ----------  -----------  --------------------
+     90.7       95,744,671          8  11,968,083.9  11,955,300.0  11,845,127  12,086,369     95,427.9  layout_cumdepth_aos 
+      7.0        7,426,556          8     928,319.5     929,879.5     904,872     950,631     15,051.9  layout_depth_aos    
+      1.6        1,717,523          8     214,690.4     215,546.5     206,875     221,690      6,378.7  layout_imbalance_aos
+      0.7          726,319          8      90,789.9      92,158.0      80,926      92,958      4,010.4  layout_spread_aos   
+
+[6/7] Executing 'cuda_gpu_mem_time_sum' stats report
+
+ Time (%)  Total Time (ns)  Count   Avg (ns)     Med (ns)    Min (ns)   Max (ns)   StdDev (ns)           Operation          
+ --------  ---------------  -----  -----------  -----------  ---------  ---------  -----------  ----------------------------
+     99.0        6,519,956      1  6,519,956.0  6,519,956.0  6,519,956  6,519,956          0.0  [CUDA memcpy Host-to-Device]
+      1.0           68,606      3     22,868.7     32,991.0      2,304     33,311     17,810.2  [CUDA memcpy Device-to-Host]
+
+[7/7] Executing 'cuda_gpu_mem_size_sum' stats report
+
+ Total (MB)  Count  Avg (MB)  Med (MB)  Min (MB)  Max (MB)  StdDev (MB)           Operation          
+ ----------  -----  --------  --------  --------  --------  -----------  ----------------------------
+     80.000      1    80.000    80.000    80.000    80.000        0.000  [CUDA memcpy Host-to-Device]
+      0.800      3     0.267     0.400     0.000     0.400        0.231  [CUDA memcpy Device-to-Host]
+
+Generated:
+    /kaggle/working/results/bench_quick-20261021-185806/raw/profiles/aos.nsys-rep
+    /kaggle/working/results/bench_quick-20261021-185806/raw/profiles/aos.sqlite
+
+
+$ /opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/nsys stats --report cuda_gpu_kern_sum --format csv --output /kaggle/working/results/bench_quick-20261021-185806/raw/profiles/aos /kaggle/working/results/bench_quick-20261021-185806/raw/profiles/aos.nsys-rep
+[exit 1]
+
+
+WARNING: Existing SQLite export found: /kaggle/working/results/bench_quick-20261021-185806/raw/profiles/aos.sqlite
+         File is older than input file: /kaggle/working/results/bench_quick-20261021-185806/raw/profiles/aos.nsys-rep
+         Use --force-export=true to update export file.
+
+usage: nsys stats [<args>] <input-file>
+Try 'nsys stats --help' for more information.
+
