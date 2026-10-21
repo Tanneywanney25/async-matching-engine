@@ -34,6 +34,11 @@ dev = [
     "numpy>=1.26",
     "zstandard>=0.22",
     "hypothesis>=6.100",
+    "pybind11>=2.11",
+]
+# The C++20 order book core's binding (native/, built with CMake into exchange_engine._native).
+native = [
+    "pybind11>=2.11",
 ]
 # The GPU analytics layer (recorder, archive, benchmarks) on top of the core package.
 analytics = [
