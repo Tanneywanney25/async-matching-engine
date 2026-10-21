@@ -121,18 +121,18 @@ CI runs both suites on every push; GPU tests are marked and skipped where `nvidi
 ## Benchmark
 
 ```bash
-python scripts/benchmark.py --orders 100000 --cancels 10000
+python scripts/benchmark.py --orders 100000 --cancels 10000 --results-dir results/engine-local-<date>
 ```
 
-Measured — Python 3.14.7, Windows 11, AMD Zen 3 (Ryzen), single core:
+Measured on this laptop (`AMD Ryzen 5 7530U with Radeon Graphics`, Python `3.14.7`, `Windows-11-10.0.26300-SP0`), single core, matching path only; raw latencies in [`results/engine-local-20261021`](results/engine-local-20261021):
 
-| Operation                | mean | p50 | p95 | p99 |
-|--------------------------|-----:|----:|----:|----:|
-| `add_order` (insert+match) | 7.98 µs | 5.70 µs | 16.90 µs | 25.00 µs |
-| `cancel_order`             | 1.68 µs | 0.30 µs | 5.10 µs | 5.90 µs |
+| Operation | mean | p50 | p95 | p99 |
+|---|---:|---:|---:|---:|
+| `add_order` (insert + match) | 10.91 µs | 7.70 µs | 23.70 µs | 36.80 µs |
+| `cancel_order` | 2.72 µs | 0.60 µs | 8.10 µs | 10.60 µs |
 
-Median `add_order` is ~5.7 µs, comfortably under the 50 µs target. Numbers vary
-by machine; re-run the command to reproduce on yours.
+Numbers vary by machine; re-run the command to reproduce on yours. The GPU job runs the same benchmark on its own host CPU (see [BENCHMARKS.md](BENCHMARKS.md)).
+
 
 ## Deploy (Vercel)
 
@@ -162,6 +162,55 @@ warm instance).
   orders never mutate the observed book.
 - **`SortedDict` + `deque`.** O(log n) level access with FIFO time priority per
   level — simple, fast, and easy to reason about for a portfolio-scale engine.
+
+<!-- gpu-lab:start -->
+## GPU analytics layer
+
+An offline layer that replays the recorded Coinbase book on an NVIDIA Tesla T4. Every number below is rendered from committed raw results by `scripts/render_docs.py`; the full set with raw links is in [BENCHMARKS.md](BENCHMARKS.md), the reasoning in [DESIGN.md](DESIGN.md).
+
+```mermaid
+flowchart LR
+  A[Coinbase WebSocket] --> B[recorder.py<br/>zstd JSON lines]
+  B --> C[build_archive.py<br/>tick-encoded level-major archive]
+  C --> D[(Kaggle private dataset)]
+  D --> E[Kaggle T4 job<br/>bench.run_all]
+  E --> F[results/run/metrics.json]
+  F --> G[render_docs.py]
+  G --> H[BENCHMARKS.md, README, BULLETS.md]
+  G --> I[public/data/gpu_lab.json<br/>GPU Lab dashboard]
+```
+
+Archive: 863,153 book snapshots and 280,818 trades of BTC-USD and ETH-USD, 9.36 hours of capture, 0 sequence gaps.
+
+### The optimization ladder
+
+| Rung | Per-kernel median ms (IQR) | End to end ms | Effective GB/s | % of measured ceiling | % of theoretical | Block | Verified |
+|---|---:|---:|---:|---:|---:|---:|:---:|
+| v0 array-of-structures, one kernel per metric | 40.7 (IQR 24.7) | 101 | 9.2 | 3.5 | 2.9 | 256 | yes |
+| v1 structure-of-arrays, one kernel per metric | 2.03 (IQR 0.0339) | 32.8 | 184.1 | 70.1 | 57.5 | 256 | yes |
+| v2 structure-of-arrays, fused | 1.78 (IQR 0.0103) | 32.5 | 210.0 | 80.0 | 65.6 | 256 | yes |
+| v3 fused, 128-bit loads | 1.57 (IQR 0.0104) | 32.3 | 238.8 | 90.9 | 74.6 | 256 | yes |
+| v4 v3 + grid-stride, best launch configuration | 1.49 (IQR 0.0614) | 32.2 | 251.1 | 95.6 | 78.5 | 128 | yes |
+
+### Key findings
+
+- The fused, vectorized feature kernel reaches 95.6% of the measured read-bandwidth ceiling and is 25.8 times faster than single-threaded C++ per kernel, but only 3.2 times faster than NumPy once transfers are counted.
+- Moving the book levels from array-of-structures to structure-of-arrays order cut total kernel time by 95.8% in the Nsight Systems profiles.
+- Rolling windows built from prefix sums cancel: the worst float32 window was off by 3.5e+00 of its value and even float64 reached 1.8e-08, above a tenth of a tick, so production uses a double-double scan.
+- The warp-cooperative execution-cost kernel prices 1.68 billion simulated orders per second, 4.3 times the divergent thread-per-order walk.
+- Ten-level order flow imbalance has essentially no out-of-sample power for the next second's mid move (R squared -0.0020 for BTC-USD), as expected of a liquid market; it is reported as a description, not a signal.
+- Transfers take 94.2% of the pipeline's stage time even with three overlapping streams, so the archive should stay resident on the card and every analysis should run in one residency.
+
+**The GPU is not in the live matching path.** A PCIe round trip alone takes longer than the engine's matching latency, so the GPU only ever analyses recorded history.
+
+### Limitations
+
+- One Kaggle T4 and its four-vCPU host; numbers move with the card's clocks, which are recorded per block.
+- Nsight Compute is blocked in Kaggle's container, so there are no per-kernel hardware counters, only Nsight Systems traces.
+- The archive covers one recording window of two products; the order flow imbalance fit describes that window only.
+- The compiled C++ order book core (a stretch item) was not built; the Python engine remains the reference implementation.
+
+<!-- gpu-lab:end -->
 
 ## License
 

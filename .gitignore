@@ -39,7 +39,7 @@ Thumbs.db
 # GPU analytics layer: credentials and recorded market data never enter git
 access_token
 kaggle.json
-data/
+/data/
 build/
 *.nsys-rep.tmp
 
