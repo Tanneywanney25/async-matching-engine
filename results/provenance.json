@@ -1,17 +1,773 @@
 {
- "generated_unix": 1792623290.258959,
+ "generated_unix": 1792624263.921141,
  "tokens": {
   "0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.gap_count",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.1.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.1.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.1.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.0.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.0.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.0.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.3.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.3.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.3.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.4.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.4.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.4.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.5.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.5.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.2.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.2.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.2.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.15.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.15.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.15.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.14.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.14.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.14.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.13.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.13.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.13.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.16.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.16.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.16.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.11.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.11.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.11.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.10.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.10.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.10.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.9.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.9.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.9.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.12.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.12.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.12.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.8.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.8.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.8.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.7.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.7.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.7.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.21.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.21.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.21.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.17.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.17.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.17.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.23.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.23.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.23.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.19.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.19.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.19.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.22.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.22.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.22.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.18.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.18.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.18.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.24.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.24.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.24.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.20.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.20.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.20.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.25.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.25.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.25.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.26.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.26.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.26.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.30.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.30.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.29.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.29.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.31.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.31.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.31.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.27.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.27.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.27.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.28.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.28.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.28.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.35.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.35.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.35.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.32.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.32.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.32.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.33.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.33.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.33.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.34.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.34.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.34.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.40.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.40.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.36.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.36.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.36.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.37.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.37.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.37.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.38.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.38.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.39.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.39.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.42.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.42.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.42.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.41.spill_stores",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.41.spill_loads",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.kernels.scan_kernel.stack_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.kernels.scan_kernel.stack_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.42.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.21.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
     "value": 0
    },
    {
     "doc": "README.md (GPU section)",
     "path": "archive.gap_count",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 0
    }
   ],
@@ -19,7 +775,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.ETH-USD.h1s.r2_oos",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.0007151876366484622
    }
   ],
@@ -27,671 +783,697 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.ETH-USD.h10s.r2_oos",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": -0.0014757058274823542
-   }
-  ],
-  "0.00171": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "precision.variants.4.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.001712024211883545
-   }
-  ],
-  "0.00174": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "precision.variants.3.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.0017439574003219604
    }
   ],
   "0.0020": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.BTC-USD.h1s.r2_oos",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": -0.001981168212491502
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ofi.per_product.BTC-USD.h1s.r2_oos",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": -0.001981168212491502
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ofi.per_product.BTC-USD.h1s.r2_oos",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": -0.001981168212491502
    }
   ],
-  "0.00376": [
+  "0.00393": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "precision.variants.1.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.003760002553462982
+    "path": "scans.implementations.0.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.003928001970052719
    }
   ],
-  "0.00432": [
+  "0.00433": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.1.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.004319995641708374
+    "path": "scans.large.implementations.1.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.0043280720710754395
    }
   ],
-  "0.00452": [
+  "0.00462": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.26.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.004520028829574585
+    "path": "scans.implementations.2.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.00461600162088871
    }
   ],
   "0.0051": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.ETH-USD.h10s.r2_in",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.005135025054521125
    }
   ],
-  "0.00529": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.2.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.0052880048751831055
-   }
-  ],
-  "0.00589": [
+  "0.00514": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.27.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.005888015031814575
-   }
-  ],
-  "0.00598": [
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.005136042833328247
+   },
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.22.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.005983948707580566
+    "path": "scans.implementations.1.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.005143996328115463
    }
   ],
-  "0.00610": [
+  "0.00578": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.2.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.0057840049266815186
+   }
+  ],
+  "0.00681": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.006104022264480591
-   }
-  ],
-  "0.00615": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "precision.variants.0.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.00615200400352478
-   }
-  ],
-  "0.00630": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.rolling_book.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.006303995847702026
-   }
-  ],
-  "0.00645": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.29.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.006447970867156982
-   }
-  ],
-  "0.00649": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.1.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.006488025188446045
-   }
-  ],
-  "0.00659": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.13.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.006592005491256714
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.006808072328567505
    }
   ],
   "0.0069": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.ETH-USD.h1s.r2_in",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.006878928199865131
    }
   ],
-  "0.00690": [
+  "0.00694": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.0.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.006904006004333496
+    "path": "ladder.sweep.table.22.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.006944060325622559
    }
   ],
-  "0.00693": [
+  "0.00723": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.8.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.006927996873855591
-   }
-  ],
-  "0.00697": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.11.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.00696796178817749
-   }
-  ],
-  "0.00716": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.5.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.0071600377559661865
+    "path": "ladder.sweep.table.26.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.007231980562210083
    }
   ],
   "0.0073": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.BTC-USD.h10s.r2_in",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.007255404179986491
    }
   ],
-  "0.00779": [
+  "0.00764": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "precision.variants.2.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.007791966199874878
+    "path": "ladder.sweep.table.8.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.007640033960342407
    }
   ],
-  "0.00802": [
+  "0.00788": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.19.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.008016049861907959
+    "path": "ladder.sweep.table.16.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.007880032062530518
    }
   ],
-  "0.00803": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.28.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.008032053709030151
-   }
-  ],
-  "0.00831": [
+  "0.00798": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.0.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.008311867713928223
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.007975995540618896
+   }
+  ],
+  "0.00819": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.19.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008192062377929688
+   }
+  ],
+  "0.00835": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.5.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008352011442184448
+   }
+  ],
+  "0.00838": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.17.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008376002311706543
    }
   ],
   "0.0084": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.BTC-USD.h1s.r2_in",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.008406197360601775
    }
   ],
-  "0.00885": [
+  "0.00841": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.16.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.008847951889038086
+    "path": "ladder.sweep.table.7.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008408010005950928
+   }
+  ],
+  "0.00856": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.3.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008560001850128174
    },
    {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.3.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008560001850128174
+   }
+  ],
+  "0.00872": [
+   {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.25.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.008847951889038086
+    "path": "ladder.sweep.table.0.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008719950914382935
+   }
+  ],
+  "0.00877": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.14.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008768022060394287
+   }
+  ],
+  "0.00889": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.28.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008888065814971924
+   }
+  ],
+  "0.00890": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.10.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.00890401005744934
+   }
+  ],
+  "0.00898": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.11.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.008975982666015625
+   }
+  ],
+  "0.00916": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.3.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.009160071611404419
+   }
+  ],
+  "0.00938": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.29.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.009384006261825562
+   }
+  ],
+  "0.00941": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.2.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.009408026933670044
+   }
+  ],
+  "0.00946": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.21.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.009463995695114136
+   }
+  ],
+  "0.00954": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.23.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.009535998106002808
    }
   ],
   "0.0099": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.BTC-USD.h10s.r2_oos",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": -0.009897838211532894
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ofi.per_product.BTC-USD.h10s.r2_oos",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": -0.009897838211532894
    }
   ],
-  "0.00995": [
+  "0.0101": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.18.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.009952038526535034
-   }
-  ],
-  "0.00997": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.23.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.009968012571334839
-   }
-  ],
-  "0.0103": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.2.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.010327965021133423
+    "path": "ladder.sweep.table.9.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.010064005851745605
    },
    {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.2.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.010327965021133423
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.13.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.010087966918945312
    }
   ],
   "0.0104": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.3.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.010383903980255127
+    "path": "ladder.sweep.table.6.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.010416001081466675
    },
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.17.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.010432034730911255
+    "path": "ladder.sweep.table.20.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.010447978973388672
+   }
+  ],
+  "0.0115": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.2.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.011520028114318848
    },
    {
     "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.3.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.010383903980255127
+    "path": "ladder.rungs.2.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.011520028114318848
    }
   ],
-  "0.0106": [
+  "0.0117": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.21.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.010615915060043335
-   }
-  ],
-  "0.0110": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.3.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.010999977588653564
-   }
-  ],
-  "0.0112": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.15.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.011215925216674805
-   }
-  ],
-  "0.0114": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.14.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.011384040117263794
+    "path": "scans.rolling_book.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.011656045913696289
    }
   ],
   "0.0118": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.25.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.011823952198028564
+   }
+  ],
+  "0.0121": [
+   {
+    "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.4.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.011831969022750854
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.012127995491027832
    }
   ],
-  "0.0125": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.2.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.012512058019638062
-   }
-  ],
-  "0.0126": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.10.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.012559950351715088
-   }
-  ],
-  "0.0137": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.1.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.013656049966812134
-   }
-  ],
-  "0.0138": [
+  "0.0122": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.12.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.013784021139144897
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.012200027704238892
    }
   ],
-  "0.0139": [
+  "0.0131": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.2.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.013880044221878052
+    "path": "ladder.sweep.table.15.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.013095974922180176
    }
   ],
-  "0.0150": [
+  "0.0134": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.7.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.015031963586807251
+    "path": "ladder.sweep.table.24.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.013375997543334961
    }
   ],
-  "0.0154": [
+  "0.0136": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.6.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.015384048223495483
+    "path": "ladder.sweep.table.1.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.013615995645523071
    }
   ],
   "0.0159": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.20.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.015872031450271606
+    "path": "ladder.sweep.table.18.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.01591995358467102
    }
   ],
-  "0.0163": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.9.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.01634395122528076
-   }
-  ],
-  "0.0172": [
+  "0.0160": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.read_kernel.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.01722407341003418
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.015976309776306152
    }
   ],
-  "0.0181": [
+  "0.0200": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.0.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.018096059560775757
+    "path": "ladder.rungs.4.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.02004796266555786
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.4.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.02004796266555786
    }
   ],
-  "0.0219": [
+  "0.0248": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.24.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.021927982568740845
+    "path": "ladder.rungs.1.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.02480006217956543
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.1.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.02480006217956543
    }
   ],
-  "0.0233": [
+  "0.0310": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "precision.variants.1.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.030959993600845337
+   }
+  ],
+  "0.0419": [
    {
     "doc": "BENCHMARKS.md",
     "path": "pipeline.serial_ms.iqr_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 0.02331075000938654
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.04185849998350477
    }
   ],
-  "0.0339": [
+  "0.0509": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.1.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.03387194871902466
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.1.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.03387194871902466
+    "path": "precision.variants.0.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.05088798701763153
    }
   ],
-  "0.0422": [
+  "0.0572": [
    {
     "doc": "BENCHMARKS.md",
     "path": "pipeline.overlapped_ms.iqr_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 0.042236750005031354
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.0572194999790554
    }
   ],
-  "0.0588": [
+  "0.0716": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "precision.variants.3.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.07156798243522644
+   }
+  ],
+  "0.0771": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 0.058791935443878174
-   }
-  ],
-  "0.0614": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.4.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.0613519549369812
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.4.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.0613519549369812
-   }
-  ],
-  "0.0947": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "bandwidth.copy_kernel.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.09467220306396484
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.07710397243499756
    }
   ],
   "0.0e+00": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.time_windows.1s.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.0
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.4.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.0
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.4.median_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.0
    }
   ],
-  "0.120": [
+  "0.106": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "bandwidth.copy_kernel.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.10632061958312988
+   }
+  ],
+  "0.118": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.2.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.12043200060725212
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.11766399815678596
    }
   ],
-  "0.178": [
+  "0.146": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "precision.variants.2.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.14570404589176178
+   }
+  ],
+  "0.182": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.1.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.17817600071430206
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.18223999440670013
    }
   ],
-  "0.244": [
+  "0.248": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.0.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.24371199309825897
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.24779199808835983
    }
   ],
-  "0.323": [
+  "0.276": [
    {
     "doc": "BENCHMARKS.md",
     "path": "baselines.cpp_omp.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.32324499997571365
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.27557724999383026
    }
   ],
-  "0.362": [
+  "0.350": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.cudamemcpy_d2d.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.3622159957885742
-   }
-  ],
-  "0.38": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "engine.cancel_order.p50_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 0.384
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.3503842353820801
    }
   ],
   "0.39": [
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.naive.orders_per_s",
-    "run_id": "bench_all-20261021-190618",
-    "value": 387223552.42101485
+    "run_id": "bench_all-20261021-230301",
+    "value": 386725846.1135337
    }
   ],
-  "0.426": [
+  "0.406": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.0.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.4259679913520813
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.4059839993715286
    },
    {
     "doc": "DESIGN.md",
     "path": "precision.variants.0.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.4259679913520813
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.4059839993715286
    }
   ],
-  "0.445": [
+  "0.432": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.1.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.44542399048805237
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.43169599771499634
    }
   ],
-  "0.512": [
+  "0.448": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.3.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.5124800205230713
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.4481920003890991
    }
   ],
-  "0.770": [
+  "0.46": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.cancel_order.p50_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.46
+   }
+  ],
+  "0.492": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.cupy.e2e_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.49238824996677977
+   }
+  ],
+  "0.507": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "precision.variants.4.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.5074241757392883
+   }
+  ],
+  "0.593": [
    {
     "doc": "BENCHMARKS.md",
     "path": "baselines.cpp_single.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.7702987499840219
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.5927992500573964
+   }
+  ],
+  "0.658": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.cupy.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.6581441164016724
    }
   ],
   "0.78": [
    {
     "doc": "DESIGN.md",
     "path": "precision.tolerance_rel -> numpy.spacing(float32(price)) in cents",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.1784660779128707e-08
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "precision.tolerance_rel -> numpy.spacing(float32(price)) in cents",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.1784660779128707e-08
    }
   ],
-  "0.899": [
+  "0.926": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "baselines.cupy.e2e_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 0.8988637500237928
+    "path": "precision.variants.2.ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.9256480038166046
    }
   ],
   "1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.BTC-USD.h1s.horizon_s",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 1
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.ETH-USD.h1s.horizon_s",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.4.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.4.blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
     "value": 1
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1
    },
    {
     "doc": "BULLETS.md",
     "path": "bullet_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": "1"
    }
   ],
@@ -699,13 +1481,13 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.verification.sample",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 1000
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "slippage.verification.sample",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 1000
    }
   ],
@@ -713,37 +1495,49 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.24.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.25.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.26.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.27.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.28.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.29.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1024
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.device.maxThreadsPerMultiProcessor",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1024
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.4.block",
+    "run_id": "bench_all-20261021-230301",
     "value": 1024
    }
   ],
@@ -751,7 +1545,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.bytes",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1073741824
    }
   ],
@@ -759,31 +1553,31 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.5.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1280
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.11.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1280
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.17.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1280
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.23.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1280
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.29.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1280
    }
   ],
@@ -791,13 +1585,13 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.n",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1726306
    },
    {
     "doc": "DESIGN.md",
     "path": "precision.n",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1726306
    }
   ],
@@ -805,23 +1599,15 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.049072027206421
-   }
-  ],
-  "1.06": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "precision.variants.2.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.0564639568328857
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.053007960319519
    }
   ],
   "1.0e-08": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.2.median_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 9.993572777282692e-09
    }
   ],
@@ -829,31 +1615,29 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.speedups.e2e_vs_cupy",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.0885942943471854
-   }
-  ],
-  "1.2": [
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0965670166925194
+   },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.speedups.e2e_vs_numpy_pageable",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.1999224906379606
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.1181915396128197
    }
   ],
   "1.22": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_book.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.2222400307655334
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.2167840003967285
    }
   ],
   "1.2e-08": [
    {
     "doc": "DESIGN.md",
     "path": "precision.tolerance_rel",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.1784660779128707e-08
    }
   ],
@@ -861,373 +1645,405 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.2.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.00012542238196938085
    },
    {
     "doc": "DESIGN.md",
     "path": "precision.variants.2.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.00012542238196938085
-   }
-  ],
-  "1.45": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "layout.kernels.3.soa_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 1.453051
    }
   ],
   "1.48": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.7.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.477728009223938
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.4833759665489197
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.7.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.4833759665489197
    }
   ],
   "1.49": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.4.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.4882239699363708
-   },
-   {
-    "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.2.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.4896960258483887
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.4924319982528687
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.12.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.487056016921997
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.4934719800949097
    },
    {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.4.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.4882239699363708
+    "doc": "BENCHMARKS.md",
+    "path": "layout.kernels.3.soa_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.485724
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.2.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.4924319982528687
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.12.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.4934719800949097
    }
   ],
   "1.50": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.27.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.500927984714508
+    "path": "ladder.rungs.4.kernel_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.4955520033836365
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.28.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5013920068740845
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5029600262641907
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.29.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5019680261611938
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5033119916915894
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.28.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5029600262641907
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.4.kernel_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.4955520033836365
+   }
+  ],
+  "1.51": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.27.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5055519938468933
    }
   ],
   "1.52": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.6.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5195040106773376
-   },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.22.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.524191975593567
-   },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.26.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5205280184745789
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5241439938545227
    }
   ],
   "1.53": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.1.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5267360210418701
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5311999917030334
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.22.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.53220796585083
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.23.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5254560112953186
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.530303955078125
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.26.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5250719785690308
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.23.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.530303955078125
    }
   ],
   "1.55": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.25.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5506880283355713
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5528799891471863
    }
   ],
   "1.56": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.21.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5558080077171326
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5566080212593079
    }
   ],
   "1.57": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5652959942817688
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5675359964370728
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5652959942817688
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5675359964370728
    }
   ],
   "1.59": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.17.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.5927520394325256
-   },
-   {
-    "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.20.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.59334397315979
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5930399894714355
    }
   ],
   "1.5e-05": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.time_windows.1s.float64_cumsum_max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.4835426079406455e-05
    },
    {
     "doc": "DESIGN.md",
     "path": "scans.rolling_vwap.time_windows.1s.float64_cumsum_max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.4835426079406455e-05
    }
   ],
   "1.60": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.19.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.600495994091034
+    "path": "ladder.sweep.table.17.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.5960960388183594
    }
   ],
   "1.61": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.0.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6131680011749268
+    "path": "ladder.sweep.table.16.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.614736020565033
    },
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.16.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6072800159454346
+    "path": "ladder.sweep.table.19.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6087999939918518
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.24.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6086399555206299
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6079040169715881
    }
   ],
   "1.62": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.0.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6151520013809204
+   },
+   {
+    "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.15.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6181440353393555
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6249759793281555
    }
   ],
   "1.63": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.8.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6257439851760864
-   },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.13.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6344640254974365
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6282399892807007
    }
   ],
   "1.64": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.3.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.640447974205017
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6383999586105347
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.13.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6361599564552307
    }
   ],
   "1.65": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.11.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6518239974975586
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.654304027557373
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.14.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6468480229377747
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6523999571800232
    }
   ],
   "1.67": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.18.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6654719710350037
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6732479929924011
    }
   ],
   "1.68": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.10.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6778879761695862
-   },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "slippage.warp.orders_per_s",
-    "run_id": "bench_all-20261021-190618",
-    "value": 1678182386.4719162
-   },
-   {
-    "doc": "BULLETS.md",
-    "path": "slippage.warp.orders_per_s",
-    "run_id": "bench_all-20261021-190618",
-    "value": 1678182386.4719162
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "slippage.warp.orders_per_s",
-    "run_id": "bench_all-20261021-190618",
-    "value": 1678182386.4719162
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6840960383415222
    }
   ],
   "1.69": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.9.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.6862399578094482
+    "path": "slippage.warp.orders_per_s",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1688519853.8055408
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "pipeline.breakdown.d2h_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6899360120296478
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "slippage.warp.orders_per_s",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1688519853.8055408
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "slippage.warp.orders_per_s",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1688519853.8055408
    }
   ],
   "1.70": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.5.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.703935980796814
-   },
+    "path": "ladder.sweep.table.9.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.6954560279846191
+   }
+  ],
+  "1.71": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "pipeline.breakdown.d2h_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 1.6959039978682995
+    "path": "ladder.sweep.table.5.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.7087200284004211
    }
   ],
   "1.72": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.4.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.716223955154419
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.7162559628486633
    }
   ],
-  "1.74": [
+  "1.73": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.2.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.7357760071754456
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.7273439764976501
+   }
+  ],
+  "1.77": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.numpy.ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.7713577500302335
    }
   ],
   "1.78": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.7795679569244385
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.782591998577118
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 1.7795679569244385
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.782591998577118
    }
   ],
   "1.8e-08": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.1.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.776730134698869e-08
    },
    {
     "doc": "DESIGN.md",
     "path": "precision.variants.1.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.776730134698869e-08
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "precision.variants.1.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.776730134698869e-08
    },
    {
     "doc": "README.md (GPU section)",
     "path": "precision.variants.1.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.776730134698869e-08
-   }
-  ],
-  "1.98": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "engine.cancel_order.mean_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 1.9841315
    }
   ],
   "1.9e-16": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.max_rel_err_100",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.8808902712975676e-16
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "scans.rolling_vwap.max_rel_err_100",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.8808902712975676e-16
    }
   ],
@@ -1235,25 +2051,31 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.levels",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 10
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.BTC-USD.h10s.horizon_s",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 10
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.ETH-USD.h10s.horizon_s",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
+    "value": 10
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.27.registers",
+    "run_id": "bench_all-20261021-230301",
     "value": 10
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 10
    }
   ],
@@ -1261,135 +2083,473 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "engine.cancels",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 10000
+   }
+  ],
+  "10,240": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.41.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 10240
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.41.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 10240
    }
   ],
   "10.2": [
    {
     "doc": "BENCHMARKS.md",
     "path": "pipeline.d2h_gbs",
-    "run_id": "bench_all-20261021-190618",
-    "value": 10.179267235468014
-   }
-  ],
-  "10.39": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "engine.add_order.mean_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 10.38641846
+    "run_id": "bench_all-20261021-230301",
+    "value": 10.215215178039026
    }
   ],
   "100": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.0.e2e_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 100.16059950001477
+   },
+   {
+    "doc": "BENCHMARKS.md",
     "path": "precision.window",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 100
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.0.e2e_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 100.16059950001477
    }
   ],
   "100,000": [
    {
     "doc": "BENCHMARKS.md",
     "path": "engine.orders",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 100000
    },
    {
     "doc": "BULLETS.md",
     "path": "engine.orders",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 100000
    }
   ],
-  "101": [
+  "100.0": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.0.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 100.95215549998215
+    "path": "resources.kernels.1.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
    },
    {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.0.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 100.95215549998215
-   }
-  ],
-  "104": [
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.0.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
    {
     "doc": "BENCHMARKS.md",
-    "path": "baselines.numpy.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 104.14378799998758
+    "path": "resources.kernels.3.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.5.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.2.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.15.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.14.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.13.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.16.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.11.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.10.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.9.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.12.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.8.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.1.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.21.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.17.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.23.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.19.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.22.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.18.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.24.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.20.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.25.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.26.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.30.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.29.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.31.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.27.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.28.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.35.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.32.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.33.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.34.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.40.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.36.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.37.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.38.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.39.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.42.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.41.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.863153.1.occupancy.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.16777216.1.occupancy.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.1.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.2.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.3.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.4.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.42.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.21.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.41.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 1.0
    }
   ],
   "11": [
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 11
+   }
+  ],
+  "11.05": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.add_order.mean_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 11.05427006
+   }
+  ],
+  "11.5": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.speedups.kernel_vs_cpp_omp",
+    "run_id": "bench_all-20261021-230301",
+    "value": 11.507486507377298
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "ladder.speedups.kernel_vs_cpp_omp",
+    "run_id": "bench_all-20261021-230301",
+    "value": 11.507486507377298
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "ladder.speedups.kernel_vs_cpp_omp",
+    "run_id": "bench_all-20261021-230301",
+    "value": 11.507486507377298
    }
   ],
   "110,483,584": [
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.orders",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 110483584
    }
   ],
-  "114.7": [
+  "111": [
+   {
+    "doc": "DESIGN.md",
+    "path": "layout.children.aos.event_median_ms.cumdepth",
+    "run_id": "bench_all-20261021-230301",
+    "value": 110.56289672851562
+   }
+  ],
+  "117.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.2.gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 114.67423882658947
+    "run_id": "bench_all-20261021-230301",
+    "value": 117.37190828411025
    }
   ],
   "12": [
    {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.12.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 12
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.24.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 12
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.36.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 12
+   },
+   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 12
    }
   ],
-  "12.0": [
+  "12.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "pipeline.h2d_gbs",
-    "run_id": "bench_all-20261021-190618",
-    "value": 11.975018082481201
-   }
-  ],
-  "12.4": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.speedups.kernel_vs_cpp_omp",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 12.376217472684027
-   },
-   {
-    "doc": "DESIGN.md",
-    "path": "ladder.speedups.kernel_vs_cpp_omp",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 12.376217472684027
-   },
-   {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "ladder.speedups.kernel_vs_cpp_omp",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 12.376217472684027
+    "run_id": "bench_all-20261021-230301",
+    "value": 12.141312094297396
    }
   ],
   "127,759": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.ETH-USD.h10s.n_test",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 127759
    }
   ],
@@ -1397,7 +2557,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.ETH-USD.h1s.n_test",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 127798
    }
   ],
@@ -1405,49 +2565,85 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.4.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.6.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.7.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.8.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.9.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.10.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.11.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
+    "value": 128
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 128
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.863153.1.block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 128
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.863153.1.block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 128
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.16777216.1.block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 128
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.16777216.1.block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 128
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.1.block",
+    "run_id": "bench_all-20261021-230301",
     "value": 128
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.4.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 128
    }
   ],
@@ -1455,7 +2651,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.flops_per_snapshot",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 129
    }
   ],
@@ -1463,15 +2659,29 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 13
+   }
+  ],
+  "13.6": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.0.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 13.602593421936035
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.0.kernel_ms.iqr_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 13.602593421936035
    }
   ],
   "131,099": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.BTC-USD.h10s.n_test",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 131099
    }
   ],
@@ -1479,31 +2689,55 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.BTC-USD.h1s.n_test",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 131142
    }
   ],
   "14": [
    {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.16.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 14
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.37.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 14
+   },
+   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 14
    }
   ],
-  "142": [
+  "140": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.0.soa_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 141.980406
+    "run_id": "bench_all-20261021-230301",
+    "value": 140.152118
    }
   ],
   "15": [
    {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.13.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 15
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.9.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 15
+   },
+   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 15
    }
   ],
@@ -1511,23 +2745,53 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "gpu.memory_gb",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 15.636
    }
   ],
-  "154.6": [
+  "155.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.2.gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 154.6486729222704
+    "run_id": "bench_all-20261021-230301",
+    "value": 155.40359051373065
    }
   ],
   "16": [
    {
     "doc": "BENCHMARKS.md",
     "path": "pipeline.chunks",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
+    "value": 16
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.device.maxBlocksPerMultiProcessor",
+    "run_id": "bench_all-20261021-230301",
+    "value": 16
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.4.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 16
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.2.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 16
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.13.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 16
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.0.blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
     "value": 16
    }
   ],
@@ -1535,13 +2799,13 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.n_elements",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 16777216
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "scans.large.n_elements",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 16777216
    }
   ],
@@ -1549,75 +2813,111 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.2.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 160
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.8.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 160
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.14.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 160
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.20.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 160
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.26.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 160
    }
   ],
-  "171": [
+  "17": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "layout.kernels.2.aos_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 171.321543
+    "path": "resources.kernels.9.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 17
    }
   ],
-  "18.4": [
+  "17.2": [
    {
     "doc": "BENCHMARKS.md",
     "path": "baselines.cpp_omp.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 18.4185834999937
+    "run_id": "bench_all-20261021-230301",
+    "value": 17.210044500018284
    }
   ],
-  "184.1": [
+  "175": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "layout.kernels.2.aos_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 174.618382
+   }
+  ],
+  "18,725": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.16777216.1.grid",
+    "run_id": "bench_all-20261021-230301",
+    "value": 18725
+   }
+  ],
+  "184.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 184.10951393782844
+    "run_id": "bench_all-20261021-230301",
+    "value": 184.01089002542776
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 184.10951393782844
+    "run_id": "bench_all-20261021-230301",
+    "value": 184.01089002542776
+   }
+  ],
+  "195": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.0.e2e_pageable_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 195.39067450000402
    }
   ],
   "2": [
    {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.40.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 2
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.3.blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 2
+   },
+   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 2
    },
    {
     "doc": "BULLETS.md",
     "path": "bullet_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": "2"
    }
   ],
@@ -1625,7 +2925,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.time_windows.1s.sample",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 2000
    }
   ],
@@ -1633,37 +2933,29 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 2.0300159454345703
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.0311039686203003
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 2.0300159454345703
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.0311039686203003
    }
   ],
-  "2.05": [
+  "2.07": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 2.0494399070739746
-   }
-  ],
-  "2.13": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "baselines.cupy.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 2.1259440183639526
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.073823928833008
    }
   ],
   "2.1e-04": [
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.verification.max_avg_price_tick_err",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.00021109275348862866
    }
   ],
@@ -1671,837 +2963,1167 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.3.median_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 2.0690802834125008e-07
+   }
+  ],
+  "2.29": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.cancel_order.mean_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.2935977
    }
   ],
   "2.5e-04": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.0.median_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.00024673172576793894
-   }
-  ],
-  "2.65": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "baselines.numpy.ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 2.651134249987308
    }
   ],
   "2.78": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.1.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 2.7827680110931396
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.78329598903656
    }
   ],
   "2.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 2.8678842934030726
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.904711080282935
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.speedups.e2e_vs_numpy",
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.924186749946573
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "ladder.speedups.e2e_vs_numpy",
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.924186749946573
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "ladder.speedups.e2e_vs_numpy",
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.924186749946573
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 2.8678842934030726
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.904711080282935
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.speedups.e2e_vs_numpy",
+    "run_id": "bench_all-20261021-230301",
+    "value": 2.924186749946573
    }
   ],
   "200": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.decimal_sample",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 200
-   }
-  ],
-  "202": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.0.e2e_pageable_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 201.73988999999892
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.soa_total_kernel_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 202.204989
+    "run_id": "bench_all-20261021-230301",
+    "value": 200.465929
    },
    {
     "doc": "DESIGN.md",
     "path": "layout.soa_total_kernel_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 202.204989
+    "run_id": "bench_all-20261021-230301",
+    "value": 200.465929
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "layout.soa_total_kernel_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 202.204989
+    "run_id": "bench_all-20261021-230301",
+    "value": 200.465929
    }
   ],
-  "210.0": [
+  "209.7": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 210.02021729247704
+    "run_id": "bench_all-20261021-230301",
+    "value": 209.6639328002858
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 210.02021729247704
+    "run_id": "bench_all-20261021-230301",
+    "value": 209.6639328002858
    }
   ],
   "217.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.4.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 217.77184025284853
+    "run_id": "bench_all-20261021-230301",
+    "value": 217.76777886886575
    }
   ],
-  "219.3": [
+  "218.7": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.5.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 219.34230699514018
+    "run_id": "bench_all-20261021-230301",
+    "value": 218.72819583549506
    }
   ],
-  "22.28": [
+  "22": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "engine.add_order.p95_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 22.279
+    "path": "resources.kernels.3.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 22
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.30.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 22
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.29.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 22
    }
   ],
   "22.6": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.3.aos_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 22.646947
+    "run_id": "bench_all-20261021-230301",
+    "value": 22.552781
    }
   ],
-  "221.4": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "bandwidth.copy_kernel_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 221.4488778059239
-   }
-  ],
-  "221.6": [
+  "220.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.9.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 221.64416592613725
+    "run_id": "bench_all-20261021-230301",
+    "value": 220.43936429555728
    }
   ],
-  "222.7": [
+  "221.7": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "bandwidth.copy_kernel_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 221.74742000580298
+   }
+  ],
+  "221.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.10.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 222.7474386300895
+    "run_id": "bench_all-20261021-230301",
+    "value": 221.92632753180743
    }
   ],
-  "224.4": [
+  "223.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.18.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 224.40800896080938
+    "run_id": "bench_all-20261021-230301",
+    "value": 223.36512612909334
    }
   ],
-  "226.3": [
+  "225.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.11.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 226.26214994225037
+    "run_id": "bench_all-20261021-230301",
+    "value": 225.92295175140538
    }
   ],
-  "226.9": [
+  "226.2": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.14.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 226.9458042238071
+    "run_id": "bench_all-20261021-230301",
+    "value": 226.1832841231923
    }
   ],
-  "227.8": [
+  "228.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.3.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 227.83121127698175
+    "run_id": "bench_all-20261021-230301",
+    "value": 228.1160024667965
    }
   ],
-  "228.7": [
+  "228.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.13.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 228.66532586194637
+    "run_id": "bench_all-20261021-230301",
+    "value": 228.4283071012969
    }
   ],
-  "229.9": [
+  "229.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.8.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 229.89182331775265
+    "run_id": "bench_all-20261021-230301",
+    "value": 229.53941154897416
    }
   ],
-  "231.0": [
+  "23": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.38.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 23
+   }
+  ],
+  "23.90": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.add_order.p95_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 23.9
+   }
+  ],
+  "230.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.15.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 230.9715580551632
+    "run_id": "bench_all-20261021-230301",
+    "value": 230.0004761636689
    }
   ],
-  "231.7": [
+  "231.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.0.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 231.68402096234755
+    "run_id": "bench_all-20261021-230301",
+    "value": 231.39942784360593
    }
   ],
-  "232.1": [
+  "231.5": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "bandwidth.cudamemcpy_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 232.05884365631812
+    "path": "ladder.sweep.table.16.effective_bw_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 231.45903989261228
    }
   ],
   "232.3": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.24.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 232.3361717563697
-   }
-  ],
-  "232.5": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.16.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 232.53275427564841
-   }
-  ],
-  "233.5": [
-   {
-    "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.19.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 233.5183907862639
+    "run_id": "bench_all-20261021-230301",
+    "value": 232.31305966917657
+   }
+  ],
+  "232.4": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "bandwidth.cudamemcpy_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 232.3758360776309
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.24.effective_bw_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 232.4425121494078
+   }
+  ],
+  "234.2": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.17.effective_bw_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 234.1621305424049
    }
   ],
   "234.6": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.20.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 234.5665815390878
+    "run_id": "bench_all-20261021-230301",
+    "value": 234.6113415043694
    }
   ],
-  "234.7": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.17.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 234.65375635818364
-   }
-  ],
-  "238.8": [
+  "238.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 238.76969618866994
+    "run_id": "bench_all-20261021-230301",
+    "value": 238.42849532610632
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 238.76969618866994
+    "run_id": "bench_all-20261021-230301",
+    "value": 238.42849532610632
    }
   ],
-  "24.7": [
+  "24.3": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.0.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 24.74519920349121
+    "path": "ladder.speedups.kernel_vs_cpp_single",
+    "run_id": "bench_all-20261021-230301",
+    "value": 24.276239754855457
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "ladder.speedups.kernel_vs_cpp_single",
+    "run_id": "bench_all-20261021-230301",
+    "value": 24.276239754855457
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "ladder.speedups.kernel_vs_cpp_single",
+    "run_id": "bench_all-20261021-230301",
+    "value": 24.276239754855457
    },
    {
     "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.0.kernel_ms.iqr_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 24.74519920349121
+    "path": "ladder.speedups.kernel_vs_cpp_single",
+    "run_id": "bench_all-20261021-230301",
+    "value": 24.276239754855457
    }
   ],
-  "240.2": [
+  "240.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.21.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 240.22581651858425
+    "run_id": "bench_all-20261021-230301",
+    "value": 240.10235325501998
    }
   ],
-  "241.0": [
+  "240.7": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.25.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 241.0189813622015
+    "run_id": "bench_all-20261021-230301",
+    "value": 240.67877209574587
    }
   ],
-  "244.8": [
+  "243.9": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.22.effective_bw_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 243.925927374004
+   }
+  ],
+  "244.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.1.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 244.80017753491532
+    "run_id": "bench_all-20261021-230301",
+    "value": 244.0865014532246
    }
   ],
-  "245.0": [
+  "244.2": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.23.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 245.00558930089352
+    "run_id": "bench_all-20261021-230301",
+    "value": 244.22942106355566
+   }
+  ],
+  "245.1": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.26.effective_bw_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 245.06728485738998
    }
   ],
   "245.2": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.22.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 245.20877618086934
-   }
-  ],
-  "245.8": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.26.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 245.7996462143118
-   }
-  ],
-  "246.0": [
-   {
-    "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.6.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 245.96529286776834
+    "run_id": "bench_all-20261021-230301",
+    "value": 245.21649562441107
    }
   ],
-  "248.8": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.29.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 248.83702082209902
-   }
-  ],
-  "248.9": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.28.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 248.9324888428985
-   }
-  ],
-  "249.0": [
+  "248.2": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.27.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 249.00944802564274
+    "run_id": "bench_all-20261021-230301",
+    "value": 248.24466410158922
    }
   ],
-  "25.8": [
+  "248.6": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.speedups.kernel_vs_cpp_single",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 25.824894153266868
-   },
-   {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "ladder.speedups.kernel_vs_cpp_single",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 25.824894153266868
-   },
-   {
-    "doc": "BULLETS.md",
-    "path": "ladder.speedups.kernel_vs_cpp_single",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 25.824894153266868
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.speedups.kernel_vs_cpp_single",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 25.824894153266868
+    "path": "ladder.sweep.table.29.effective_bw_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 248.61455976243911
    }
   ],
-  "250.9": [
+  "248.7": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.2.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 250.8869208986111
+    "path": "ladder.sweep.table.28.effective_bw_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 248.67278069197494
    }
   ],
-  "251.1": [
+  "249.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.4.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 251.13508218523017
+    "run_id": "bench_all-20261021-230301",
+    "value": 249.90454905908578
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.rungs.4.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 251.13508218523017
+    "run_id": "bench_all-20261021-230301",
+    "value": 249.90454905908578
    },
    {
     "doc": "BULLETS.md",
     "path": "ladder.rungs.4.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 251.13508218523017
+    "run_id": "bench_all-20261021-230301",
+    "value": 249.90454905908578
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.4.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 251.13508218523017
+    "run_id": "bench_all-20261021-230301",
+    "value": 249.90454905908578
    }
   ],
-  "251.3": [
+  "25": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.30.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 25
+   }
+  ],
+  "250.3": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.12.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 251.33232692444338
+    "run_id": "bench_all-20261021-230301",
+    "value": 250.25260197800873
    }
   ],
-  "252.9": [
+  "250.4": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.2.effective_bw_gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 250.42698725136478
+   }
+  ],
+  "252.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.7.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 252.91883666486143
+    "run_id": "bench_all-20261021-230301",
+    "value": 251.95584762608755
    }
   ],
   "256": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.12.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.13.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.14.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.15.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.16.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.17.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.1.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.0.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.3.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.5.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.2.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.15.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.14.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.13.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.16.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.11.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.10.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.9.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.12.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.8.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.7.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.21.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.17.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.23.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.19.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.22.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.18.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.24.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.20.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.25.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.26.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.30.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.29.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.31.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.27.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.28.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.35.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.32.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.33.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.34.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.36.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.37.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.38.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.39.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.42.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.41.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.2.block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.42.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.21.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 256
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.41.primary_block",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 256
    }
   ],
-  "262.7": [
+  "26": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.4.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 26
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.32.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 26
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.33.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 26
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.34.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 26
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.38.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 26
+   }
+  ],
+  "262.2": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.read_kernel_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 262.6734513309259
+    "run_id": "bench_all-20261021-230301",
+    "value": 262.2300448352215
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.ceiling_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 262.6734513309259
+    "run_id": "bench_all-20261021-230301",
+    "value": 262.2300448352215
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "bandwidth.ceiling_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 262.6734513309259
+    "run_id": "bench_all-20261021-230301",
+    "value": 262.2300448352215
+   }
+  ],
+  "28": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.39.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 28
    }
   ],
   "280,818": [
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.n_trades",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 280818
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.n_trades",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 280818
    },
    {
     "doc": "README.md (GPU section)",
     "path": "archive.n_trades",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 280818
    }
   ],
-  "285": [
+  "286": [
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.naive.ms.median_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 285.3224792480469
+    "run_id": "bench_all-20261021-230301",
+    "value": 285.68968200683594
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "slippage.naive.ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 285.68968200683594
+   }
+  ],
+  "29": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.40.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 29
    }
   ],
   "3": [
    {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.7.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 3
+   },
+   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 3
    },
    {
     "doc": "BULLETS.md",
     "path": "bullet_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": "3"
    }
   ],
-  "3,648": [
+  "3,650": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.0.aos_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 3647.917696
+    "run_id": "bench_all-20261021-230301",
+    "value": 3650.369201
    }
   ],
   "3.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.speedups.kernel_vs_cupy",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.043176385374148
+    "run_id": "bench_all-20261021-230301",
+    "value": 3.020209277364545
    }
   ],
-  "3.03": [
+  "3.02": [
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.warp.ms.iqr_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 3.026815414428711
+    "run_id": "bench_all-20261021-230301",
+    "value": 3.023527145385742
    }
   ],
-  "3.2": [
+  "3.11": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.speedups.e2e_vs_numpy",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.2308180914710825
+    "path": "precision.variants.4.ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 3.1123839616775513
    },
    {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "ladder.speedups.e2e_vs_numpy",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.2308180914710825
-   },
+    "doc": "DESIGN.md",
+    "path": "precision.variants.4.ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 3.1123839616775513
+   }
+  ],
+  "3.48": [
    {
-    "doc": "BULLETS.md",
-    "path": "ladder.speedups.e2e_vs_numpy",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.2308180914710825
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.speedups.e2e_vs_numpy",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.2308180914710825
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.0.elements_per_s",
+    "run_id": "bench_all-20261021-230301",
+    "value": 3483377214.1915956
    }
   ],
   "3.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.4944777016210433
+    "run_id": "bench_all-20261021-230301",
+    "value": 3.5453353477625806
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.4944777016210433
-   }
-  ],
-  "3.54": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.0.elements_per_s",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3541692753.9220314
+    "run_id": "bench_all-20261021-230301",
+    "value": 3.5453353477625806
    }
   ],
   "3.5e+00": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.0.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 3.485116166252154
    },
    {
     "doc": "DESIGN.md",
     "path": "precision.variants.0.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 3.485116166252154
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "precision.variants.0.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 3.485116166252154
    },
    {
     "doc": "README.md (GPU section)",
     "path": "precision.variants.0.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 3.485116166252154
    }
   ],
-  "3.60": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "precision.variants.4.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.598703980445862
-   },
-   {
-    "doc": "DESIGN.md",
-    "path": "precision.variants.4.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.598703980445862
-   }
-  ],
-  "3.64": [
+  "3.66": [
    {
     "doc": "BENCHMARKS.md",
     "path": "pipeline.breakdown.kernel_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 3.6412320137023926
+    "run_id": "bench_all-20261021-230301",
+    "value": 3.6574880182743073
    }
   ],
   "3.97": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.0.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 3.969823956489563
+    "run_id": "bench_all-20261021-230301",
+    "value": 3.97052800655365
    }
   ],
   "30": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.iters",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
+    "value": 30
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.28.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 30
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.40.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 30
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.39.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
     "value": 30
    }
   ],
-  "32.2": [
+  "31.8": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.3.e2e_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 31.832480999980817
+   },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.4.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 32.23449449998839
+    "run_id": "bench_all-20261021-230301",
+    "value": 31.765106999984027
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.3.e2e_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 31.832480999980817
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.4.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 32.23449449998839
+    "run_id": "bench_all-20261021-230301",
+    "value": 31.765106999984027
    }
   ],
-  "32.21": [
+  "32.1": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "engine.add_order.p99_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 32.207
+    "path": "ladder.rungs.2.e2e_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 32.06346449999842
    },
    {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "engine.add_order.p99_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 32.207
-   },
-   {
-    "doc": "BULLETS.md",
-    "path": "engine.add_order.p99_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 32.207
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.2.e2e_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 32.06346449999842
    }
   ],
   "32.3": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.3.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 32.30763999999908
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.3.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 32.30763999999908
-   }
-  ],
-  "32.5": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.2.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 32.53503900000965
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.2.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 32.53503900000965
-   }
-  ],
-  "32.8": [
-   {
-    "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 32.79555300002812
+    "run_id": "bench_all-20261021-230301",
+    "value": 32.299469000008685
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 32.79555300002812
+    "run_id": "bench_all-20261021-230301",
+    "value": 32.299469000008685
    }
   ],
   "320": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.3.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 320
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.9.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 320
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.15.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 320
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.21.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 320
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.27.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 320
    }
   ],
@@ -2509,71 +4131,391 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "gpu.theoretical_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 320.06
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.theoretical_gbs",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 320.064
    }
   ],
-  "38.4": [
+  "33": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived: kernels whose NVRTC binary matches nvcc",
+    "run_id": "bench_all-20261021-230301",
+    "value": 33
+   }
+  ],
+  "34.57": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.add_order.p99_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 34.568
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "engine.add_order.p99_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 34.568
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "engine.add_order.p99_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 34.568
+   }
+  ],
+  "36.3": [
    {
     "doc": "BENCHMARKS.md",
     "path": "baselines.cpp_single.ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 38.43322649996139
+    "run_id": "bench_all-20261021-230301",
+    "value": 36.30637899999556
+   }
+  ],
+  "38": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.5.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 38
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.42.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 38
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.42.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 38
    }
   ],
   "4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "manifest.cpu_cores",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.1.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.0.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.3.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.5.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.2.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.15.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.14.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.13.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.16.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.11.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.10.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.9.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.12.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.8.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.21.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.17.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.23.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.19.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.22.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.18.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.24.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.20.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.25.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.26.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.30.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.29.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.31.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.27.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.28.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.35.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.32.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.33.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.34.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.36.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.37.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.38.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.39.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.42.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.41.occupancy.0.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.2.blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.42.occupancy.0.blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.21.occupancy.0.blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.41.occupancy.0.blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
     "value": 4
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 4
    }
   ],
-  "4,782": [
+  "4,128": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.30.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4128
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.38.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4128
+   }
+  ],
+  "4,796": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.aos_total_kernel_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 4781.549185
+    "run_id": "bench_all-20261021-230301",
+    "value": 4795.637541
    },
    {
     "doc": "DESIGN.md",
     "path": "layout.aos_total_kernel_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 4781.549185
+    "run_id": "bench_all-20261021-230301",
+    "value": 4795.637541
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "layout.aos_total_kernel_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 4781.549185
+    "run_id": "bench_all-20261021-230301",
+    "value": 4795.637541
    }
   ],
   "4.09": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.read_kernel.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 4.0877439975738525
+    "run_id": "bench_all-20261021-230301",
+    "value": 4.094655990600586
    }
   ],
   "4.1e-15": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.1.median_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 4.1344222137583805e-15
    }
   ],
@@ -2581,259 +4523,427 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.0.elements_per_s",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 4226186396.1433096
+    "run_id": "bench_all-20261021-230301",
+    "value": 4225437012.988692
    }
   ],
-  "4.3": [
+  "4.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.speedup_warp_vs_naive",
-    "run_id": "bench_all-20261021-190618",
-    "value": 4.3338851058503955
+    "run_id": "bench_all-20261021-230301",
+    "value": 4.366193443687834
    },
    {
     "doc": "DESIGN.md",
     "path": "slippage.speedup_warp_vs_naive",
-    "run_id": "bench_all-20261021-190618",
-    "value": 4.3338851058503955
+    "run_id": "bench_all-20261021-230301",
+    "value": 4.366193443687834
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "slippage.speedup_warp_vs_naive",
-    "run_id": "bench_all-20261021-190618",
-    "value": 4.3338851058503955
+    "run_id": "bench_all-20261021-230301",
+    "value": 4.366193443687834
    },
    {
     "doc": "BULLETS.md",
     "path": "slippage.speedup_warp_vs_naive",
-    "run_id": "bench_all-20261021-190618",
-    "value": 4.3338851058503955
+    "run_id": "bench_all-20261021-230301",
+    "value": 4.366193443687834
    },
    {
     "doc": "README.md (GPU section)",
     "path": "slippage.speedup_warp_vs_naive",
-    "run_id": "bench_all-20261021-190618",
-    "value": 4.3338851058503955
+    "run_id": "bench_all-20261021-230301",
+    "value": 4.366193443687834
    }
   ],
-  "4.53": [
+  "4.52": [
    {
     "doc": "BENCHMARKS.md",
     "path": "baselines.cupy.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 4.52892804145813
+    "run_id": "bench_all-20261021-230301",
+    "value": 4.516880035400391
+   }
+  ],
+  "4.74": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.1.elements_per_s",
+    "run_id": "bench_all-20261021-230301",
+    "value": 4736353306.035142
    }
   ],
   "4.7e-03": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.3.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.004721926720344517
    },
    {
     "doc": "DESIGN.md",
     "path": "precision.variants.3.max_rel_err",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 0.004721926720344517
-   }
-  ],
-  "4.84": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.1.elements_per_s",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 4844384184.961198
    }
   ],
   "40": [
    {
     "doc": "BENCHMARKS.md",
     "path": "gpu.sm_count",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.0.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.6.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.12.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.18.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.24.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
+    "value": 40
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.1.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 40
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.5.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
     "value": 40
    }
   ],
-  "40.7": [
+  "40.2": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 40.71713638305664
+    "run_id": "bench_all-20261021-230301",
+    "value": 40.20091247558594
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.kernel_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 40.71713638305664
+    "run_id": "bench_all-20261021-230301",
+    "value": 40.20091247558594
    }
   ],
   "42": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "derived: timed blocks rendered",
-    "run_id": "bench_all-20261021-190618",
+    "path": "resources.kernels.11.registers",
+    "run_id": "bench_all-20261021-230301",
     "value": 42
+   }
+  ],
+  "43": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived: launched kernels",
+    "run_id": "bench_all-20261021-230301",
+    "value": 43
    }
   ],
   "433": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.bytes_min_io_per_snapshot",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 433
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.bytes_min_io_per_snapshot",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 433
    }
   ],
-  "48.9": [
+  "44": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.14.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 44
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.10.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 44
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.22.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 44
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.18.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 44
+   }
+  ],
+  "46": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.35.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 46
+   }
+  ],
+  "47": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived: configurations where the calculator agrees with the API",
+    "run_id": "bench_all-20261021-230301",
+    "value": 47
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived: launched configurations",
+    "run_id": "bench_all-20261021-230301",
+    "value": 47
+   }
+  ],
+  "48": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.15.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 48
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.8.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 48
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.41.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 48
+   }
+  ],
+  "49": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.41.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 49
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.kernels.scan_kernel.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 49
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.kernels.scan_kernel.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 49
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.41.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 49
+   }
+  ],
+  "49.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.1.soa_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 48.924524
+    "run_id": "bench_all-20261021-230301",
+    "value": 48.978407
    }
   ],
   "5": [
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 5
-   }
-  ],
-  "5.63": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "engine.cancel_order.p95_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 5.629
    }
   ],
   "50": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.levels",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 50
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.35.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 50
+   }
+  ],
+  "50.0": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.4.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.5
+   }
+  ],
+  "51": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.26.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 51
    }
   ],
   "512": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.18.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.19.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.20.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.21.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.22.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.23.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
+    "value": 512
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.40.primary_block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 512
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.3.block",
+    "run_id": "bench_all-20261021-230301",
     "value": 512
    }
   ],
-  "56.7": [
+  "52": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.26.nvrtc_num_regs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 52
+   }
+  ],
+  "54": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.31.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 54
+   }
+  ],
+  "55.7": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.0.gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 56.6670840627525
+    "run_id": "bench_all-20261021-230301",
+    "value": 55.73403542706553
+   }
+  ],
+  "56.9": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "pipeline.breakdown.h2d_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 56.87494421005249
+   }
+  ],
+  "57.2": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "pipeline.overlapped_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 57.198131000006924
    }
   ],
   "57.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 57.52271856185901
+    "run_id": "bench_all-20261021-230301",
+    "value": 57.49190475199577
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 57.52271856185901
-   }
-  ],
-  "57.7": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "pipeline.breakdown.h2d_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 57.66475200653076
-   }
-  ],
-  "58.0": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "pipeline.overlapped_ms.median_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 57.99236600006452
+    "run_id": "bench_all-20261021-230301",
+    "value": 57.49190475199577
    }
   ],
   "6": [
    {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.42.occupancy.0.limits.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 6
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.41.occupancy.0.limits.shared_memory",
+    "run_id": "bench_all-20261021-230301",
+    "value": 6
+   },
+   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 6
    }
   ],
@@ -2841,87 +4951,143 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.1.elements_per_s",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 6028966817.614631
+    "run_id": "bench_all-20261021-230301",
+    "value": 6027823151.431137
    }
   ],
-  "6.51": [
+  "6.11": [
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.naive.ms.iqr_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 6.506683349609375
+    "run_id": "bench_all-20261021-230301",
+    "value": 6.111785888671875
    }
   ],
-  "6.9": [
+  "6.34": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "pipeline.overlap_saved_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 6.927005237640682
-   },
-   {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "pipeline.overlap_saved_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 6.927005237640682
+    "path": "engine.cancel_order.p95_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 6.344
    }
   ],
-  "62.3": [
+  "61.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "pipeline.serial_ms.median_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 62.30847749998247
+    "run_id": "bench_all-20261021-230301",
+    "value": 61.489044499950296
+   }
+  ],
+  "62": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.23.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 62
    }
   ],
   "64": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.0.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.1.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.2.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.3.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.4.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.5.block_size",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.n_sizes",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
+    "value": 64
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.0.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 64
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 64
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.21.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 64
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.17.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 64
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.19.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 64
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.25.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 64
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.29.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 64
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.0.block",
+    "run_id": "bench_all-20261021-230301",
+    "value": 64
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "resources.kernels.21.registers",
+    "run_id": "bench_all-20261021-230301",
     "value": 64
    },
    {
     "doc": "BULLETS.md",
     "path": "slippage.n_sizes",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 64
    }
   ],
@@ -2929,245 +5095,373 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.4.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 640
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.10.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 640
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.16.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 640
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.22.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 640
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.28.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 640
    }
   ],
-  "65.6": [
+  "65,536": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.device.regsPerMultiprocessor",
+    "run_id": "bench_all-20261021-230301",
+    "value": 65536
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.device.sharedMemPerMultiprocessor",
+    "run_id": "bench_all-20261021-230301",
+    "value": 65536
+   }
+  ],
+  "65.4": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "slippage.warp.ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 65.43220901489258
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "slippage.warp.ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 65.43220901489258
+   }
+  ],
+  "65.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 65.61819426504606
+    "run_id": "bench_all-20261021-230301",
+    "value": 65.5068776245644
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 65.61819426504606
+    "run_id": "bench_all-20261021-230301",
+    "value": 65.5068776245644
    }
   ],
-  "65.8": [
+  "66": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "slippage.warp.ms.median_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 65.83526611328125
+    "path": "resources.kernels.7.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 66
+   }
+  ],
+  "666.6": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "precision.cost_vs_float32_naive_pct",
+    "run_id": "bench_all-20261021-230301",
+    "value": 666.6272479939072
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "precision.cost_vs_float32_naive_pct",
+    "run_id": "bench_all-20261021-230301",
+    "value": 666.6272479939072
    }
   ],
   "67.6": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.0.gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 67.61898233829295
+    "run_id": "bench_all-20261021-230301",
+    "value": 67.60699220781908
    }
   ],
   "7": [
    {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.863153.1.items_per_thread",
+    "run_id": "bench_all-20261021-230301",
+    "value": 7
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.16777216.1.items_per_thread",
+    "run_id": "bench_all-20261021-230301",
+    "value": 7
+   },
+   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 7
    }
   ],
-  "7.07": [
+  "7,184": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "engine.cancel_order.p99_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 7.071
-   }
-  ],
-  "7.17": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.2.elements_per_s",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 7167139926.661842
-   }
-  ],
-  "7.69": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "engine.add_order.p50_us",
-    "run_id": "bench_all-20261021-190618",
-    "value": 7.693
-   }
-  ],
-  "70.1": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.1.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 70.09064410772154
+    "path": "resources.cub.kernels.scan_kernel.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 7184
    },
    {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.1.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 70.09064410772154
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.kernels.scan_kernel.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 7184
    }
   ],
-  "706.2": [
+  "7.0": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.rolling_book.snapshots_per_s",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 706205801.0482408
-   }
-  ],
-  "74.6": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.3.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 74.60060993697196
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.3.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 74.60060993697196
-   }
-  ],
-  "744.8": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "precision.cost_vs_float32_naive_pct",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 744.8296711269496
+    "path": "pipeline.overlap_saved_pct",
+    "run_id": "bench_all-20261021-230301",
+    "value": 6.978338230555591
    },
    {
     "doc": "INTERVIEW_NOTES.md",
-    "path": "precision.cost_vs_float32_naive_pct",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 744.8296711269496
+    "path": "pipeline.overlap_saved_pct",
+    "run_id": "bench_all-20261021-230301",
+    "value": 6.978338230555591
    }
   ],
-  "76.9": [
+  "7.34": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.2.elements_per_s",
+    "run_id": "bench_all-20261021-230301",
+    "value": 7335744267.75689
+   }
+  ],
+  "70.2": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.1.pct_of_ceiling",
+    "run_id": "bench_all-20261021-230301",
+    "value": 70.17155114359812
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.1.pct_of_ceiling",
+    "run_id": "bench_all-20261021-230301",
+    "value": 70.17155114359812
+   }
+  ],
+  "709.4": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.rolling_book.snapshots_per_s",
+    "run_id": "bench_all-20261021-230301",
+    "value": 709372410.9772743
+   }
+  ],
+  "74.5": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.3.pct_of_theoretical",
+    "run_id": "bench_all-20261021-230301",
+    "value": 74.49400598821057
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.3.pct_of_theoretical",
+    "run_id": "bench_all-20261021-230301",
+    "value": 74.49400598821057
+   }
+  ],
+  "75.0": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.7.occupancy.0.occupancy*100",
+    "run_id": "bench_all-20261021-230301",
+    "value": 0.75
+   }
+  ],
+  "75.8": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.1.gbs",
+    "run_id": "bench_all-20261021-230301",
+    "value": 75.78165289656228
+   }
+  ],
+  "77.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.divergence_penalty_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 76.92601498249041
+    "run_id": "bench_all-20261021-230301",
+    "value": 77.09675457816256
    },
    {
     "doc": "DESIGN.md",
     "path": "slippage.divergence_penalty_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 76.92601498249041
+    "run_id": "bench_all-20261021-230301",
+    "value": 77.09675457816256
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "slippage.divergence_penalty_pct",
+    "run_id": "bench_all-20261021-230301",
+    "value": 77.09675457816256
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "slippage.divergence_penalty_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 76.92601498249041
-   }
-  ],
-  "77.5": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.1.gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 77.51014695937917
+    "run_id": "bench_all-20261021-230301",
+    "value": 77.09675457816256
    }
   ],
   "78": [
    {
     "doc": "DESIGN.md",
     "path": "precision.tolerance_rel -> spacing as % of the one-cent tick",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.1784660779128707e-08
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "precision.tolerance_rel -> spacing as % of the one-cent tick",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.1784660779128707e-08
    }
   ],
-  "78.5": [
+  "78.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.4.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 78.46402037880867
+    "run_id": "bench_all-20261021-230301",
+    "value": 78.07955566983034
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.rungs.4.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 78.46402037880867
+    "run_id": "bench_all-20261021-230301",
+    "value": 78.07955566983034
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.4.pct_of_theoretical",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 78.46402037880867
+    "run_id": "bench_all-20261021-230301",
+    "value": 78.07955566983034
    }
   ],
   "8": [
    {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.1.api_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 8
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.20.registers",
+    "run_id": "bench_all-20261021-230301",
+    "value": 8
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.863153.1.cub_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 8
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.16777216.1.cub_blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 8
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.6.occupancy.1.blocks_per_sm",
+    "run_id": "bench_all-20261021-230301",
+    "value": 8
+   },
+   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 8
+   }
+  ],
+  "8,256": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.39.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 8256
+   }
+  ],
+  "8,320": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.5.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 8320
+   }
+  ],
+  "8,712": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.kernels.40.static_smem_bytes",
+    "run_id": "bench_all-20261021-230301",
+    "value": 8712
+   }
+  ],
+  "8.19": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.add_order.p50_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 8.194
    }
   ],
   "80": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.1.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 80
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.7.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 80
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.13.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 80
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.19.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 80
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.25.grid",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 80
    }
   ],
@@ -3175,352 +5469,382 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 79.9548702879324
+    "run_id": "bench_all-20261021-230301",
+    "value": 79.95419934890874
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 79.9548702879324
+    "run_id": "bench_all-20261021-230301",
+    "value": 79.95419934890874
    }
   ],
-  "82.1": [
+  "81.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.ceiling_gbs*0.312438",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 262.6734513309259
+    "run_id": "bench_all-20261021-230301",
+    "value": 262.2300448352215
+   }
+  ],
+  "83.1": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.4.e2e_pageable_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 83.06904649998614
+   }
+  ],
+  "83.3": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.3.e2e_pageable_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 83.26090700001032
+   }
+  ],
+  "83.4": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.2.e2e_pageable_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 83.40156850002245
+   }
+  ],
+  "83.7": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.1.e2e_pageable_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 83.7262985000109
    }
   ],
   "84,856.07": [
    {
     "doc": "DESIGN.md",
     "path": "precision.tolerance_rel -> 0.1 / tolerance_rel ticks of $0.01",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.1784660779128707e-08
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "precision.tolerance_rel -> 0.1 / tolerance_rel ticks of $0.01",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 1.1784660779128707e-08
-   }
-  ],
-  "86.8": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.4.e2e_pageable_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 86.79209599998217
-   }
-  ],
-  "86.9": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.3.e2e_pageable_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 86.93685549999941
    }
   ],
   "863,153": [
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.n_snapshots",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 863153
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.n_snapshots",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 863153
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.n_elements",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 863153
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.n_snapshots",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 863153
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_book.n_snapshots",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 863153
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.n_snapshots",
-    "run_id": "bench_all-20261021-190618",
+    "run_id": "bench_all-20261021-230301",
     "value": 863153
    },
    {
     "doc": "BULLETS.md",
     "path": "archive.n_snapshots",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 863153
    },
    {
     "doc": "README.md (GPU section)",
     "path": "archive.n_snapshots",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 863153
-   }
-  ],
-  "87.1": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.2.e2e_pageable_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 87.13779799998633
-   }
-  ],
-  "87.5": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.1.e2e_pageable_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 87.4705450000306
    }
   ],
   "9": [
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 9
    }
   ],
-  "9.2": [
+  "9.24": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "bandwidth.cudamemcpy_d2d.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 9.241424083709717
+   }
+  ],
+  "9.3": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 9.17906518483761
+    "run_id": "bench_all-20261021-230301",
+    "value": 9.296934471996773
    },
    {
     "doc": "BULLETS.md",
     "path": "ladder.rungs.0.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 9.17906518483761
+    "run_id": "bench_all-20261021-230301",
+    "value": 9.296934471996773
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.effective_bw_gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 9.17906518483761
+    "run_id": "bench_all-20261021-230301",
+    "value": 9.296934471996773
    }
   ],
-  "9.25": [
+  "9.34": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "bandwidth.cudamemcpy_d2d.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 9.254047870635986
+    "path": "engine.cancel_order.p99_us",
+    "run_id": "bench_all-20261021-230301",
+    "value": 9.335
    }
   ],
   "9.36": [
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.capture_seconds",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 33692.928069
    },
    {
     "doc": "README.md (GPU section)",
     "path": "archive.capture_seconds",
-    "run_id": "bench_rerun-20261021-191923",
+    "run_id": "bench_all-20261021-230301",
     "value": 33692.928069
    }
   ],
-  "9.67": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.2.elements_per_s",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 9665542057.641901
-   }
-  ],
-  "9.70": [
+  "9.68": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.copy_kernel.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 9.697423934936523
+    "run_id": "bench_all-20261021-230301",
+    "value": 9.684368133544922
+   }
+  ],
+  "9.71": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.2.elements_per_s",
+    "run_id": "bench_all-20261021-230301",
+    "value": 9712724407.108166
    }
   ],
   "9.85": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.2.soa_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 9.847008
+    "run_id": "bench_all-20261021-230301",
+    "value": 9.84968
    }
   ],
   "90.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 90.89982066282704
+    "run_id": "bench_all-20261021-230301",
+    "value": 90.92340867192718
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 90.89982066282704
+    "run_id": "bench_all-20261021-230301",
+    "value": 90.92340867192718
    }
   ],
-  "93.6": [
+  "91.1": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.cupy.e2e_ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 91.09077649998198
+   }
+  ],
+  "92.9": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.numpy.ms.median_ms",
+    "run_id": "bench_all-20261021-230301",
+    "value": 92.88710499998842
+   }
+  ],
+  "93.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.3.reduction_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 93.58389896881023
+    "run_id": "bench_all-20261021-230301",
+    "value": 93.41223594553594
    }
   ],
-  "94.2": [
+  "94.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "pipeline.transfer_share_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 94.22043984990384
+    "run_id": "bench_all-20261021-230301",
+    "value": 94.12190805058088
    },
    {
     "doc": "DESIGN.md",
     "path": "pipeline.transfer_share_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 94.22043984990384
+    "run_id": "bench_all-20261021-230301",
+    "value": 94.12190805058088
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "pipeline.transfer_share_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 94.22043984990384
+    "run_id": "bench_all-20261021-230301",
+    "value": 94.12190805058088
    },
    {
     "doc": "README.md (GPU section)",
     "path": "pipeline.transfer_share_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 94.22043984990384
+    "run_id": "bench_all-20261021-230301",
+    "value": 94.12190805058088
    }
   ],
-  "94.3": [
+  "94.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.2.reduction_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 94.25232353878577
-   }
-  ],
-  "94.5": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "baselines.cupy.e2e_ms.median_ms",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 94.48138050001376
+    "run_id": "bench_all-20261021-230301",
+    "value": 94.35931092294739
    }
   ],
   "94.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.1.reduction_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 94.7933967760712
+    "run_id": "bench_all-20261021-230301",
+    "value": 94.83403092128393
    }
   ],
-  "940": [
+  "948": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.1.aos_ms",
-    "run_id": "bench_all-20261021-190618",
-    "value": 939.662999
+    "run_id": "bench_all-20261021-230301",
+    "value": 948.097177
    }
   ],
-  "95.6": [
+  "95.3": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 95.60733333070678
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.29973928659443
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 95.60733333070678
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.29973928659443
    },
    {
     "doc": "BULLETS.md",
     "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 95.60733333070678
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.29973928659443
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 95.60733333070678
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.29973928659443
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 95.60733333070678
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.29973928659443
    }
   ],
   "95.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.reduction_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 95.77114066641144
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.81982734753973
    },
    {
     "doc": "DESIGN.md",
     "path": "layout.reduction_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 95.77114066641144
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.81982734753973
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "layout.reduction_pct",
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.81982734753973
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "layout.reduction_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 95.77114066641144
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.81982734753973
    },
    {
     "doc": "BULLETS.md",
     "path": "layout.reduction_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 95.77114066641144
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.81982734753973
    },
    {
     "doc": "README.md (GPU section)",
     "path": "layout.reduction_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 95.77114066641144
+    "run_id": "bench_all-20261021-230301",
+    "value": 95.81982734753973
    }
   ],
-  "96.1": [
+  "96.2": [
    {
     "doc": "BENCHMARKS.md",
     "path": "layout.kernels.0.reduction_pct",
-    "run_id": "bench_all-20261021-190618",
-    "value": 96.1079054454632
+    "run_id": "bench_all-20261021-230301",
+    "value": 96.16060430376177
    }
   ],
-  "96.5": [
+  "96.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.1.gbs",
-    "run_id": "bench_rerun-20261021-191923",
-    "value": 96.46346908183409
+    "run_id": "bench_all-20261021-230301",
+    "value": 96.44517042289819
+   }
+  ],
+  "964": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "resources.cub.launches.863153.1.grid",
+    "run_id": "bench_all-20261021-230301",
+    "value": 964
    }
   ]
  }

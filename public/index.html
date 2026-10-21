@@ -279,6 +279,14 @@
           </div>
           <div class="chart" id="gpu-ofi-chart"></div>
         </section>
+        <section class="panel card-bold gpu-card gpu-wide" id="gpu-resources" aria-label="Kernel resources and occupancy">
+          <h3>Kernel resources and occupancy</h3>
+          <p class="muted small">Registers and shared memory from <code>nvcc -Xptxas -v</code>; theoretical occupancy from
+            <code>cudaOccupancyMaxActiveBlocksPerMultiprocessor</code> at each kernel's benchmarked block size (no hardware
+            counters on Kaggle, so this is what the launch allows, not what the scheduler achieved).</p>
+          <p class="small" id="gpu-resources-summary"></p>
+          <details><summary>Every launched kernel, lowest occupancy first</summary><div id="gpu-resources-table"></div></details>
+        </section>
         <section class="panel card-bold gpu-card gpu-wide" aria-label="All measurements">
           <details><summary>All measurements (<span id="gpu-bench-count">0</span>) with raw files</summary><div id="gpu-bench"></div></details>
           <details><summary>Runs</summary><div id="gpu-prov"></div></details>

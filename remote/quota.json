@@ -26,15 +26,15 @@
       "uploaded_at": "2026-10-21T19:03:40Z"
     }
   ],
-  "gpu_hours_used_estimate": 0.288,
+  "gpu_hours_used_estimate": 0.384,
   "kaggle_reported": {
-    "checked_at": "2026-10-21T23:00:10Z",
+    "checked_at": "2026-10-21T23:08:58Z",
     "gpu": {
-      "remaining_hours": 29.76,
+      "remaining_hours": 29.68,
       "total_hours": 30.0,
-      "used_hours": 0.24
+      "used_hours": 0.32
     },
-    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.24h  29.76h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
+    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.32h  29.68h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
     "tpu": {
       "remaining_hours": 20.0,
       "total_hours": 20.0,
@@ -43,7 +43,7 @@
   },
   "phase2": {
     "budget_gpu_hours": 6.0,
-    "gpu_hours_used_estimate": 0.035,
+    "gpu_hours_used_estimate": 0.13,
     "kaggle_used_hours_at_start": 0.2,
     "started_at": "2026-10-21T22:25:01Z"
   },
@@ -214,6 +214,27 @@
       "status": "complete",
       "timeout_minutes": 30,
       "wall_seconds": 114.42295360565186
+    },
+    {
+      "branch": "gpu-phase2",
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive"
+      ],
+      "env": {},
+      "finished_at": "2026-10-21T23:08:55Z",
+      "git_sha": "156d18410f9b935097ae7bcec5a234042254db67",
+      "gpu_minutes": 5.71,
+      "gpu_name": "Tesla T4",
+      "job": "bench_all",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-all",
+      "pushed_at": "2026-10-21T23:03:04Z",
+      "result_status": "complete",
+      "run_id": "bench_all-20261021-230301",
+      "running_at": "2026-10-21T23:03:12Z",
+      "source": "real",
+      "status": "complete",
+      "timeout_minutes": 40,
+      "wall_seconds": 308.1354568004608
     }
   ]
 }

@@ -186,20 +186,20 @@ Archive: 863,153 book snapshots and 280,818 trades of BTC-USD and ETH-USD, 9.36 
 
 | Rung | Per-kernel median ms (IQR) | End to end ms | Effective GB/s | % of measured ceiling | % of theoretical | Block | Verified |
 |---|---:|---:|---:|---:|---:|---:|:---:|
-| v0 array-of-structures, one kernel per metric | 40.7 (IQR 24.7) | 101 | 9.2 | 3.5 | 2.9 | 256 | yes |
-| v1 structure-of-arrays, one kernel per metric | 2.03 (IQR 0.0339) | 32.8 | 184.1 | 70.1 | 57.5 | 256 | yes |
-| v2 structure-of-arrays, fused | 1.78 (IQR 0.0103) | 32.5 | 210.0 | 80.0 | 65.6 | 256 | yes |
-| v3 fused, 128-bit loads | 1.57 (IQR 0.0104) | 32.3 | 238.8 | 90.9 | 74.6 | 256 | yes |
-| v4 v3 + grid-stride, best launch configuration | 1.49 (IQR 0.0614) | 32.2 | 251.1 | 95.6 | 78.5 | 128 | yes |
+| v0 array-of-structures, one kernel per metric | 40.2 (IQR 13.6) | 100 | 9.3 | 3.5 | 2.9 | 256 | yes |
+| v1 structure-of-arrays, one kernel per metric | 2.03 (IQR 0.0248) | 32.3 | 184.0 | 70.2 | 57.5 | 256 | yes |
+| v2 structure-of-arrays, fused | 1.78 (IQR 0.0115) | 32.1 | 209.7 | 80.0 | 65.5 | 256 | yes |
+| v3 fused, 128-bit loads | 1.57 (IQR 0.00856) | 31.8 | 238.4 | 90.9 | 74.5 | 256 | yes |
+| v4 v3 + grid-stride, best launch configuration | 1.50 (IQR 0.0200) | 31.8 | 249.9 | 95.3 | 78.1 | 128 | yes |
 
 ### Key findings
 
-- The fused, vectorized feature kernel reaches 95.6% of the measured read-bandwidth ceiling and is 25.8 times faster than single-threaded C++ per kernel, but only 3.2 times faster than NumPy once transfers are counted.
+- The fused, vectorized feature kernel reaches 95.3% of the measured read-bandwidth ceiling and is 24.3 times faster than single-threaded C++ per kernel, but only 2.9 times faster than NumPy once transfers are counted.
 - Moving the book levels from array-of-structures to structure-of-arrays order cut total kernel time by 95.8% in the Nsight Systems profiles.
 - Rolling windows built from prefix sums cancel: the worst float32 window was off by 3.5e+00 of its value and even float64 reached 1.8e-08, above a tenth of a tick, so production uses a double-double scan.
-- The warp-cooperative execution-cost kernel prices 1.68 billion simulated orders per second, 4.3 times the divergent thread-per-order walk.
+- The warp-cooperative execution-cost kernel prices 1.69 billion simulated orders per second, 4.4 times the divergent thread-per-order walk.
 - Ten-level order flow imbalance has essentially no out-of-sample power for the next second's mid move (R squared -0.0020 for BTC-USD), as expected of a liquid market; it is reported as a description, not a signal.
-- Transfers take 94.2% of the pipeline's stage time even with three overlapping streams, so the archive should stay resident on the card and every analysis should run in one residency.
+- Transfers take 94.1% of the pipeline's stage time even with three overlapping streams, so the archive should stay resident on the card and every analysis should run in one residency.
 
 **The GPU is not in the live matching path.** A PCIe round trip alone takes longer than the engine's matching latency, so the GPU only ever analyses recorded history.
 

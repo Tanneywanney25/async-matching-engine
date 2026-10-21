@@ -839,12 +839,14 @@ export function scanRows(scans) {
   }));
 }
 
-/** Link a results-relative raw path to the file on GitHub (branch gpu-analytics). */
-export function rawLink(raw) {
+/** Link a results-relative raw path to the file on GitHub. `base` defaults to the 0.2.0 branch;
+ * gpu_lab.json carries `raw_base` (the branch the results were merged into) and the page passes it. */
+export function rawLink(raw, base = RAW_BASE) {
   if (typeof raw !== "string") return null;
   const cleaned = raw.trim().replace(/\\/g, "/").replace(/^(\.\/)+/, "").replace(/^\/+/, "");
   if (!cleaned) return null;
-  return RAW_BASE + cleaned.split("/").map(encodeURIComponent).join("/");
+  const root = typeof base === "string" && /^https:\/\//.test(base) ? (base.endsWith("/") ? base : `${base}/`) : RAW_BASE;
+  return root + cleaned.split("/").map(encodeURIComponent).join("/");
 }
 
 export function formatMetric(value, unit) {
@@ -892,7 +894,7 @@ export function formatMetric(value, unit) {
   }
 }
 
-export function benchmarkRows(benchmarks) {
+export function benchmarkRows(benchmarks, base = RAW_BASE) {
   return list(benchmarks).filter(Boolean).map((b) => ({
     section: String(b.section ?? ""),
     name: String(b.name ?? ""),
@@ -901,7 +903,7 @@ export function benchmarkRows(benchmarks) {
     unit: String(b.unit ?? ""),
     runId: b.run_id ? String(b.run_id) : DASH,
     raw: typeof b.raw === "string" ? b.raw : null,
-    href: rawLink(b.raw),
+    href: rawLink(b.raw, base),
   }));
 }
 
@@ -971,5 +973,53 @@ export function sectionStatus(data) {
     ofi: ofiSelections(get(data, "ofi")).products.length > 0,
     benchmarks: list(get(data, "benchmarks")).length > 0,
     engine: isNum(get(data, "engine.p99_us")),
+    resources: list(get(data, "resources.kernels")).length > 0,
   };
+}
+
+// --- Kernel resources (phase 2) -----------------------------------------------
+
+export const LIMIT_LABELS = { registers: "registers", shared_memory: "shared memory", warps: "warp slots", blocks: "block cap" };
+
+export function limitLabel(names) {
+  const parts = list(names).map((n) => LIMIT_LABELS[n] ?? String(n));
+  return parts.length ? parts.join(" + ") : DASH;
+}
+
+/** Rows for the resource table, lowest occupancy first (ties: more registers first). */
+export function resourceRows(resources) {
+  return list(get(resources, "kernels"))
+    .filter((k) => k && typeof k.kernel === "string")
+    .map((k) => {
+      const occ = num(k.occupancy);
+      const spills = isNum(k.spill_stores) || isNum(k.spill_loads) ? (num(k.spill_stores, 0) + num(k.spill_loads, 0)) : null;
+      return {
+        kernel: k.kernel,
+        file: String(k.file ?? ""),
+        registers: fmtInt(k.registers),
+        spills: spills === null ? DASH : fmtInt(spills),
+        smem: fmtInt(k.static_smem_bytes),
+        block: fmtInt(k.block),
+        blocksPerSm: fmtInt(k.blocks_per_sm),
+        occupancy: occ === null ? DASH : fmtPct(occ * 100, 0),
+        occupancyFrac: occ === null ? 0 : clamp01(occ),
+        limitedBy: limitLabel(k.limited_by),
+        full: occ !== null && occ >= 0.999,
+        sortKey: [occ === null ? 2 : occ, -num(k.registers, 0)],
+      };
+    })
+    .sort((a, b) => a.sortKey[0] - b.sortKey[0] || a.sortKey[1] - b.sortKey[1] || a.kernel.localeCompare(b.kernel));
+}
+
+/** One sentence: how many kernels reach full theoretical occupancy, and the lowest one. */
+export function resourceSummary(resources) {
+  const rows = resourceRows(resources);
+  if (!rows.length) return "";
+  const full = rows.filter((r) => r.full).length;
+  const low = rows[0];
+  const spilling = rows.filter((r) => r.spills !== DASH && r.spills !== "0").length;
+  const lowest = low.full ? "every launched kernel is at full theoretical occupancy" :
+    `lowest: ${low.kernel} at ${low.occupancy} (${low.limitedBy})`;
+  return `${full} of ${rows.length} kernels reach full theoretical occupancy; ${lowest}; ` +
+    `${spilling === 0 ? "no kernel spills registers" : `${spilling} spill registers`}.`;
 }

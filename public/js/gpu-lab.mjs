@@ -2,9 +2,9 @@
 // All layout math lives in gpu-core.mjs (pure, unit-tested); this module only builds DOM/SVG.
 
 import {
-  DASH, benchmarkRows, engineTiles, fmtBps, fmtInt, fmtMs, fmtPct, fmtX, heatmapLayout, heatmapSummary,
-  ladderLayout, ofiRows, ofiSelections, pipelineSegments, precisionRows, provenanceRows, rooflineLayout,
-  scanRows, scatterLayout, sectionStatus, slippageNote, slippageProducts, speedupTiles, get,
+  DASH, RAW_BASE, benchmarkRows, engineTiles, fmtBps, fmtInt, fmtMs, fmtPct, fmtX, heatmapLayout, heatmapSummary,
+  ladderLayout, ofiRows, ofiSelections, pipelineSegments, precisionRows, provenanceRows, resourceRows, resourceSummary,
+  rooflineLayout, scanRows, scatterLayout, sectionStatus, slippageNote, slippageProducts, speedupTiles, get,
 } from "./gpu-core.mjs";
 
 const DATA_URL = "/data/gpu_lab.json";
@@ -95,7 +95,7 @@ function renderTables(data) {
     [{ key: "name", label: "Scan" }, { key: "medianMs", label: "Median", num: true },
      { key: "elementsPerS", label: "Elements/s", num: true }, { key: "gbs", label: "Bandwidth", num: true }],
     scanRows(get(data, "scans")), { rowClass: (r) => (r.winner ? "chosen" : "") });
-  const bench = benchmarkRows(get(data, "benchmarks"));
+  const bench = benchmarkRows(get(data, "benchmarks"), get(data, "raw_base", RAW_BASE));
   $("gpu-bench-count").textContent = fmtInt(bench.length);
   $("gpu-bench").innerHTML = table(
     [{ key: "section", label: "Section" }, { key: "name", label: "Measurement" }, { key: "value", label: "Median", num: true },
@@ -106,6 +106,18 @@ function renderTables(data) {
     provenanceRows(get(data, "provenance")));
   $("gpu-engine").innerHTML = engineTiles(get(data, "engine"))
     .map((t) => `<div class="tile${t.small ? " small-tile" : ""}"><span>${esc(t.label)}</span><b>${esc(t.value)}</b>${t.sub ? `<em>${esc(t.sub)}</em>` : ""}</div>`).join("");
+}
+
+function renderResources(data) {
+  const res = get(data, "resources");
+  $("gpu-resources-summary").textContent = resourceSummary(res);
+  const occCell = (r) => `<span class="occ-bar" aria-hidden="true"><span style="width:${(r.occupancyFrac * 100).toFixed(1)}%"></span></span>${esc(r.occupancy)}`;
+  $("gpu-resources-table").innerHTML = table(
+    [{ key: "kernel", label: "Kernel", html: (r) => `<code title="${esc(r.file)}">${esc(r.kernel)}</code>` },
+     { key: "occupancy", label: "Occupancy", num: true, html: occCell }, { key: "limitedBy", label: "Limited by" },
+     { key: "registers", label: "Registers", num: true }, { key: "smem", label: "Shared B", num: true },
+     { key: "block", label: "Block", num: true }, { key: "spills", label: "Spill B", num: true }],
+    resourceRows(res), { rowClass: (r) => (r.full ? "" : "chosen") });
 }
 
 function renderSlippage(data) {
@@ -176,7 +188,7 @@ export async function initGpuLab() {
   const show = sectionStatus(data);
   const steps = [
     ["ladder", renderLadder, "gpu-ladder"], ["roofline", renderRoofline, "gpu-roofline"], ["pipeline", renderTimeline, "gpu-timeline"],
-    ["slippage", renderSlippage, "gpu-slippage"], ["ofi", renderOfi, "gpu-ofi"],
+    ["slippage", renderSlippage, "gpu-slippage"], ["ofi", renderOfi, "gpu-ofi"], ["resources", renderResources, "gpu-resources"],
   ];
   for (const [key, fn, id] of steps) {
     if (!show[key]) { $(id).hidden = true; continue; }

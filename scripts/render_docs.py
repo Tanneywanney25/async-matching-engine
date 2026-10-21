@@ -34,7 +34,8 @@ sys.path.insert(0, str(REPO / "scripts"))
 import check_bullets  # noqa: E402
 
 NUM_RE = re.compile(r"(?<![A-Za-z_\d.])\d[\d,]*(?:\.\d+)?(?:e[-+]?\d+)?")
-GITHUB = "https://github.com/Tanneywanney25/async-matching-engine/blob/gpu-analytics/"
+# Raw links on the dashboard: the results are merged into main, which keeps every run directory.
+RAW_BASE = "https://github.com/Tanneywanney25/async-matching-engine/blob/main/"
 MARK_START, MARK_END = "<!-- gpu-lab:start -->", "<!-- gpu-lab:end -->"
 DATA_LIMIT_BYTES = 5 * 1024 * 1024
 LADDER_ORDER = ["v0_aos", "v1_soa", "v2_soa_fused", "v3_soa_fused_vec4", "v4_soa_fused_vec4_sweep"]
@@ -498,7 +499,10 @@ LIMIT_WORDS = {"registers": "registers", "shared_memory": "shared memory", "warp
 
 
 def limit_words(names: Sequence[str]) -> str:
-    return " and ".join(LIMIT_WORDS.get(n, n) for n in names) or "nothing"
+    words = [LIMIT_WORDS.get(n, n) for n in names]
+    if len(words) <= 2:
+        return " and ".join(words) or "nothing"
+    return ", ".join(words[:-1]) + " and " + words[-1]
 
 
 def primary_occupancy(row: dict) -> Tuple[int, Optional[dict]]:
@@ -591,6 +595,9 @@ def resources_md(r: Renderer) -> List[str]:
             q = f"kernels.{vi}.occupancy.{j}"
             out.append(f"| {r.fmt('resources', q + '.block', 'int')} | {r.fmt('resources', q + '.blocks_per_sm', 'int')} | "
                        f"{r.fmt('resources', q + '.occupancy', 'pct', 100.0)} | {limit_words(occ['limited_by'])} | {ms} |")
+        if len({round(o["occupancy"], 6) for o in v4["occupancy"]}) == 1:
+            out += ["", "Every swept block size reaches the same theoretical occupancy, so occupancy does not explain the "
+                        "differences across the sweep; the grid size changes them more (see the launch configuration sweep above)."]
         out.append("")
     return out
 
@@ -631,13 +638,25 @@ def occupancy_design_note(r: Renderer) -> str:
         spare = [k for k in ("registers", "shared_memory") if lim.get(k) is not None and lim[k] > occ["blocks_per_sm"]]
         spare_txt = (f"; {limit_words(spare)} would allow "
                      + " and ".join(f"{r.fmt('resources', f'{q}.limits.{k}', 'int')}" for k in spare) + " blocks") if spare else ""
-        parts.append(f"`{kernel}` ({r.fmt(sec, path, 'ms')} ms per launch) uses {regs} registers per thread and {smem} bytes of static "
-                     f"shared memory, so at {r.fmt('resources', f'kernels.{i}.primary_block', 'int')} threads per block "
+        smem_txt = f"{smem} bytes of static shared memory" if row.get("static_smem_bytes") else "no shared memory"
+        parts.append(f"`{kernel}` ({r.fmt(sec, path, 'ms')} ms per launch) uses {regs} registers per thread and {smem_txt}, "
+                     f"so at {r.fmt('resources', f'kernels.{i}.primary_block', 'int')} threads per block "
                      f"{r.fmt('resources', q + '.blocks_per_sm', 'int')} blocks fit on a multiprocessor, "
                      f"{r.fmt('resources', q + '.occupancy', 'pct', 100.0)}% occupancy, and {limit_words(occ['limited_by'])} bind first{spare_txt}.")
+    full = all((primary_occupancy(rows[k][1])[1] or {}).get("occupancy", 0) >= 0.999 for _ms, k, _s, _p in timed)
+    causes = []
+    if any(k == "slippage_naive" for _ms, k, _s, _p in timed) and r.has("slippage"):
+        causes.append(f"the naive walk loses {r.fmt('slippage', 'divergence_penalty_pct', 'pct')}% of its time to divergence")
+    if any(k.startswith("layout_") and k.endswith("_aos") for _ms, k, _s, _p in timed) and r.has("layout"):
+        causes.append(f"the array-of-structures kernels read uncoalesced memory, and the same kernels in structure-of-arrays "
+                      f"order take {r.fmt('layout', 'reduction_pct', 'pct')}% less time")
+    closing = ""
+    if full:
+        closing = (" All three already fill every warp slot the multiprocessor has, so more occupancy cannot speed them up"
+                   + ("; what does is what the other sections measured: " + " and ".join(causes) + "." if causes else "."))
     return ("The three kernels with the longest measured launches, from the resource table in BENCHMARKS.md: " + " ".join(parts)
-            + " These are theoretical figures: without counters there is no achieved occupancy, so the table says what the "
-              "compiler and launch shape allow, not what the scheduler reached.")
+            + closing + " These are theoretical figures: without counters there is no achieved occupancy, so the table says "
+              "what the compiler and launch shape allow, not what the scheduler reached.")
 
 
 def resources_lab(r: Renderer) -> Optional[dict]:
@@ -1040,7 +1059,7 @@ def changelog(text: str) -> str:
 
 def gpu_lab_json(r: Renderer) -> dict:
     g = r.get
-    out: dict = {"generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    out: dict = {"generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "raw_base": RAW_BASE,
                  "statement": "The GPU is not in the live matching path: a PCIe round trip alone takes longer than the engine's matching latency.",
                  "provenance": {"runs": [{"run_id": run.id, "git_sha": run.manifest.get("git_sha"), "gpu_name": run.manifest.get("gpu_name"),
                                           "source": run.source, "date": datetime.fromtimestamp(run.started, tz=timezone.utc).strftime("%Y-%m-%d")}

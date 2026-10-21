@@ -307,6 +307,11 @@ code { color: var(--connection-cyan); font-size: 0.92em; }
 .gpu-table .num { text-align: right; font-variant-numeric: tabular-nums; }
 .gpu-table tr.chosen td { color: var(--accent); }
 .gpu-table a { color: var(--connection-cyan); }
+.gpu-table code { font-size: 12px; }
+.gpu-card p code { overflow-wrap: anywhere; }
+.occ-bar { display: inline-block; width: 44px; height: 6px; margin-right: 6px; vertical-align: middle;
+  background: var(--line); border-radius: 3px; overflow: hidden; }
+.occ-bar > span { display: block; height: 100%; background: var(--accent); }
 .grid-line { stroke: var(--line); stroke-width: 1; }
 .axis-label, .ref-label, .point-label { fill: var(--muted); font-size: 11px; }
 .axis-title { fill: var(--muted); font-size: 11px; font-style: italic; }

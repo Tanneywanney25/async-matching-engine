@@ -1,0 +1,41 @@
+
+Fatbin elf code:
+================
+arch = sm_75
+code version = [1,7]
+host = linux
+compile_size = 64bit
+
+Resource usage:
+ Common:
+  GLOBAL:0
+
+Fatbin elf code:
+================
+arch = sm_75
+code version = [1,7]
+host = linux
+compile_size = 64bit
+
+Resource usage:
+ Common:
+  GLOBAL:28 CONSTANT[4]:224
+ Function _ZN3cub17CUB_200700_750_NS16DeviceScanKernelINS0_16DeviceScanPolicyIfN4cuda3std3__44plusIvEEE9Policy900EPKfPfNS0_13ScanTileStateIfLb1EEES7_NS0_8NullTypeEjfLb0EEEvT0_T1_T2_iT3_T4_T5_:
+  REG:54 STACK:0 SHARED:7696 LOCAL:0 CONSTANT[0]:388 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN3cub17CUB_200700_750_NS20DeviceScanInitKernelINS0_13ScanTileStateIfLb1EEEEEvT_i:
+  REG:10 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:364 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN3cub17CUB_200700_750_NS16DeviceScanKernelINS0_16DeviceScanPolicyIdN4cuda3std3__44plusIvEEE9Policy900EPKdPdNS0_13ScanTileStateIdLb1EEES7_NS0_8NullTypeEjdLb0EEEvT0_T1_T2_iT3_T4_T5_:
+  REG:49 STACK:0 SHARED:7184 LOCAL:0 CONSTANT[0]:388 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN3cub17CUB_200700_750_NS20DeviceScanInitKernelINS0_13ScanTileStateIdLb1EEEEEvT_i:
+  REG:12 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:364 TEXTURE:0 SURFACE:0 SAMPLER:0
+ Function _ZN3cub17CUB_200700_750_NS11EmptyKernelIvEEvv:
+  REG:4 STACK:0 SHARED:0 LOCAL:0 CONSTANT[0]:352 TEXTURE:0 SURFACE:0 SAMPLER:0
+
+Fatbin ptx code:
+================
+arch = sm_75
+code version = [8,7]
+host = linux
+compile_size = 64bit
+compressed
+ptxasOptions = 

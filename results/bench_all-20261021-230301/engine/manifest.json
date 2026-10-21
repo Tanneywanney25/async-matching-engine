@@ -1,0 +1,15 @@
+{
+  "run_id": "engine",
+  "job": "engine_local",
+  "source": "real",
+  "gpu_name": "none (CPU benchmark)",
+  "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+  "cpu_cores": 4,
+  "python": "3.13.15",
+  "os": "Linux-6.18.48+-x86_64-with-glibc2.39",
+  "git_sha": "156d18410f9b935097ae7bcec5a234042254db67",
+  "started_unix": 1792624094.8318105,
+  "finished_unix": 1792624096.417374,
+  "wall_seconds": 1.5855634212493896,
+  "status": "complete"
+}

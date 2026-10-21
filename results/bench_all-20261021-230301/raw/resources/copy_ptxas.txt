@@ -1,0 +1,11 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'read_int4' for 'sm_75'
+ptxas info    : Function properties for read_int4
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 20.154 ms
+ptxas info    : Compiling entry function 'copy_int4' for 'sm_75'
+ptxas info    : Function properties for copy_int4
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 10.328 ms
