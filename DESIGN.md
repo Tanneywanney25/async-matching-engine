@@ -32,4 +32,4 @@ Kaggle's container denies access to the GPU performance counters (`ERR_NVGPUCTRP
 
 ## Honest baselines
 
-The single-threaded C++ baseline is the one bullet 1 quotes, and it is compiled with `-O3 -march=native` and a cache-friendly level-outer loop. The same code with OpenMP on every core is reported too: the best kernel is 11.5 times faster than that, a smaller and fairer figure.
+The single-threaded C++ baseline is the one bullet 1 quotes, and it is compiled with `-O3 -march=native` and a cache-friendly level-outer loop. The same code with OpenMP on every core is reported too: the best kernel is 11.8 times faster than that, a smaller and fairer figure.

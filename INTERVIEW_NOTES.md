@@ -6,11 +6,11 @@ Rendered from the measured numbers by `scripts/render_docs.py`.
 
 ### 1. Why is the end-to-end speedup so much smaller than the per-kernel one?
 
-The kernel is 24.3 times faster than single-threaded C++, but end to end it is 2.9 times faster than NumPy because the inputs cross PCIe first. The work is a few adds per byte, so the copy dominates; that is why analyses run in one residency.
+The kernel is 23.5 times faster than single-threaded C++, but end to end it is 2.8 times faster than NumPy because the inputs cross PCIe first. The work is a few adds per byte, so the copy dominates; that is why analyses run in one residency.
 
 ### 2. How close to the hardware limit is the best feature kernel?
 
-249.9 GB/s of minimum traffic, 95.3% of the 262.2 GB/s the read-only streaming kernel achieves (a copy is slower because half its traffic is writes) and 78.1% of the theoretical figure.
+251.3 GB/s of minimum traffic, 95.8% of the 262.4 GB/s the read-only streaming kernel achieves (a copy is slower because half its traffic is writes) and 78.5% of the theoretical figure.
 
 ### 3. What did each rung of the ladder buy?
 
@@ -22,7 +22,7 @@ No: 129 floating-point operations per 433 bytes, far left of the roofline's ridg
 
 ### 5. Why compare against OpenMP when the bullet quotes single-threaded C++?
 
-Because an honest comparison beats a flattering one: with every core the CPU closes the gap to 11.5 times.
+Because an honest comparison beats a flattering one: with every core the CPU closes the gap to 11.8 times.
 
 ### 6. How did you measure the layout effect?
 
@@ -30,7 +30,7 @@ The same four kernels in both layouts under `nsys profile`, total kernel time fr
 
 ### 7. Which scan won?
 
-`cub_device_scan` on 16,777,216 elements. CUB's single-pass decoupled look-back reads and writes each element once; the hand-written scans need a second pass for the block carries.
+`cub_device_scan` on 16,777,216 elements. The hand-written single-pass decoupled look-back scan came within 3.4% of it (1.79 ms against 1.73 ms); both read and write each element once, while the Blelloch and warp-shuffle scans need a second pass for the block carries.
 
 ### 8. How do you know the rolling price is right?
 

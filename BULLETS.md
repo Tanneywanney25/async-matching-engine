@@ -6,7 +6,7 @@ Rendered by `scripts/render_docs.py` from real-data T4 results; `scripts/check_b
 
 <!-- bullet:1 -->
 CUDA C++ kernels on an NVIDIA T4 for spread, depth and order imbalance over 863,153 recorded Coinbase book
-snapshots, 24.3 times faster than single-threaded C++ per kernel and 2.9 times faster than NumPy end to end.
+snapshots, 23.5 times faster than single-threaded C++ per kernel and 2.8 times faster than NumPy end to end.
 
 ## Template bullet 2 (prefix scan and layout)
 
@@ -23,8 +23,8 @@ live WebSocket order book feed, benchmarked over 100,000 orders at 34.57 microse
 ## Alternate: GPU performance (percentage of peak bandwidth)
 
 <!-- bullet:4 -->
-Took CUDA order book feature kernels on an NVIDIA T4 from 9.3 to 249.9 gigabytes per second of effective
-bandwidth, 95.3% of the measured memory ceiling, by moving book levels to structure-of-arrays order.
+Took CUDA order book feature kernels on an NVIDIA T4 from 9.1 to 251.3 gigabytes per second of effective
+bandwidth, 95.8% of the measured memory ceiling, by moving book levels to structure-of-arrays order.
 
 ## Alternate: execution cost (the slippage kernel)
 

@@ -186,15 +186,15 @@ Archive: 863,153 book snapshots and 280,818 trades of BTC-USD and ETH-USD, 9.36 
 
 | Rung | Per-kernel median ms (IQR) | End to end ms | Effective GB/s | % of measured ceiling | % of theoretical | Block | Verified |
 |---|---:|---:|---:|---:|---:|---:|:---:|
-| v0 array-of-structures, one kernel per metric | 40.2 (IQR 13.6) | 100 | 9.3 | 3.5 | 2.9 | 256 | yes |
-| v1 structure-of-arrays, one kernel per metric | 2.03 (IQR 0.0248) | 32.3 | 184.0 | 70.2 | 57.5 | 256 | yes |
-| v2 structure-of-arrays, fused | 1.78 (IQR 0.0115) | 32.1 | 209.7 | 80.0 | 65.5 | 256 | yes |
-| v3 fused, 128-bit loads | 1.57 (IQR 0.00856) | 31.8 | 238.4 | 90.9 | 74.5 | 256 | yes |
-| v4 v3 + grid-stride, best launch configuration | 1.50 (IQR 0.0200) | 31.8 | 249.9 | 95.3 | 78.1 | 128 | yes |
+| v0 array-of-structures, one kernel per metric | 41.1 (IQR 0.378) | 100 | 9.1 | 3.5 | 2.8 | 256 | yes |
+| v1 structure-of-arrays, one kernel per metric | 2.02 (IQR 0.00964) | 32.3 | 184.9 | 70.5 | 57.8 | 256 | yes |
+| v2 structure-of-arrays, fused | 1.78 (IQR 0.00857) | 32.1 | 209.8 | 80.0 | 65.5 | 256 | yes |
+| v3 fused, 128-bit loads | 1.57 (IQR 0.00875) | 31.8 | 238.1 | 90.8 | 74.4 | 256 | yes |
+| v4 v3 + grid-stride, best launch configuration | 1.49 (IQR 0.00465) | 31.8 | 251.3 | 95.8 | 78.5 | 128 | yes |
 
 ### Key findings
 
-- The fused, vectorized feature kernel reaches 95.3% of the measured read-bandwidth ceiling and is 24.3 times faster than single-threaded C++ per kernel, but only 2.9 times faster than NumPy once transfers are counted.
+- The fused, vectorized feature kernel reaches 95.8% of the measured read-bandwidth ceiling and is 23.5 times faster than single-threaded C++ per kernel, but only 2.8 times faster than NumPy once transfers are counted.
 - Moving the book levels from array-of-structures to structure-of-arrays order cut total kernel time by 95.8% in the Nsight Systems profiles.
 - Rolling windows built from prefix sums cancel: the worst float32 window was off by 3.5e+00 of its value and even float64 reached 1.8e-08, above a tenth of a tick, so production uses a double-double scan.
 - The warp-cooperative execution-cost kernel prices 1.69 billion simulated orders per second, 4.4 times the divergent thread-per-order walk.

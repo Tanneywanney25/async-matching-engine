@@ -26,15 +26,15 @@
       "uploaded_at": "2026-10-21T19:03:40Z"
     }
   ],
-  "gpu_hours_used_estimate": 0.453,
+  "gpu_hours_used_estimate": 0.496,
   "kaggle_reported": {
-    "checked_at": "2026-10-21T23:22:35Z",
+    "checked_at": "2026-10-21T23:25:34Z",
     "gpu": {
-      "remaining_hours": 29.62,
+      "remaining_hours": 29.58,
       "total_hours": 30.0,
-      "used_hours": 0.38
+      "used_hours": 0.42
     },
-    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.38h  29.62h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
+    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.42h  29.58h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
     "tpu": {
       "remaining_hours": 20.0,
       "total_hours": 20.0,
@@ -43,7 +43,7 @@
   },
   "phase2": {
     "budget_gpu_hours": 6.0,
-    "gpu_hours_used_estimate": 0.199,
+    "gpu_hours_used_estimate": 0.243,
     "kaggle_used_hours_at_start": 0.2,
     "started_at": "2026-10-21T22:25:01Z"
   },
@@ -305,6 +305,30 @@
       "status": "complete",
       "timeout_minutes": 20,
       "wall_seconds": 38.29413986206055
+    },
+    {
+      "branch": "gpu-phase2",
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive"
+      ],
+      "env": {
+        "SECTIONS": "ladder,scans",
+        "SKIP_ENGINE": "1"
+      },
+      "finished_at": "2026-10-21T23:25:31Z",
+      "git_sha": "d86371921eaf3adbdb3c51248461f705cb1a0fd1",
+      "gpu_minutes": 2.61,
+      "gpu_name": "Tesla T4",
+      "job": "bench_rerun",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-rerun",
+      "pushed_at": "2026-10-21T23:22:48Z",
+      "result_status": "complete",
+      "run_id": "bench_rerun-20261021-232245",
+      "running_at": "2026-10-21T23:22:54Z",
+      "source": "real",
+      "status": "complete",
+      "timeout_minutes": 30,
+      "wall_seconds": 141.5324194431305
     }
   ]
 }

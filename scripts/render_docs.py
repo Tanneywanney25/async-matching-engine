@@ -949,9 +949,17 @@ def interview_md(r: Renderer, decisions: str) -> str:
                    f"{r.fmt('layout', 'aos_total_kernel_ms', 'ms')} ms versus {r.fmt('layout', 'soa_total_kernel_ms', 'ms')} ms, "
                    f"{r.fmt('layout', 'reduction_pct', 'pct')}% less."))
     if r.has("scans"):
-        qa += [("Which scan won?",
-                f"`{r.get('scans', 'large.winner')}` on {r.fmt('scans', 'large.n_elements', 'int')} elements. CUB's single-pass decoupled look-back "
-                "reads and writes each element once; the hand-written scans need a second pass for the block carries."),
+        gap = r.get("scans", "large.lookback_vs_cub")
+        won = (f"`{r.get('scans', 'large.winner')}` on {r.fmt('scans', 'large.n_elements', 'int')} elements. "
+               + (f"The hand-written single-pass decoupled look-back scan came within "
+                  f"{r.fmt('scans', 'large.lookback_vs_cub.pct_slower_than_cub', 'pct')}% of it "
+                  f"({r.fmt('scans', 'large.lookback_vs_cub.lookback_ms', 'ms')} ms against "
+                  f"{r.fmt('scans', 'large.lookback_vs_cub.cub_ms', 'ms')} ms); both read and write each element once, "
+                  "while the Blelloch and warp-shuffle scans need a second pass for the block carries."
+                  if gap and gap["lookback_ms"] > gap["cub_ms"] else
+                  "CUB's single-pass decoupled look-back reads and writes each element once; the multi-pass scans need a "
+                  "second pass for the block carries."))
+        qa += [("Which scan won?", won),
                ("How do you know the rolling price is right?",
                 f"Against `metrics.rolling_vwap` in Decimal on sampled trades: maximum relative error {r.fmt('scans', 'rolling_vwap.max_rel_err_100', 'sci')}.")]
     if r.has("precision"):

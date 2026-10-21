@@ -11,7 +11,7 @@ Every figure on this page is rendered by `scripts/render_docs.py` from `results/
 | Driver / CUDA runtime / nvcc | `580.178.04` / `12090` / `Cuda compilation tools, release 12.8, V12.8.93` |
 | Nsight Systems | `NVIDIA Nsight Systems version 2025.1.1.0` |
 | Host CPU | `Intel(R) Xeon(R) CPU @ 2.00GHz`, 4 logical cores |
-| Run | `bench_all-20261021-230301` at git `156d18410f9b`, NVRTC target `sm_75` |
+| Run | `bench_rerun-20261021-232245` at git `d86371921eaf`, NVRTC target `sm_75` |
 | Archive | 863,153 snapshots, 280,818 trades, source `real` |
 | Capture window | `2026-10-21T07:49:24Z` to `2026-10-21T17:10:57Z` (9.36 hours), sequence gaps: 0 |
 | Archive content hash | `10e3c7d79010feb6281d9c3833d00e6a05a51275dc9e1aa58c05c5aa75451959` |
@@ -20,13 +20,13 @@ Every figure on this page is rendered by `scripts/render_docs.py` from `results/
 
 | Measurement | Median ms (IQR) | GB/s (read + write) | Raw |
 |---|---:|---:|---|
-| Device-to-device copy kernel, 128-bit loads | 9.68 (IQR 0.106) | 221.7 | [raw](results/bench_all-20261021-230301/raw/bandwidth__copy_kernel.json) |
-| `cudaMemcpy` device to device | 9.24 (IQR 0.350) | 232.4 | [raw](results/bench_all-20261021-230301/raw/bandwidth__cudamemcpy_d2d.json) |
-| Read-only streaming kernel, 128-bit loads (bytes read) | 4.09 (IQR 0.0160) | 262.2 | [raw](results/bench_all-20261021-230301/raw/bandwidth__read_kernel.json) |
+| Device-to-device copy kernel, 128-bit loads | 9.69 (IQR 0.0694) | 221.6 | [raw](results/bench_rerun-20261021-232245/raw/bandwidth__copy_kernel.json) |
+| `cudaMemcpy` device to device | 9.21 (IQR 0.283) | 233.1 | [raw](results/bench_rerun-20261021-232245/raw/bandwidth__cudamemcpy_d2d.json) |
+| Read-only streaming kernel, 128-bit loads (bytes read) | 4.09 (IQR 0.0130) | 262.4 | [raw](results/bench_rerun-20261021-232245/raw/bandwidth__read_kernel.json) |
 
 A copy spends half its DRAM time writing and pays the read/write turnaround; the feature kernels read about seventeen bytes for every one they write, so the read-only figure is the fair ceiling for them and the highest measured figure is used.
 
-Buffer size 1,073,741,824 bytes. Measured ceiling 262.2 GB/s, 81.9% of the 320.1 GB/s theoretical figure.
+Buffer size 1,073,741,824 bytes. Measured ceiling 262.4 GB/s, 82.0% of the 320.1 GB/s theoretical figure.
 
 ## Feature kernels: the optimization ladder
 
@@ -34,87 +34,91 @@ Buffer size 1,073,741,824 bytes. Measured ceiling 262.2 GB/s, 81.9% of the 320.1
 
 | Rung | Per-kernel median ms (IQR) | End to end ms | End to end, pageable ms | Effective GB/s | % of measured ceiling | % of theoretical | Block | Verified | Raw |
 |---|---:|---:|---:|---:|---:|---:|---:|:---:|---|
-| v0 array-of-structures, one kernel per metric | 40.2 (IQR 13.6) | 100 | 195 | 9.3 | 3.5 | 2.9 | 256 | yes | [raw](results/bench_all-20261021-230301/raw/ladder_kernel__v0_aos.json) |
-| v1 structure-of-arrays, one kernel per metric | 2.03 (IQR 0.0248) | 32.3 | 83.7 | 184.0 | 70.2 | 57.5 | 256 | yes | [raw](results/bench_all-20261021-230301/raw/ladder_kernel__v1_soa.json) |
-| v2 structure-of-arrays, fused | 1.78 (IQR 0.0115) | 32.1 | 83.4 | 209.7 | 80.0 | 65.5 | 256 | yes | [raw](results/bench_all-20261021-230301/raw/ladder_kernel__v2_soa_fused.json) |
-| v3 fused, 128-bit loads | 1.57 (IQR 0.00856) | 31.8 | 83.3 | 238.4 | 90.9 | 74.5 | 256 | yes | [raw](results/bench_all-20261021-230301/raw/ladder_kernel__v3_soa_fused_vec4.json) |
-| v4 v3 + grid-stride, best launch configuration | 1.50 (IQR 0.0200) | 31.8 | 83.1 | 249.9 | 95.3 | 78.1 | 128 | yes | [raw](results/bench_all-20261021-230301/raw/ladder_kernel__v4_soa_fused_vec4_sweep.json) |
+| v0 array-of-structures, one kernel per metric | 41.1 (IQR 0.378) | 100 | 194 | 9.1 | 3.5 | 2.8 | 256 | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_kernel__v0_aos.json) |
+| v1 structure-of-arrays, one kernel per metric | 2.02 (IQR 0.00964) | 32.3 | 82.8 | 184.9 | 70.5 | 57.8 | 256 | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_kernel__v1_soa.json) |
+| v2 structure-of-arrays, fused | 1.78 (IQR 0.00857) | 32.1 | 82.5 | 209.8 | 80.0 | 65.5 | 256 | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_kernel__v2_soa_fused.json) |
+| v3 fused, 128-bit loads | 1.57 (IQR 0.00875) | 31.8 | 82.3 | 238.1 | 90.8 | 74.4 | 256 | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_kernel__v3_soa_fused_vec4.json) |
+| v4 v3 + grid-stride, best launch configuration | 1.49 (IQR 0.00465) | 31.8 | 82.1 | 251.3 | 95.8 | 78.5 | 128 | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_kernel__v4_soa_fused_vec4_sweep.json) |
 
 ### Launch configuration sweep (v4, grid-stride)
 
 | Block | Grid | Median ms | IQR ms | Effective GB/s |
 |---:|---:|---:|---:|---:|
-| 64 | 40 | 1.62 | 0.00872 | 231.4 |
-| 64 | 80 | 1.53 | 0.0136 | 244.1 |
-| 64 | 160 | 1.49 | 0.00941 | 250.4 |
-| 64 | 320 | 1.64 | 0.00916 | 228.1 |
-| 64 | 640 | 1.72 | 0.0121 | 217.8 |
-| 64 | 1,280 | 1.71 | 0.00835 | 218.7 |
-| 128 | 40 | 1.52 | 0.0104 | 245.2 |
-| 128 | 80 | 1.48 | 0.00841 | 252.0 |
-| 128 | 160 | 1.63 | 0.00764 | 229.5 |
-| 128 | 320 | 1.70 | 0.0101 | 220.4 |
-| 128 | 640 | 1.68 | 0.00890 | 221.9 |
-| 128 | 1,280 | 1.65 | 0.00898 | 225.9 |
-| 256 | 40 | 1.49 | 0.0122 | 250.3 |
-| 256 | 80 | 1.64 | 0.0101 | 228.4 |
-| 256 | 160 | 1.65 | 0.00877 | 226.2 |
-| 256 | 320 | 1.62 | 0.0131 | 230.0 |
-| 256 | 640 | 1.61 | 0.00788 | 231.5 |
-| 256 | 1,280 | 1.60 | 0.00838 | 234.2 |
-| 512 | 40 | 1.67 | 0.0159 | 223.4 |
-| 512 | 80 | 1.61 | 0.00819 | 232.3 |
-| 512 | 160 | 1.59 | 0.0104 | 234.6 |
-| 512 | 320 | 1.56 | 0.00946 | 240.1 |
-| 512 | 640 | 1.53 | 0.00694 | 243.9 |
-| 512 | 1,280 | 1.53 | 0.00954 | 244.2 |
-| 1,024 | 40 | 1.61 | 0.0134 | 232.4 |
-| 1,024 | 80 | 1.55 | 0.0118 | 240.7 |
-| 1,024 | 160 | 1.53 | 0.00723 | 245.1 |
-| 1,024 | 320 | 1.51 | 0.00514 | 248.2 |
-| 1,024 | 640 | 1.50 | 0.00889 | 248.7 |
-| 1,024 | 1,280 | 1.50 | 0.00938 | 248.6 |
+| 64 | 40 | 1.62 | 0.0165 | 230.1 |
+| 64 | 80 | 1.53 | 0.0103 | 244.1 |
+| 64 | 160 | 1.49 | 0.00819 | 250.8 |
+| 64 | 320 | 1.64 | 0.00634 | 227.3 |
+| 64 | 640 | 1.72 | 0.00686 | 217.8 |
+| 64 | 1,280 | 1.71 | 0.00849 | 218.5 |
+| 128 | 40 | 1.52 | 0.00890 | 245.6 |
+| 128 | 80 | 1.48 | 0.0139 | 252.0 |
+| 128 | 160 | 1.63 | 0.00670 | 229.8 |
+| 128 | 320 | 1.69 | 0.0105 | 221.2 |
+| 128 | 640 | 1.68 | 0.00842 | 222.0 |
+| 128 | 1,280 | 1.65 | 0.00427 | 225.9 |
+| 256 | 40 | 1.49 | 0.0109 | 250.9 |
+| 256 | 80 | 1.64 | 0.00855 | 228.0 |
+| 256 | 160 | 1.65 | 0.00995 | 227.0 |
+| 256 | 320 | 1.62 | 0.00650 | 230.5 |
+| 256 | 640 | 1.61 | 0.00997 | 231.5 |
+| 256 | 1,280 | 1.60 | 0.00602 | 234.3 |
+| 512 | 40 | 1.67 | 0.0112 | 224.1 |
+| 512 | 80 | 1.60 | 0.00932 | 233.0 |
+| 512 | 160 | 1.60 | 0.0179 | 234.2 |
+| 512 | 320 | 1.56 | 0.0102 | 240.1 |
+| 512 | 640 | 1.53 | 0.00599 | 244.7 |
+| 512 | 1,280 | 1.53 | 0.00620 | 244.6 |
+| 1,024 | 40 | 1.61 | 0.0127 | 232.1 |
+| 1,024 | 80 | 1.55 | 0.00729 | 240.5 |
+| 1,024 | 160 | 1.52 | 0.00885 | 245.2 |
+| 1,024 | 320 | 1.50 | 0.00503 | 248.8 |
+| 1,024 | 640 | 1.50 | 0.00665 | 248.6 |
+| 1,024 | 1,280 | 1.50 | 0.00429 | 248.6 |
 
 ## Baselines (same machine, same job, same archive)
 
 | Implementation | Median ms (IQR) | Verified | Raw |
 |---|---:|:---:|---|
-| C++ single thread, `g++ -O3 -march=native` | 36.3 (IQR 0.593) | yes | [raw](results/bench_all-20261021-230301/raw/ladder_e2e_and_cpu__cpp_single.json) |
-| C++ with OpenMP on every core | 17.2 (IQR 0.276) | yes | [raw](results/bench_all-20261021-230301/raw/ladder_e2e_and_cpu__cpp_omp.json) |
-| Vectorized NumPy | 92.9 (IQR 1.77) | yes | [raw](results/bench_all-20261021-230301/raw/ladder_e2e_and_cpu__numpy.json) |
-| CuPy expression chain, per kernel | 4.52 (IQR 0.658) | yes | [raw](results/bench_all-20261021-230301/raw/ladder_kernel__cupy_chain.json) |
-| CuPy expression chain, end to end | 91.1 (IQR 0.492) | yes | [raw](results/bench_all-20261021-230301/raw/ladder_e2e_and_cpu__cupy_e2e.json) |
+| C++ single thread, `g++ -O3 -march=native` | 34.9 (IQR 0.504) | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_e2e_and_cpu__cpp_single.json) |
+| C++ with OpenMP on every core | 17.6 (IQR 0.664) | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_e2e_and_cpu__cpp_omp.json) |
+| Vectorized NumPy | 90.1 (IQR 2.51) | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_e2e_and_cpu__numpy.json) |
+| CuPy expression chain, per kernel | 4.28 (IQR 0.101) | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_kernel__cupy_chain.json) |
+| CuPy expression chain, end to end | 90.7 (IQR 0.987) | yes | [raw](results/bench_rerun-20261021-232245/raw/ladder_e2e_and_cpu__cupy_e2e.json) |
 
-Best rung: `v4_soa_fused_vec4_sweep`. Per kernel it is 24.3 times faster than single-threaded C++, 11.5 times faster than C++ with OpenMP on every core and 3.0 times faster than the CuPy chain. End to end, transfers included, it is 2.9 times faster than NumPy and 1.1 times faster than the CuPy chain with its own transfers. From pageable memory the end-to-end advantage over NumPy shrinks to 1.1 times.
+Best rung: `v4_soa_fused_vec4_sweep`. Per kernel it is 23.5 times faster than single-threaded C++, 11.8 times faster than C++ with OpenMP on every core and 2.9 times faster than the CuPy chain. End to end, transfers included, it is 2.8 times faster than NumPy and 1.1 times faster than the CuPy chain with its own transfers. From pageable memory the end-to-end advantage over NumPy shrinks to 1.1 times.
 
 ## Prefix scans
 
 GB/s counts every float64 element twice, once read and once written; the last column compares that with the read-only streaming ceiling measured in the same job.
 
+Before it was timed, the single-pass decoupled look-back scan (Merrill and Garland, 2016) passed 16 correctness cases in a child process with a timeout, at sizes from 1 to 16,777,216 elements: 8 of them on integer-valued inputs, whose partial sums are exact in float64, so they must equal `numpy.cumsum` bit for bit whatever order the look-back adds the tiles in, and 20 repeated runs at 16,777,216 elements with 0 mismatches.
+
 ### Archive-length series (863,153 float64 elements)
 
 | Implementation | Median ms (IQR) | Elements per second (billions) | GB/s | % of read ceiling | Verified | Raw |
 |---|---:|---:|---:|---:|:---:|---|
-| blelloch_shared | 0.248 (IQR 0.00393) | 3.48 | 55.7 | 21.3 | yes | [raw](results/bench_all-20261021-230301/raw/scan_snapshots__blelloch_shared.json) |
-| warp_shuffle | 0.182 (IQR 0.00514) | 4.74 | 75.8 | 28.9 | yes | [raw](results/bench_all-20261021-230301/raw/scan_snapshots__warp_shuffle.json) |
-| cub_device_scan | 0.118 (IQR 0.00462) | 7.34 | 117.4 | 44.8 | yes | [raw](results/bench_all-20261021-230301/raw/scan_snapshots__cub_device_scan.json) |
+| blelloch_shared | 0.246 (IQR 0.00376) | 3.50 | 56.1 | 21.4 | yes | [raw](results/bench_rerun-20261021-232245/raw/scan_snapshots__blelloch_shared.json) |
+| warp_shuffle | 0.181 (IQR 0.00334) | 4.76 | 76.1 | 29.0 | yes | [raw](results/bench_rerun-20261021-232245/raw/scan_snapshots__warp_shuffle.json) |
+| decoupled_lookback | 0.144 (IQR 0.00454) | 6.00 | 96.0 | 36.6 | yes | [raw](results/bench_rerun-20261021-232245/raw/scan_snapshots__decoupled_lookback.json) |
+| cub_device_scan | 0.118 (IQR 0.00291) | 7.30 | 116.7 | 44.5 | yes | [raw](results/bench_rerun-20261021-232245/raw/scan_snapshots__cub_device_scan.json) |
 
-Winner: `cub_device_scan`.
+Winner: `cub_device_scan`. The decoupled look-back scan ran in 0.144 ms against CUB's 0.118 ms: CUB is still faster, and the hand-written single pass is 21.5% slower.
 
 ### Large series (16,777,216 float64 elements)
 
 | Implementation | Median ms (IQR) | Elements per second (billions) | GB/s | % of read ceiling | Verified | Raw |
 |---|---:|---:|---:|---:|:---:|---|
-| blelloch_shared | 3.97 (IQR 0.00798) | 4.23 | 67.6 | 25.8 | yes | [raw](results/bench_all-20261021-230301/raw/scan_large__blelloch_shared.json) |
-| warp_shuffle | 2.78 (IQR 0.00433) | 6.03 | 96.4 | 36.8 | yes | [raw](results/bench_all-20261021-230301/raw/scan_large__warp_shuffle.json) |
-| cub_device_scan | 1.73 (IQR 0.00578) | 9.71 | 155.4 | 59.3 | yes | [raw](results/bench_all-20261021-230301/raw/scan_large__cub_device_scan.json) |
+| blelloch_shared | 3.97 (IQR 0.00448) | 4.23 | 67.6 | 25.8 | yes | [raw](results/bench_rerun-20261021-232245/raw/scan_large__blelloch_shared.json) |
+| warp_shuffle | 2.78 (IQR 0.00670) | 6.03 | 96.4 | 36.8 | yes | [raw](results/bench_rerun-20261021-232245/raw/scan_large__warp_shuffle.json) |
+| decoupled_lookback | 1.79 (IQR 0.0113) | 9.38 | 150.0 | 57.2 | yes | [raw](results/bench_rerun-20261021-232245/raw/scan_large__decoupled_lookback.json) |
+| cub_device_scan | 1.73 (IQR 0.00933) | 9.69 | 155.1 | 59.1 | yes | [raw](results/bench_rerun-20261021-232245/raw/scan_large__cub_device_scan.json) |
 
-Winner: `cub_device_scan`.
+Winner: `cub_device_scan`. The decoupled look-back scan ran in 1.79 ms against CUB's 1.73 ms: CUB is still faster, and the hand-written single pass is 3.4% slower.
 
 ### Rolling windows
 
-- Rolling volume-weighted average price over 280,818 trades (100-trade window, and time windows sampled at 863,153 snapshots): 1.05 (IQR 0.00681) ms for the whole chain; maximum relative error against `metrics.rolling_vwap` in Decimal 1.9e-16 over 200 sampled trades. Prefixes are double-double; against `math.fsum` window sums at 2,000 sampled snapshots the one-second window's maximum relative error is 0.0e+00 (a plain float64 cumulative sum reaches 1.5e-05).
-- Rolling one-second mean spread and imbalance over 863,153 snapshots: 1.22 (IQR 0.0117) ms, 709.4 million snapshots per second.
+- Rolling volume-weighted average price over 280,818 trades (100-trade window, and time windows sampled at 863,153 snapshots): 1.05 (IQR 0.00657) ms for the whole chain; maximum relative error against `metrics.rolling_vwap` in Decimal 1.9e-16 over 200 sampled trades. Prefixes are double-double; against `math.fsum` window sums at 2,000 sampled snapshots the one-second window's maximum relative error is 0.0e+00 (a plain float64 cumulative sum reaches 1.5e-05).
+- Rolling one-second mean spread and imbalance over 863,153 snapshots: 1.21 (IQR 0.00466) ms, 712.5 million snapshots per second.
 
 ## Prefix-sum precision
 
@@ -268,3 +272,4 @@ No timed block lost more than a tenth of its SM clock between the samples taken 
 ## Runs
 
 - [`bench_all-20261021-230301`](results/bench_all-20261021-230301/manifest.json)
+- [`bench_rerun-20261021-232245`](results/bench_rerun-20261021-232245/manifest.json)

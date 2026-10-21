@@ -1,11 +1,17 @@
 {
- "generated_unix": 1792624484.6170857,
+ "generated_unix": 1792625163.0139565,
  "tokens": {
   "0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.gap_count",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.lookback_check.repeat_failures",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 0
    },
    {
@@ -767,7 +773,7 @@
    {
     "doc": "README.md (GPU section)",
     "path": "archive.gap_count",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 0
    }
   ],
@@ -807,28 +813,90 @@
     "value": -0.001981168212491502
    }
   ],
-  "0.00393": [
+  "0.00291": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.3.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.002911999821662903
+   }
+  ],
+  "0.00334": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.1.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.003336004912853241
+   }
+  ],
+  "0.00376": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.0.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.003928001970052719
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.0037599951028823853
    }
   ],
-  "0.00433": [
+  "0.00427": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.1.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.0043280720710754395
+    "path": "ladder.sweep.table.11.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.004271984100341797
    }
   ],
-  "0.00462": [
+  "0.00429": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.29.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.0042879581451416016
+   }
+  ],
+  "0.00448": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.0.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.004479825496673584
+   }
+  ],
+  "0.00454": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.2.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.00461600162088871
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.00453600287437439
+   }
+  ],
+  "0.00465": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.4.kernel_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.004647940397262573
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.4.kernel_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.004647940397262573
+   }
+  ],
+  "0.00466": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.rolling_book.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.004663974046707153
+   }
+  ],
+  "0.00503": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.27.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.00503203272819519
    }
   ],
   "0.0051": [
@@ -839,34 +907,82 @@
     "value": 0.005135025054521125
    }
   ],
-  "0.00514": [
+  "0.00599": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.27.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.005136042833328247
-   },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.1.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.005143996328115463
+    "path": "ladder.sweep.table.22.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.005991935729980469
    }
   ],
-  "0.00578": [
+  "0.00602": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.2.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.0057840049266815186
+    "path": "ladder.sweep.table.17.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.006024003028869629
    }
   ],
-  "0.00681": [
+  "0.00620": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.23.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.006199955940246582
+   }
+  ],
+  "0.00634": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.3.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.006336033344268799
+   }
+  ],
+  "0.00650": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.15.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.00649598240852356
+   }
+  ],
+  "0.00657": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.006808072328567505
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.006567925214767456
+   }
+  ],
+  "0.00665": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.28.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.006647944450378418
+   }
+  ],
+  "0.00670": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.8.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.0067040324211120605
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.1.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.006696045398712158
+   }
+  ],
+  "0.00686": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.4.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.006864011287689209
    }
   ],
   "0.0069": [
@@ -877,20 +993,12 @@
     "value": 0.006878928199865131
    }
   ],
-  "0.00694": [
+  "0.00729": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.22.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.006944060325622559
-   }
-  ],
-  "0.00723": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.26.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.007231980562210083
+    "path": "ladder.sweep.table.25.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.00728800892829895
    }
   ],
   "0.0073": [
@@ -901,52 +1009,12 @@
     "value": 0.007255404179986491
    }
   ],
-  "0.00764": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.8.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.007640033960342407
-   }
-  ],
-  "0.00788": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.16.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.007880032062530518
-   }
-  ],
-  "0.00798": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.0.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.007975995540618896
-   }
-  ],
   "0.00819": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.19.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008192062377929688
-   }
-  ],
-  "0.00835": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.5.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008352011442184448
-   }
-  ],
-  "0.00838": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.17.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008376002311706543
+    "path": "ladder.sweep.table.2.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.008191972970962524
    }
   ],
   "0.0084": [
@@ -957,106 +1025,102 @@
     "value": 0.008406197360601775
    }
   ],
-  "0.00841": [
+  "0.00842": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.7.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008408010005950928
+    "path": "ladder.sweep.table.10.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.008423984050750732
    }
   ],
-  "0.00856": [
+  "0.00849": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.5.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.00848802924156189
+   }
+  ],
+  "0.00855": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.13.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.008552014827728271
+   }
+  ],
+  "0.00857": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.2.kernel_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.008568048477172852
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.2.kernel_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.008568048477172852
+   }
+  ],
+  "0.00875": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008560001850128174
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.008751988410949707
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008560001850128174
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.008751988410949707
    }
   ],
-  "0.00872": [
+  "0.00885": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.0.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008719950914382935
-   }
-  ],
-  "0.00877": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.14.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008768022060394287
-   }
-  ],
-  "0.00889": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.28.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008888065814971924
+    "path": "ladder.sweep.table.26.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.008848011493682861
    }
   ],
   "0.00890": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.10.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.00890401005744934
+    "path": "ladder.sweep.table.6.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.00889599323272705
    }
   ],
-  "0.00898": [
+  "0.00932": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.11.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.008975982666015625
+    "path": "ladder.sweep.table.19.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.009319961071014404
    }
   ],
-  "0.00916": [
+  "0.00933": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.3.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.009160071611404419
+    "path": "scans.large.implementations.3.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.009328007698059082
    }
   ],
-  "0.00938": [
+  "0.00964": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.29.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.009384006261825562
-   }
-  ],
-  "0.00941": [
+    "path": "ladder.rungs.1.kernel_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.009640038013458252
+   },
    {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.2.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.009408026933670044
-   }
-  ],
-  "0.00946": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.21.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.009463995695114136
-   }
-  ],
-  "0.00954": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.23.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.009535998106002808
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.1.kernel_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.009640038013458252
    }
   ],
   "0.0099": [
@@ -1073,146 +1137,108 @@
     "value": -0.009897838211532894
    }
   ],
-  "0.0101": [
+  "0.00995": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.9.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.010064005851745605
-   },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.13.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.010087966918945312
+    "path": "ladder.sweep.table.14.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.009951978921890259
    }
   ],
-  "0.0104": [
+  "0.00997": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.6.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.010416001081466675
-   },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.20.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.010447978973388672
+    "path": "ladder.sweep.table.16.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.009967952966690063
    }
   ],
-  "0.0115": [
+  "0.0102": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.2.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.011520028114318848
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.2.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.011520028114318848
+    "path": "ladder.sweep.table.21.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.01015201210975647
    }
   ],
-  "0.0117": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.rolling_book.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.011656045913696289
-   }
-  ],
-  "0.0118": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.25.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.011823952198028564
-   }
-  ],
-  "0.0121": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.4.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.012127995491027832
-   }
-  ],
-  "0.0122": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.12.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.012200027704238892
-   }
-  ],
-  "0.0131": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.15.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.013095974922180176
-   }
-  ],
-  "0.0134": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.24.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.013375997543334961
-   }
-  ],
-  "0.0136": [
+  "0.0103": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.1.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.013615995645523071
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.010288029909133911
    }
   ],
-  "0.0159": [
+  "0.0105": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.9.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.010527998208999634
+   }
+  ],
+  "0.0109": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.12.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.010944008827209473
+   }
+  ],
+  "0.0112": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.18.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.01591995358467102
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.011191964149475098
    }
   ],
-  "0.0160": [
+  "0.0113": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.2.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.011295944452285767
+   }
+  ],
+  "0.0127": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.24.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.012687981128692627
+   }
+  ],
+  "0.0130": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.read_kernel.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.015976309776306152
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.012960076332092285
    }
   ],
-  "0.0200": [
+  "0.0139": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.4.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.02004796266555786
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.4.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.02004796266555786
+    "path": "ladder.sweep.table.7.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.013935983180999756
    }
   ],
-  "0.0248": [
+  "0.0165": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.1.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.02480006217956543
-   },
+    "path": "ladder.sweep.table.0.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.016543954610824585
+   }
+  ],
+  "0.0179": [
    {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.1.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.02480006217956543
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.20.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.01789596676826477
    }
   ],
   "0.0310": [
@@ -1247,6 +1273,14 @@
     "value": 0.0572194999790554
    }
   ],
+  "0.0694": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "bandwidth.copy_kernel.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.06935977935791016
+   }
+  ],
   "0.0716": [
    {
     "doc": "BENCHMARKS.md",
@@ -1267,7 +1301,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.time_windows.1s.max_rel_err",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 0.0
    },
    {
@@ -1283,20 +1317,40 @@
     "value": 0.0
    }
   ],
-  "0.106": [
+  "0.101": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "bandwidth.copy_kernel.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.10632061958312988
+    "path": "baselines.cupy.kernel_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.10051226615905762
    }
   ],
   "0.118": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.3.ms.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.11830399930477142
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.lookback_vs_cub.cub_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.11830399930477142
+   }
+  ],
+  "0.144": [
+   {
+    "doc": "BENCHMARKS.md",
     "path": "scans.implementations.2.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.11766399815678596
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.14379199594259262
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.lookback_vs_cub.lookback_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.14379199594259262
    }
   ],
   "0.146": [
@@ -1307,36 +1361,42 @@
     "value": 0.14570404589176178
    }
   ],
-  "0.182": [
+  "0.181": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.1.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.18223999440670013
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.18136000633239746
    }
   ],
-  "0.248": [
+  "0.246": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.0.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.24779199808835983
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.24638400226831436
    }
   ],
-  "0.276": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "baselines.cpp_omp.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.27557724999383026
-   }
-  ],
-  "0.350": [
+  "0.283": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.cudamemcpy_d2d.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.3503842353820801
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.28287220001220703
+   }
+  ],
+  "0.378": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.0.kernel_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.3782024383544922
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.0.kernel_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.3782024383544922
    }
   ],
   "0.39": [
@@ -1385,12 +1445,12 @@
     "value": 0.46
    }
   ],
-  "0.492": [
+  "0.504": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "baselines.cupy.e2e_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.49238824996677977
+    "path": "baselines.cpp_single.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.5042995000081874
    }
   ],
   "0.507": [
@@ -1401,20 +1461,12 @@
     "value": 0.5074241757392883
    }
   ],
-  "0.593": [
+  "0.664": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "baselines.cpp_single.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.5927992500573964
-   }
-  ],
-  "0.658": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "baselines.cupy.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.6581441164016724
+    "path": "baselines.cpp_omp.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.66420324998262
    }
   ],
   "0.78": [
@@ -1439,7 +1491,21 @@
     "value": 0.9256480038166046
    }
   ],
+  "0.987": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.cupy.e2e_ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0.9870860000091852
+   }
+  ],
   "1": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.lookback_check.cases.n (min)",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1
+   },
    {
     "doc": "BENCHMARKS.md",
     "path": "ofi.per_product.BTC-USD.h1s.horizon_s",
@@ -1467,13 +1533,13 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1
    },
    {
     "doc": "BULLETS.md",
     "path": "bullet_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": "1"
    }
   ],
@@ -1495,37 +1561,37 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.24.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.25.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.26.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.27.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.28.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1024
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.29.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1024
    },
    {
@@ -1545,7 +1611,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.bytes",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1073741824
    }
   ],
@@ -1553,31 +1619,31 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.5.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1280
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.11.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1280
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.17.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1280
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.23.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1280
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.29.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1280
    }
   ],
@@ -1599,8 +1665,8 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.053007960319519
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.0549440383911133
    }
   ],
   "1.0e-08": [
@@ -1615,22 +1681,22 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.speedups.e2e_vs_cupy",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.0965670166925194
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.1048636938317027
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.speedups.e2e_vs_numpy_pageable",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.1181915396128197
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.0975644892877718
    }
   ],
-  "1.22": [
+  "1.21": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_book.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.2167840003967285
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.2113919854164124
    }
   ],
   "1.2e-08": [
@@ -1659,28 +1725,34 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.7.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.4833759665489197
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.483295977115631
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.7.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.4833759665489197
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.483295977115631
    }
   ],
   "1.49": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.4.kernel_ms.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.4871360063552856
+   },
+   {
+    "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.2.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.4924319982528687
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.4902080297470093
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.12.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.4934719800949097
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.489679992198944
    },
    {
     "doc": "BENCHMARKS.md",
@@ -1691,145 +1763,129 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.2.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.4924319982528687
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.4902080297470093
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.12.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.4934719800949097
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.489679992198944
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.4.kernel_ms.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.4871360063552856
    }
   ],
   "1.50": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.4.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.4955520033836365
+    "path": "ladder.sweep.table.27.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5024799704551697
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.28.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5029600262641907
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5036479830741882
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.29.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5033119916915894
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5031840205192566
    },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.28.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5029600262641907
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.4.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.4955520033836365
-   }
-  ],
-  "1.51": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.27.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5055519938468933
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5024799704551697
    }
   ],
   "1.52": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.6.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5241439938545227
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.521664023399353
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.26.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5241600275039673
    }
   ],
   "1.53": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.1.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5311999917030334
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5311200022697449
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.22.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.53220796585083
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5276640057563782
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.23.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.530303955078125
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5278079509735107
    },
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.26.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5250719785690308
-   },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.23.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.530303955078125
+    "path": "ladder.sweep.table.22.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5276640057563782
    }
   ],
   "1.55": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.25.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5528799891471863
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5541920065879822
    }
   ],
   "1.56": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.21.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5566080212593079
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5567359924316406
    }
   ],
   "1.57": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5675359964370728
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5695839524269104
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5675359964370728
-   }
-  ],
-  "1.59": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.20.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5930399894714355
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5695839524269104
    }
   ],
   "1.5e-05": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.time_windows.1s.float64_cumsum_max_rel_err",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1.4835426079406455e-05
    },
    {
     "doc": "DESIGN.md",
     "path": "scans.rolling_vwap.time_windows.1s.float64_cumsum_max_rel_err",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1.4835426079406455e-05
    }
   ],
@@ -1837,97 +1893,109 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.17.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.5960960388183594
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.5953919887542725
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.19.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6042400002479553
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.20.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.59552001953125
    }
   ],
   "1.61": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.16.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.614736020565033
-   },
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.19.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6087999939918518
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6143199801445007
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.24.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6079040169715881
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6105120182037354
    }
   ],
   "1.62": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.0.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6151520013809204
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6242079734802246
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.15.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6249759793281555
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.621776044368744
    }
   ],
   "1.63": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.8.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6282399892807007
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6261119842529297
    }
   ],
   "1.64": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.3.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6383999586105347
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6444160342216492
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.13.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6361599564552307
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6389120221138
    }
   ],
   "1.65": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.11.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.654304027557373
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6544319987297058
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.14.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6523999571800232
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6467999815940857
    }
   ],
   "1.67": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.18.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6732479929924011
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6676160097122192
    }
   ],
   "1.68": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.10.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6840960383415222
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6833439469337463
    }
   ],
   "1.69": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.9.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.6895359754562378
+   },
    {
     "doc": "BENCHMARKS.md",
     "path": "slippage.warp.orders_per_s",
@@ -1953,58 +2021,74 @@
     "value": 1688519853.8055408
    }
   ],
-  "1.70": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.9.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.6954560279846191
-   }
-  ],
   "1.71": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.5.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.7087200284004211
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.710640013217926
    }
   ],
   "1.72": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.4.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.7162559628486633
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.716223955154419
    }
   ],
   "1.73": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.2.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.7273439764976501
-   }
-  ],
-  "1.77": [
+    "path": "scans.large.implementations.3.ms.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.7310879826545715
+   },
    {
     "doc": "BENCHMARKS.md",
-    "path": "baselines.numpy.ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.7713577500302335
+    "path": "scans.large.lookback_vs_cub.cub_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.7310879826545715
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "scans.large.lookback_vs_cub.cub_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.7310879826545715
    }
   ],
   "1.78": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.782591998577118
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.7816320061683655
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 1.782591998577118
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.7816320061683655
+   }
+  ],
+  "1.79": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.2.ms.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.7890880107879639
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.lookback_vs_cub.lookback_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.7890880107879639
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "scans.large.lookback_vs_cub.lookback_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 1.7890880107879639
    }
   ],
   "1.8e-08": [
@@ -2037,13 +2121,13 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.max_rel_err_100",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1.8808902712975676e-16
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "scans.rolling_vwap.max_rel_err_100",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 1.8808902712975676e-16
    }
   ],
@@ -2075,7 +2159,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 10
    }
   ],
@@ -2113,8 +2197,8 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 100.16059950001477
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 100.25866399999472
    },
    {
     "doc": "BENCHMARKS.md",
@@ -2125,8 +2209,8 @@
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 100.16059950001477
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 100.25866399999472
    }
   ],
   "100,000": [
@@ -2455,7 +2539,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 11
    }
   ],
@@ -2467,24 +2551,24 @@
     "value": 11.05427006
    }
   ],
-  "11.5": [
+  "11.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.speedups.kernel_vs_cpp_omp",
-    "run_id": "bench_all-20261021-230301",
-    "value": 11.507486507377298
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 11.820495183276744
    },
    {
     "doc": "DESIGN.md",
     "path": "ladder.speedups.kernel_vs_cpp_omp",
-    "run_id": "bench_all-20261021-230301",
-    "value": 11.507486507377298
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 11.820495183276744
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.speedups.kernel_vs_cpp_omp",
-    "run_id": "bench_all-20261021-230301",
-    "value": 11.507486507377298
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 11.820495183276744
    }
   ],
   "110,483,584": [
@@ -2503,12 +2587,12 @@
     "value": 110.56289672851562
    }
   ],
-  "117.4": [
+  "116.7": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.2.gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 117.37190828411025
+    "path": "scans.implementations.3.gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 116.73694956348783
    }
   ],
   "12": [
@@ -2533,7 +2617,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 12
    }
   ],
@@ -2565,43 +2649,43 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.4.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.6.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.7.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.8.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.9.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.10.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 128
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.11.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 128
    },
    {
@@ -2643,7 +2727,7 @@
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.4.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 128
    }
   ],
@@ -2651,7 +2735,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.flops_per_snapshot",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 129
    }
   ],
@@ -2659,22 +2743,8 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 13
-   }
-  ],
-  "13.6": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.0.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 13.602593421936035
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.0.kernel_ms.iqr_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 13.602593421936035
    }
   ],
   "131,099": [
@@ -2709,7 +2779,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 14
    }
   ],
@@ -2737,7 +2807,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 15
    }
   ],
@@ -2745,19 +2815,33 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "gpu.memory_gb",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 15.636
    }
   ],
-  "155.4": [
+  "150.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.2.gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 155.40359051373065
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 150.04038615281624
+   }
+  ],
+  "155.1": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.3.gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 155.06748281410992
    }
   ],
   "16": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.lookback_check.cases (count)",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 16
+   },
    {
     "doc": "BENCHMARKS.md",
     "path": "pipeline.chunks",
@@ -2798,14 +2882,26 @@
   "16,777,216": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "scans.lookback_check.cases.n (max)",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 16777216
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.lookback_check.repeat_n",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 16777216
+   },
+   {
+    "doc": "BENCHMARKS.md",
     "path": "scans.large.n_elements",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 16777216
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "scans.large.n_elements",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 16777216
    }
   ],
@@ -2813,31 +2909,31 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.2.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 160
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.8.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 160
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.14.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 160
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.20.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 160
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.26.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 160
    }
   ],
@@ -2849,12 +2945,12 @@
     "value": 17
    }
   ],
-  "17.2": [
+  "17.6": [
    {
     "doc": "BENCHMARKS.md",
     "path": "baselines.cpp_omp.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 17.210044500018284
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 17.578684000000067
    }
   ],
   "175": [
@@ -2873,26 +2969,26 @@
     "value": 18725
    }
   ],
-  "184.0": [
+  "184.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 184.01089002542776
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 184.90084444534696
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 184.01089002542776
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 184.90084444534696
    }
   ],
-  "195": [
+  "194": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.e2e_pageable_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 195.39067450000402
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 194.21705450002946
    }
   ],
   "2": [
@@ -2911,13 +3007,13 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 2
    },
    {
     "doc": "BULLETS.md",
     "path": "bullet_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": "2"
    }
   ],
@@ -2925,22 +3021,22 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.time_windows.1s.sample",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 2000
    }
   ],
-  "2.03": [
+  "2.02": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.0311039686203003
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.0213279724121094
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.0311039686203003
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.0213279724121094
    }
   ],
   "2.07": [
@@ -2975,6 +3071,14 @@
     "value": 2.2935977
    }
   ],
+  "2.51": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.numpy.ms.iqr_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.514483749976648
+   }
+  ],
   "2.5e-04": [
    {
     "doc": "BENCHMARKS.md",
@@ -2987,53 +3091,69 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.1.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.78329598903656
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.7832319736480713
+   }
+  ],
+  "2.8": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.0.pct_of_theoretical",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.8400720170969715
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.speedups.e2e_vs_numpy",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.8370115651434538
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "ladder.speedups.e2e_vs_numpy",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.8370115651434538
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "ladder.speedups.e2e_vs_numpy",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.8370115651434538
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.0.pct_of_theoretical",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.8400720170969715
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.speedups.e2e_vs_numpy",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.8370115651434538
    }
   ],
   "2.9": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.0.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.904711080282935
-   },
+    "path": "ladder.speedups.kernel_vs_cupy",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 2.8769716331084862
+   }
+  ],
+  "20": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.speedups.e2e_vs_numpy",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.924186749946573
-   },
-   {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "ladder.speedups.e2e_vs_numpy",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.924186749946573
-   },
-   {
-    "doc": "BULLETS.md",
-    "path": "ladder.speedups.e2e_vs_numpy",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.924186749946573
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.0.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.904711080282935
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.speedups.e2e_vs_numpy",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.924186749946573
+    "path": "scans.lookback_check.repeats",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 20
    }
   ],
   "200": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.decimal_sample",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 200
    },
    {
@@ -3055,42 +3175,50 @@
     "value": 200.465929
    }
   ],
-  "209.7": [
+  "209.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 209.6639328002858
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 209.7769055035043
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 209.6639328002858
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 209.7769055035043
    }
   ],
-  "21.3": [
+  "21.4": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.0.gbs*0.381345",
-    "run_id": "bench_all-20261021-230301",
-    "value": 55.73403542706553
+    "path": "scans.implementations.0.pct_of_read_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 21.363134456316672
+   }
+  ],
+  "21.5": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.lookback_vs_cub.pct_slower_than_cub",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 21.544492821548445
    }
   ],
   "217.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.4.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 217.76777886886575
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 217.77184025284853
    }
   ],
-  "218.7": [
+  "218.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.5.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 218.72819583549506
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 218.48270010762744
    }
   ],
   "22": [
@@ -3121,76 +3249,76 @@
     "value": 22.552781
    }
   ],
-  "220.4": [
+  "221.2": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.9.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 220.43936429555728
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 221.21177319060925
    }
   ],
-  "221.7": [
+  "221.6": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.copy_kernel_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 221.74742000580298
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 221.59512621419466
    }
   ],
-  "221.9": [
+  "222.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.10.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 221.92632753180743
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 222.02548069916813
    }
   ],
-  "223.4": [
+  "224.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.18.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 223.36512612909334
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 224.11948963268665
    }
   ],
   "225.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.11.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 225.92295175140538
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 225.90547649402723
    }
   ],
-  "226.2": [
+  "227.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.14.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 226.1832841231923
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 226.95242481009646
    }
   ],
-  "228.1": [
+  "227.3": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.3.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 228.1160024667965
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 227.28144290864
    }
   ],
-  "228.4": [
+  "228.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.13.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 228.4283071012969
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 228.04472964812294
    }
   ],
-  "229.5": [
+  "229.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.8.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 229.53941154897416
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 229.83979739360106
    }
   ],
   "23": [
@@ -3201,6 +3329,32 @@
     "value": 23
    }
   ],
+  "23.5": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.speedups.kernel_vs_cpp_single",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 23.49488940531919
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "ladder.speedups.kernel_vs_cpp_single",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 23.49488940531919
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "ladder.speedups.kernel_vs_cpp_single",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 23.49488940531919
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.speedups.kernel_vs_cpp_single",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 23.49488940531919
+   }
+  ],
   "23.90": [
    {
     "doc": "BENCHMARKS.md",
@@ -3209,212 +3363,160 @@
     "value": 23.9
    }
   ],
-  "230.0": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.15.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 230.0004761636689
-   }
-  ],
-  "231.4": [
+  "230.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.0.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 231.39942784360593
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 230.10923176246214
+   }
+  ],
+  "230.5": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.15.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 230.4542913294022
    }
   ],
   "231.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.16.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 231.45903989261228
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 231.5186912117295
    }
   ],
-  "232.3": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.19.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 232.31305966917657
-   }
-  ],
-  "232.4": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "bandwidth.cudamemcpy_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 232.3758360776309
-   },
+  "232.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.24.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 232.4425121494078
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 232.06610368350567
+   }
+  ],
+  "233.0": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.19.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 232.9734010760441
+   }
+  ],
+  "233.1": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "bandwidth.cudamemcpy_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 233.12657871345942
    }
   ],
   "234.2": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.17.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 234.1621305424049
-   }
-  ],
-  "234.6": [
-   {
-    "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.20.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 234.6113415043694
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 234.24666843716767
    }
   ],
-  "238.4": [
+  "234.3": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.17.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 234.26546681598353
+   }
+  ],
+  "238.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 238.42849532610632
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 238.11739946889136
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 238.42849532610632
-   }
-  ],
-  "24.3": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.speedups.kernel_vs_cpp_single",
-    "run_id": "bench_all-20261021-230301",
-    "value": 24.276239754855457
-   },
-   {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "ladder.speedups.kernel_vs_cpp_single",
-    "run_id": "bench_all-20261021-230301",
-    "value": 24.276239754855457
-   },
-   {
-    "doc": "BULLETS.md",
-    "path": "ladder.speedups.kernel_vs_cpp_single",
-    "run_id": "bench_all-20261021-230301",
-    "value": 24.276239754855457
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.speedups.kernel_vs_cpp_single",
-    "run_id": "bench_all-20261021-230301",
-    "value": 24.276239754855457
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 238.11739946889136
    }
   ],
   "240.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.21.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 240.10235325501998
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 240.08261568887178
    }
   ],
-  "240.7": [
+  "240.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.25.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 240.67877209574587
-   }
-  ],
-  "243.9": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.22.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 243.925927374004
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 240.47559594680132
    }
   ],
   "244.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.1.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 244.0865014532246
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 244.0992531257883
    }
   ],
-  "244.2": [
+  "244.6": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.23.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 244.22942106355566
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 244.62842254607432
    }
   ],
-  "245.1": [
+  "244.7": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.26.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 245.06728485738998
+    "path": "ladder.sweep.table.22.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 244.65147283152157
    }
   ],
   "245.2": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.6.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 245.21649562441107
+    "path": "ladder.sweep.table.26.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 245.2139160295799
    }
   ],
-  "248.2": [
+  "245.6": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.27.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 248.24466410158922
+    "path": "ladder.sweep.table.6.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 245.61614341453907
    }
   ],
   "248.6": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.29.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 248.61455976243911
-   }
-  ],
-  "248.7": [
-   {
-    "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.28.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 248.67278069197494
-   }
-  ],
-  "249.9": [
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 248.5590066339083
+   },
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.4.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 249.90454905908578
-   },
+    "path": "ladder.sweep.table.29.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 248.6357251661671
+   }
+  ],
+  "248.8": [
    {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "ladder.rungs.4.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 249.90454905908578
-   },
-   {
-    "doc": "BULLETS.md",
-    "path": "ladder.rungs.4.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 249.90454905908578
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.4.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 249.90454905908578
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.27.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 248.75223387289185
    }
   ],
   "25": [
@@ -3428,94 +3530,120 @@
   "25.8": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.0.gbs*0.381345",
-    "run_id": "bench_all-20261021-230301",
-    "value": 67.60699220781908
+    "path": "scans.large.implementations.0.pct_of_read_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 25.776510509774525
    }
   ],
-  "250.3": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.sweep.table.12.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 250.25260197800873
-   }
-  ],
-  "250.4": [
+  "250.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.2.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 250.42698725136478
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 250.80072146937113
+   }
+  ],
+  "250.9": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.sweep.table.12.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 250.88962123221359
+   }
+  ],
+  "251.3": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.4.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 251.3188083691049
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "ladder.rungs.4.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 251.3188083691049
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "ladder.rungs.4.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 251.3188083691049
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.4.effective_bw_gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 251.3188083691049
    }
   ],
   "252.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.7.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 251.95584762608755
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 251.9694348034118
    }
   ],
   "256": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.12.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.13.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.14.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.15.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.16.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.17.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
@@ -3785,25 +3913,25 @@
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 256
    }
   ],
@@ -3839,24 +3967,24 @@
     "value": 26
    }
   ],
-  "262.2": [
+  "262.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.read_kernel_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 262.2300448352215
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 262.37973401106586
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.ceiling_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 262.2300448352215
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 262.37973401106586
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "bandwidth.ceiling_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 262.2300448352215
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 262.37973401106586
    }
   ],
   "28": [
@@ -3867,31 +3995,23 @@
     "value": 28
    }
   ],
-  "28.9": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.1.gbs*0.381345",
-    "run_id": "bench_all-20261021-230301",
-    "value": 75.78165289656228
-   }
-  ],
   "280,818": [
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.n_trades",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 280818
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.n_trades",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 280818
    },
    {
     "doc": "README.md (GPU section)",
     "path": "archive.n_trades",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 280818
    }
   ],
@@ -3917,6 +4037,14 @@
     "value": 29
    }
   ],
+  "29.0": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.1.pct_of_read_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 29.022576006621886
+   }
+  ],
   "3": [
    {
     "doc": "BENCHMARKS.md",
@@ -3927,13 +4055,13 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 3
    },
    {
     "doc": "BULLETS.md",
     "path": "bullet_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": "3"
    }
   ],
@@ -3943,14 +4071,6 @@
     "path": "layout.kernels.0.aos_ms",
     "run_id": "bench_all-20261021-230301",
     "value": 3650.369201
-   }
-  ],
-  "3.0": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.speedups.kernel_vs_cupy",
-    "run_id": "bench_all-20261021-230301",
-    "value": 3.020209277364545
    }
   ],
   "3.02": [
@@ -3975,26 +4095,40 @@
     "value": 3.1123839616775513
    }
   ],
-  "3.48": [
+  "3.4": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.0.elements_per_s",
-    "run_id": "bench_all-20261021-230301",
-    "value": 3483377214.1915956
+    "path": "scans.large.lookback_vs_cub.pct_slower_than_cub",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 3.3504956833245947
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "scans.large.lookback_vs_cub.pct_slower_than_cub",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 3.3504956833245947
    }
   ],
   "3.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 3.5453353477625806
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 3.46446273187314
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 3.5453353477625806
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 3.46446273187314
+   }
+  ],
+  "3.50": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.0.elements_per_s",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 3503283460.1818776
    }
   ],
   "3.5e+00": [
@@ -4035,8 +4169,8 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.0.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 3.97052800655365
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 3.9690399169921875
    }
   ],
   "30": [
@@ -4069,85 +4203,85 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 31.832480999980817
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 31.842281499990577
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.4.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 31.765106999984027
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 31.75991599999861
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 31.832480999980817
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 31.842281499990577
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.4.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 31.765106999984027
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 31.75991599999861
    }
   ],
   "32.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 32.06346449999842
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 32.05656800000156
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 32.06346449999842
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 32.05656800000156
    }
   ],
   "32.3": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 32.299469000008685
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 32.32042799999135
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 32.299469000008685
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 32.32042799999135
    }
   ],
   "320": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.3.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 320
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.9.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 320
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.15.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 320
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.21.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 320
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.27.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 320
    }
   ],
@@ -4155,13 +4289,13 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "gpu.theoretical_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 320.06
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.theoretical_gbs",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 320.064
    }
   ],
@@ -4193,20 +4327,28 @@
     "value": 34.568
    }
   ],
-  "36.3": [
+  "34.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "baselines.cpp_single.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 36.30637899999556
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 34.94009599998549
+   }
+  ],
+  "36.6": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.2.pct_of_read_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 36.60519859843131
    }
   ],
   "36.8": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.1.gbs*0.381345",
-    "run_id": "bench_all-20261021-230301",
-    "value": 96.44517042289819
+    "path": "scans.large.implementations.1.pct_of_read_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 36.75870358731377
    }
   ],
   "38": [
@@ -4233,7 +4375,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "manifest.cpu_cores",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 4
    },
    {
@@ -4497,7 +4639,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 4
    }
   ],
@@ -4539,8 +4681,8 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.read_kernel.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 4.094655990600586
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 4.092319965362549
    }
   ],
   "4.1e-15": [
@@ -4555,8 +4697,16 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.0.elements_per_s",
-    "run_id": "bench_all-20261021-230301",
-    "value": 4225437012.988692
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 4227021232.0550523
+   }
+  ],
+  "4.28": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.cupy.kernel_ms.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 4.278448104858398
    }
   ],
   "4.4": [
@@ -4591,20 +4741,12 @@
     "value": 4.366193443687834
    }
   ],
-  "4.52": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "baselines.cupy.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 4.516880035400391
-   }
-  ],
-  "4.74": [
+  "4.76": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.1.elements_per_s",
-    "run_id": "bench_all-20261021-230301",
-    "value": 4736353306.035142
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 4759334858.08337
    }
   ],
   "4.7e-03": [
@@ -4625,37 +4767,37 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "gpu.sm_count",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.0.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.6.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.12.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.18.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 40
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.24.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 40
    },
    {
@@ -4671,18 +4813,18 @@
     "value": 40
    }
   ],
-  "40.2": [
+  "41.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 40.20091247558594
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 41.11587142944336
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.kernel_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 40.20091247558594
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 41.11587142944336
    }
   ],
   "42": [
@@ -4705,13 +4847,13 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.bytes_min_io_per_snapshot",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 433
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.bytes_min_io_per_snapshot",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 433
    }
   ],
@@ -4741,12 +4883,12 @@
     "value": 44
    }
   ],
-  "44.8": [
+  "44.5": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.2.gbs*0.381345",
-    "run_id": "bench_all-20261021-230301",
-    "value": 117.37190828411025
+    "path": "scans.implementations.3.pct_of_read_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 44.491602982783895
    }
   ],
   "46": [
@@ -4829,7 +4971,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 5
    }
   ],
@@ -4837,7 +4979,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.levels",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 50
    },
    {
@@ -4867,37 +5009,37 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.18.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.19.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.20.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.21.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.22.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 512
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.23.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 512
    },
    {
@@ -4929,12 +5071,12 @@
     "value": 54
    }
   ],
-  "55.7": [
+  "56.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.0.gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 55.73403542706553
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 56.05253536291004
    }
   ],
   "56.9": [
@@ -4948,31 +5090,37 @@
   "57.2": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.2.pct_of_read_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 57.18444174750489
+   },
+   {
+    "doc": "BENCHMARKS.md",
     "path": "pipeline.overlapped_ms.median_ms",
     "run_id": "bench_all-20261021-230301",
     "value": 57.198131000006924
    }
   ],
-  "57.5": [
+  "57.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 57.49190475199577
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 57.769959897191484
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 57.49190475199577
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 57.769959897191484
    }
   ],
-  "59.3": [
+  "59.1": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.large.implementations.2.gbs*0.381345",
-    "run_id": "bench_all-20261021-230301",
-    "value": 155.40359051373065
+    "path": "scans.large.implementations.3.pct_of_read_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 59.10040399978832
    }
   ],
   "6": [
@@ -4991,16 +5139,24 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 6
+   }
+  ],
+  "6.00": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.2.elements_per_s",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 6002788919.799154
    }
   ],
   "6.03": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.1.elements_per_s",
-    "run_id": "bench_all-20261021-230301",
-    "value": 6027823151.431137
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 6027961793.644375
    }
   ],
   "6.11": [
@@ -5039,37 +5195,37 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.0.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.1.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.2.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.3.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.4.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 64
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.5.block_size",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 64
    },
    {
@@ -5143,31 +5299,31 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.4.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 640
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.10.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 640
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.16.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 640
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.22.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 640
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.28.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 640
    }
   ],
@@ -5203,14 +5359,14 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 65.5068776245644
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 65.5421745349381
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 65.5068776245644
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 65.5421745349381
    }
   ],
   "66": [
@@ -5239,8 +5395,8 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.0.gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 67.60699220781908
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 67.63233971288084
    }
   ],
   "7": [
@@ -5259,7 +5415,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 7
    }
   ],
@@ -5291,48 +5447,48 @@
     "value": 6.978338230555591
    }
   ],
-  "7.34": [
+  "7.30": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "scans.implementations.2.elements_per_s",
-    "run_id": "bench_all-20261021-230301",
-    "value": 7335744267.75689
+    "path": "scans.implementations.3.elements_per_s",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 7296059347.717989
    }
   ],
-  "70.2": [
+  "70.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 70.17155114359812
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 70.47070351765383
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.1.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 70.17155114359812
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 70.47070351765383
    }
   ],
-  "709.4": [
+  "712.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_book.snapshots_per_s",
-    "run_id": "bench_all-20261021-230301",
-    "value": 709372410.9772743
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 712529891.5555346
    }
   ],
-  "74.5": [
+  "74.4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 74.49400598821057
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 74.39680797243406
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 74.49400598821057
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 74.39680797243406
    }
   ],
   "75.0": [
@@ -5343,12 +5499,12 @@
     "value": 0.75
    }
   ],
-  "75.8": [
+  "76.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.implementations.1.gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 75.78165289656228
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 76.14935772933393
    }
   ],
   "77.1": [
@@ -5391,27 +5547,33 @@
     "value": 1.1784660779128707e-08
    }
   ],
-  "78.1": [
+  "78.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.4.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 78.07955566983034
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 78.52142333067914
    },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.rungs.4.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 78.07955566983034
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 78.52142333067914
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.4.pct_of_theoretical",
-    "run_id": "bench_all-20261021-230301",
-    "value": 78.07955566983034
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 78.52142333067914
    }
   ],
   "8": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.lookback_check.cases (integer inputs)",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 8
+   },
    {
     "doc": "BENCHMARKS.md",
     "path": "resources.kernels.6.occupancy.1.api_blocks_per_sm",
@@ -5445,7 +5607,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 8
    }
   ],
@@ -5485,31 +5647,31 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.1.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 80
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.7.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 80
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.13.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 80
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.19.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 80
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.sweep.table.25.grid",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 80
    }
   ],
@@ -5517,54 +5679,54 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 79.95419934890874
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 79.95164195671339
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.2.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 79.95419934890874
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 79.95164195671339
    }
   ],
-  "81.9": [
+  "82.0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "bandwidth.ceiling_gbs*0.312438",
-    "run_id": "bench_all-20261021-230301",
-    "value": 262.2300448352215
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 262.37973401106586
    }
   ],
-  "83.1": [
+  "82.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.4.e2e_pageable_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 83.06904649998614
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 82.09380849999093
    }
   ],
-  "83.3": [
+  "82.3": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.e2e_pageable_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 83.26090700001032
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 82.27949550001767
    }
   ],
-  "83.4": [
+  "82.5": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.2.e2e_pageable_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 83.40156850002245
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 82.46950300002709
    }
   ],
-  "83.7": [
+  "82.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.1.e2e_pageable_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 83.7262985000109
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 82.79378899999301
    }
   ],
   "84,856.07": [
@@ -5585,31 +5747,31 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.n_snapshots",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 863153
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.n_snapshots",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 863153
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.n_elements",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 863153
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_vwap.n_snapshots",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 863153
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.rolling_book.n_snapshots",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 863153
    },
    {
@@ -5621,13 +5783,13 @@
    {
     "doc": "BULLETS.md",
     "path": "archive.n_snapshots",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 863153
    },
    {
     "doc": "README.md (GPU section)",
     "path": "archive.n_snapshots",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 863153
    }
   ],
@@ -5635,36 +5797,36 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 9
    }
   ],
-  "9.24": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "bandwidth.cudamemcpy_d2d.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 9.241424083709717
-   }
-  ],
-  "9.3": [
+  "9.1": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.0.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 9.296934471996773
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 9.090048100801251
    },
    {
     "doc": "BULLETS.md",
     "path": "ladder.rungs.0.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 9.296934471996773
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 9.090048100801251
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.0.effective_bw_gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 9.296934471996773
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 9.090048100801251
+   }
+  ],
+  "9.21": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "bandwidth.cudamemcpy_d2d.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 9.211663722991943
    }
   ],
   "9.34": [
@@ -5679,30 +5841,36 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.capture_seconds",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 33692.928069
    },
    {
     "doc": "README.md (GPU section)",
     "path": "archive.capture_seconds",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-232245",
     "value": 33692.928069
    }
   ],
-  "9.68": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "bandwidth.copy_kernel.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 9.684368133544922
-   }
-  ],
-  "9.71": [
+  "9.38": [
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.2.elements_per_s",
-    "run_id": "bench_all-20261021-230301",
-    "value": 9712724407.108166
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 9377524134.551016
+   }
+  ],
+  "9.69": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "bandwidth.copy_kernel.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 9.691023826599121
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.3.elements_per_s",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 9691717675.88187
    }
   ],
   "9.85": [
@@ -5713,34 +5881,34 @@
     "value": 9.84968
    }
   ],
-  "90.9": [
+  "90.1": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.numpy.ms.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 90.10324899998068
+   }
+  ],
+  "90.7": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "baselines.cupy.e2e_ms.median_ms",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 90.7024685000124
+   }
+  ],
+  "90.8": [
    {
     "doc": "BENCHMARKS.md",
     "path": "ladder.rungs.3.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 90.92340867192718
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 90.75296930472868
    },
    {
     "doc": "README.md (GPU section)",
     "path": "ladder.rungs.3.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 90.92340867192718
-   }
-  ],
-  "91.1": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "baselines.cupy.e2e_ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 91.09077649998198
-   }
-  ],
-  "92.9": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "baselines.numpy.ms.median_ms",
-    "run_id": "bench_all-20261021-230301",
-    "value": 92.88710499998842
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 90.75296930472868
    }
   ],
   "93.4": [
@@ -5801,41 +5969,15 @@
     "value": 948.097177
    }
   ],
-  "95.3": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 95.29973928659443
-   },
-   {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 95.29973928659443
-   },
-   {
-    "doc": "BULLETS.md",
-    "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 95.29973928659443
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 95.29973928659443
-   },
-   {
-    "doc": "README.md (GPU section)",
-    "path": "ladder.rungs.4.pct_of_ceiling",
-    "run_id": "bench_all-20261021-230301",
-    "value": 95.29973928659443
-   }
-  ],
   "95.8": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "ladder.rungs.4.pct_of_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 95.78438263014075
+   },
+   {
+    "doc": "BENCHMARKS.md",
     "path": "layout.reduction_pct",
     "run_id": "bench_all-20261021-230301",
     "value": 95.81982734753973
@@ -5854,6 +5996,12 @@
    },
    {
     "doc": "INTERVIEW_NOTES.md",
+    "path": "ladder.rungs.4.pct_of_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 95.78438263014075
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
     "path": "layout.reduction_pct",
     "run_id": "bench_all-20261021-230301",
     "value": 95.81982734753973
@@ -5865,10 +6013,36 @@
     "value": 95.81982734753973
    },
    {
+    "doc": "BULLETS.md",
+    "path": "ladder.rungs.4.pct_of_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 95.78438263014075
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.4.pct_of_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 95.78438263014075
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "ladder.rungs.4.pct_of_ceiling",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 95.78438263014075
+   },
+   {
     "doc": "README.md (GPU section)",
     "path": "layout.reduction_pct",
     "run_id": "bench_all-20261021-230301",
     "value": 95.81982734753973
+   }
+  ],
+  "96.0": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.2.gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 96.04462271678646
    }
   ],
   "96.2": [
@@ -5883,8 +6057,8 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.large.implementations.1.gbs",
-    "run_id": "bench_all-20261021-230301",
-    "value": 96.44517042289819
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 96.44738869831
    }
   ],
   "964": [
