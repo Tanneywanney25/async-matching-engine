@@ -1,0 +1,6 @@
+  10,000 streams, 548,317 operations, 0 divergence(s), 34.9 s
+OK streams=10000 operations=548317 divergences=0 seconds=34.9
+
+real	0m35.124s
+user	0m0.000s
+sys	0m0.000s
