@@ -14,7 +14,7 @@ import json
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 RESULTS_DIR = REPO_ROOT / "results"
@@ -30,17 +30,50 @@ class JobSpec:
     body: str  # Python source executed after the bootstrap
     datasets: List[str] = field(default_factory=list)  # Kaggle dataset ids to attach
     needs_repo: bool = True
-    git_sha: Optional[str] = None  # defaults to HEAD
-    branch: str = "gpu-analytics"
+    git_sha: Optional[str] = None  # defaults to HEAD, which must already be pushed
+    branch: Optional[str] = None  # defaults to the current branch (remote.kaggle.push resolves it)
     timeout_minutes: int = 45
     source: str = "synthetic"  # provenance label carried into the manifest
     archive_hash: Optional[str] = None
+    env: Dict[str, str] = field(default_factory=dict)  # set in os.environ before the body runs
+
+
+def git(*args: str) -> str:
+    return subprocess.run(["git", *args], cwd=REPO_ROOT, capture_output=True, text=True, check=True).stdout.strip()
 
 
 def git_sha() -> str:
-    return subprocess.run(
-        ["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, capture_output=True, text=True, check=True
-    ).stdout.strip()
+    return git("rev-parse", "HEAD")
+
+
+def current_branch() -> str:
+    return git("rev-parse", "--abbrev-ref", "HEAD")
+
+
+# Files a job never reads from the checkout, so local edits to them cannot make a job differ
+# from what was tested: run output, the ledger and the push staging area.
+UNSHIPPED = ("results/", "remote/quota.json", "remote/.push/", "remote/.datasets/")
+
+
+def pushed_sha_problem(branch: str, sha: str) -> Optional[str]:
+    """Why ``sha`` on ``branch`` is not safe to run remotely, or ``None`` when it is.
+
+    A job clones ``branch`` from GitHub and checks out ``sha``, so the commit must be on the remote
+    branch and the working tree must hold no uncommitted change the job would silently miss (0.2.0
+    lost a smoke run to a file that was never pushed).
+    """
+    if branch == "HEAD":
+        return "detached HEAD: check out a branch so the job can clone it"
+    remote = git("ls-remote", "origin", f"refs/heads/{branch}").split()
+    if not remote:
+        return f"branch {branch} is not on origin: git push -u origin {branch}"
+    if remote[0] != sha:
+        return f"origin/{branch} is at {remote[0][:12]} but HEAD is {sha[:12]}: push first"
+    dirty = [ln[3:] for ln in git("status", "--porcelain", "--untracked-files=no").splitlines()
+             if not ln[3:].startswith(UNSHIPPED)]
+    if dirty:
+        return "uncommitted changes the job would not see: " + ", ".join(dirty[:8])
+    return None
 
 
 def sanitize(text: str) -> str:
@@ -88,26 +121,41 @@ if rc != 0 or "T4" not in gpu_line:
     json.dump({{"run_id": RUN_ID, "aborted": True, "gpu_line": gpu_line}}, open(f"{{OUT}}/manifest.json", "w"))
     sys.exit(3)
 
-def nvsmi(fields):
+def nvsmi_all(fields):
+    """One list of fields per card: Kaggle's T4 sessions have two, one output line each."""
     rc, out, _ = sh(f"nvidia-smi --query-gpu={{fields}} --format=csv,noheader,nounits")
-    return [x.strip() for x in out.split(",")] if rc == 0 else []
+    return [[x.strip() for x in line.split(",")] for line in out.splitlines()] if rc == 0 else []
+
+def nvsmi(fields):
+    cards = nvsmi_all(fields)
+    return cards[0] if cards else []
+
+def _num(v):
+    try:
+        return float(v)
+    except ValueError:
+        return v
+
+STATE_KEYS = ["sm_clock_mhz", "mem_clock_mhz", "temperature_c", "power_w", "max_sm_clock_mhz", "max_mem_clock_mhz", "util_pct"]
 
 def gpu_state():
-    f = nvsmi("clocks.sm,clocks.mem,temperature.gpu,power.draw,clocks.max.sm,clocks.max.mem,utilization.gpu")
-    keys = ["sm_clock_mhz", "mem_clock_mhz", "temperature_c", "power_w", "max_sm_clock_mhz", "max_mem_clock_mhz", "util_pct"]
-    out = {{}}
-    for k, v in zip(keys, f):
-        try:
-            out[k] = float(v)
-        except ValueError:
-            out[k] = v
+    """Card 0 at the top level (the shape manifests always had), every card under per_gpu."""
+    cards = nvsmi_all("index,clocks.sm,clocks.mem,temperature.gpu,power.draw,clocks.max.sm,clocks.max.mem,utilization.gpu")
+    per = {{c[0]: dict(zip(STATE_KEYS, map(_num, c[1:]))) for c in cards if len(c) == 1 + len(STATE_KEYS)}}
+    out = dict(per.get("0", {{}}))
+    out["per_gpu"] = per
     out["t"] = time.time()
     return out
 
 # 2. Environment facts, read from the machine rather than assumed.
 env = {{"run_id": RUN_ID, "job": JOB_NAME, "gpu_line": gpu_line, "started_unix": T0}}
-env["gpu"] = dict(zip(["name", "driver", "memory_total_mib", "pcie_gen", "pcie_width", "power_limit_w", "max_sm_clock_mhz", "max_mem_clock_mhz"],
-                      nvsmi("name,driver_version,memory.total,pcie.link.gen.max,pcie.link.width.max,power.limit,clocks.max.sm,clocks.max.mem")))
+GPU_FIELDS = ["index", "name", "driver", "memory_total_mib", "pcie_gen", "pcie_width", "power_limit_w", "max_sm_clock_mhz",
+              "max_mem_clock_mhz", "pci_bus_id"]
+env["gpus"] = [dict(zip(GPU_FIELDS, c)) for c in nvsmi_all(
+    "index,name,driver_version,memory.total,pcie.link.gen.max,pcie.link.width.max,power.limit,clocks.max.sm,clocks.max.mem,pci.bus_id")]
+env["gpu"] = {{k: v for k, v in (env["gpus"][0] if env["gpus"] else {{}}).items() if k not in ("index", "pci_bus_id")}}
+env["gpu_count"] = len(env["gpus"])
+env["topology"] = sh("nvidia-smi topo -m")[1]
 env["nvcc"] = sh("nvcc --version | tail -2")[1]
 env["nsys"] = sh("nsys --version")[1]
 env["ncu"] = sh("ncu --version | tail -1")[1]
@@ -185,13 +233,19 @@ if NEEDS_REPO:
     rc, out, err = sh(f"git -C {{REPO}} checkout -q {{GIT_SHA}}")
     if rc != 0:
         sh(f"git -C {{REPO}} fetch -q origin {{GIT_SHA}} && git -C {{REPO}} checkout -q {{GIT_SHA}}", check=True)
-    log("repo at", sh(f"git -C {{REPO}} rev-parse HEAD")[1])
+    head = sh(f"git -C {{REPO}} rev-parse HEAD")[1]
+    log("repo at", head, "on", BRANCH)
+    if head != GIT_SHA:
+        log("ABORT: checkout is at", head, "but the job was pushed for", GIT_SHA)
+        json.dump({{"run_id": RUN_ID, "aborted": True, "error": "git sha mismatch", "head": head}}, open(f"{{OUT}}/manifest.json", "w"))
+        sys.exit(5)
     sys.path.insert(0, REPO)
     sys.path.insert(0, f"{{REPO}}/src")
     os.chdir(REPO)
 
-manifest = {{"run_id": RUN_ID, "job": JOB_NAME, "git_sha": GIT_SHA, "source": SOURCE, "archive_hash": ARCHIVE_HASH,
+manifest = {{"run_id": RUN_ID, "job": JOB_NAME, "git_sha": GIT_SHA, "branch": BRANCH, "source": SOURCE, "archive_hash": ARCHIVE_HASH,
             "gpu_name": env["gpu"].get("name"), "driver": env["gpu"].get("driver"), "cuda_runtime": env.get("cuda_runtime"),
+            "gpu_count": env["gpu_count"], "gpus": env["gpus"],
             "nvcc": env["nvcc"], "nsys": env["nsys"], "cpu_model": env["cpu_model"], "cpu_cores": env["cpu_cores"],
             "clocks_at_start": env["gpu_state_at_start"], "started_unix": T0, "status": "running"}}
 json.dump(manifest, open(f"{{OUT}}/manifest.json", "w"), indent=2, default=str)
