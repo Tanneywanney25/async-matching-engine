@@ -53,7 +53,7 @@ def current_branch() -> str:
 
 # Files a job never reads from the checkout, so local edits to them cannot make a job differ
 # from what was tested: run output, the ledger and the push staging area.
-UNSHIPPED = ("results/", "remote/quota.json", "remote/.push/", "remote/.datasets/")
+UNSHIPPED = ("results/", "public/data/", "remote/quota.json", "remote/.push/", "remote/.datasets/")
 
 
 def pushed_sha_problem(branch: str, sha: str) -> Optional[str]:
