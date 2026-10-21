@@ -28,8 +28,19 @@ jobs:
       - name: Install NVRTC so every CUDA kernel is compile-checked for sm_75 (no GPU needed)
         run: pip install "nvidia-cuda-nvrtc-cu12==12.8.93"
 
-      - name: Run Python tests
+      - name: Build the C++ order book core and run its native tests (including zero allocations)
+        run: |
+          cmake -S native -B build/native -DCMAKE_BUILD_TYPE=Release -DPython_EXECUTABLE="$(which python)"
+          cmake --build build/native --parallel 2
+          ctest --test-dir build/native --output-on-failure
+
+      - name: Run Python tests (the binding tests must run, not skip)
+        env:
+          EE_REQUIRE_NATIVE: "1"
         run: pytest -q
+
+      - name: Differential fuzzer against the C++ core (10,000 seeded streams)
+        run: python scripts/fuzz_engine.py --streams 10000 --engine native --progress-every 0
 
       - name: Run frontend logic tests
         run: node --test tests/frontend/
