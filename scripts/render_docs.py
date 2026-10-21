@@ -38,6 +38,17 @@ GITHUB = "https://github.com/Tanneywanney25/async-matching-engine/blob/gpu-analy
 MARK_START, MARK_END = "<!-- gpu-lab:start -->", "<!-- gpu-lab:end -->"
 DATA_LIMIT_BYTES = 5 * 1024 * 1024
 LADDER_ORDER = ["v0_aos", "v1_soa", "v2_soa_fused", "v3_soa_fused_vec4", "v4_soa_fused_vec4_sweep"]
+README_DOC = "README.md (GPU section)"
+# Markdown prose never needs a brace, so one outside code means a template expression or a
+# placeholder that was written out instead of evaluated (INTERVIEW_NOTES.md question 2 in 0.2.0).
+LEFTOVER_RE = re.compile(r"[{}]|<\?|\$\(|%\(\w+\)")
+
+
+def template_leftovers(text: str) -> List[str]:
+    """Lines of ``text`` that still hold template syntax outside fenced code and inline code."""
+    prose = re.sub(r"```.*?```", lambda m: "\n" * m.group(0).count("\n"), text, flags=re.S)
+    prose = re.sub(r"`[^`\n]*`", "``", prose)
+    return [ln.strip() for ln in prose.splitlines() if LEFTOVER_RE.search(ln)]
 
 
 class RefuseError(SystemExit):
@@ -111,6 +122,7 @@ class Renderer:
         local = [r for r in self.runs if r.id.startswith("engine-local-") and r.real]
         self.local_engine = max(local, key=lambda r: r.started) if local else None
         self.prov: Dict[str, List[dict]] = {}
+        self.doc = ""  # the document being rendered; check_numbers.py matches tokens per document
 
     # -- access ---------------------------------------------------------------- #
 
@@ -145,7 +157,7 @@ class Renderer:
 
     def record(self, text: str, run_id: str, path: str, value: Any) -> str:
         for tok in NUM_RE.findall(text):
-            self.prov.setdefault(tok, []).append({"run_id": run_id, "path": path, "value": value})
+            self.prov.setdefault(tok, []).append({"run_id": run_id, "path": path, "value": value, "doc": self.doc})
         return text
 
     def fmt(self, section: str, path: str, kind: str = "num", scale: float = 1.0, value: Any = None) -> str:
@@ -535,6 +547,27 @@ def update_readme(text: str, r: Renderer) -> str:
 # -- DESIGN ------------------------------------------------------------------- #
 
 
+def float32_spacing_sentence(r: Renderer) -> str:
+    """The float32 spacing at the archive's highest top-of-book price, derived from the precision study.
+
+    ``tolerance_rel`` is a tenth of a tick over the highest price in ticks, so that price is
+    ``0.1 / tolerance_rel`` ticks of one cent; ``numpy.spacing`` gives the float32 step there.
+    """
+    tol = r.get("precision", "tolerance_rel")
+    if not tol:
+        return "Near the top of the recorded prices a float32 cannot hold every cent,"
+    import numpy as np
+    ticks = round(0.1 / float(tol))
+    dollars = ticks * 0.01
+    cents = float(np.spacing(np.float32(dollars))) * 100
+    run_id, path = r.run_of("precision").id, "precision.tolerance_rel"
+    price = "$" + r.record(f"{dollars:,.2f}", run_id, path + " -> 0.1 / tolerance_rel ticks of $0.01", tol)
+    step = r.record(f"{cents:.2f}", run_id, path + " -> numpy.spacing(float32(price)) in cents", tol)
+    share = r.record(f"{cents * 100:.0f}", run_id, path + " -> spacing as % of the one-cent tick", tol)
+    return (f"At the archive's highest top-of-book price, {price}, a float32 has a spacing of {step} cents, "
+            f"{share}% of the one-cent tick,")
+
+
 def design_md(r: Renderer) -> str:
     sp = "speedups"
     return "\n".join([
@@ -547,7 +580,7 @@ def design_md(r: Renderer) -> str:
         + (f"The pipeline measurements make the same point from the other side: transfers are {r.fmt('pipeline', 'transfer_share_pct', 'pct')}% "
            "of stage time, so analyses run in one residency on the card." if r.has("pipeline") else ""), "",
         "## Integer ticks, not float32 prices", "",
-        "Near $100,000 a float32 has a spacing of 2^-7 dollars (about 0.78 cents), most of the one-cent tick, so a float32 "
+        float32_spacing_sentence(r) + " so a float32 "
         "spread is mostly rounding error (`tests/test_archive.py` shows the failure on a real price). Prices are int32 tick "
         "counts; spreads and level indices are exact integers on the device, sizes stay float32, and the microprice is kept as "
         "an offset from the mid so float32 does not lose it.", "",
@@ -615,7 +648,7 @@ def interview_md(r: Renderer, decisions: str) -> str:
             ("How close to the hardware limit is the best feature kernel?",
              f"{r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.effective_bw_gbs', 'gbs')} GB/s of minimum traffic, "
              f"{r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_ceiling', 'pct')}% of the {r.fmt('bandwidth', 'ceiling_gbs', 'gbs')} GB/s "
-             "the read-only streaming kernel achieves (a copy is slower because half its traffic is writes) and {r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_theoretical', 'pct')}% of the theoretical figure."),
+             f"the read-only streaming kernel achieves (a copy is slower because half its traffic is writes) and {r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_theoretical', 'pct')}% of the theoretical figure."),
             ("What did each rung of the ladder buy?",
              "Array-of-structures to structure-of-arrays fixes coalescing, fusion removes repeated passes over the same sizes, "
              "128-bit loads cut instruction count, and the sweep picks the launch shape; the table in BENCHMARKS.md has each rung's median."),
@@ -876,12 +909,24 @@ def main(argv=None) -> int:
     out = Path(args.out_dir) if args.out_dir else REPO
     out.mkdir(parents=True, exist_ok=True)
     decisions = (REPO / "DECISIONS.md").read_text(encoding="utf-8") if (REPO / "DECISIONS.md").exists() else ""
-    docs = {"BENCHMARKS.md": benchmarks_md(r), "DESIGN.md": design_md(r), "INTERVIEW_NOTES.md": interview_md(r, decisions),
-            "BULLETS.md": bullets_md(r)}
+    docs = {}
+    for name, build in (("BENCHMARKS.md", benchmarks_md), ("DESIGN.md", design_md),
+                        ("INTERVIEW_NOTES.md", lambda rr: interview_md(rr, decisions)), ("BULLETS.md", bullets_md)):
+        r.doc = name
+        docs[name] = build(r)
+    readme_src = (out / "README.md") if (out / "README.md").exists() else REPO / "README.md"
+    r.doc = README_DOC
+    readme = update_readme(readme_src.read_text(encoding="utf-8"), r)
+    section = readme[readme.index(MARK_START):readme.index(MARK_END)] if MARK_START in readme else readme
+    leftovers = [(name, ln) for name, text in [*docs.items(), (README_DOC, section)]
+                 for ln in template_leftovers(text)]
+    if leftovers:
+        for name, ln in leftovers:
+            print(f"render_docs: unrendered template syntax in {name}: {ln[:120]}", file=sys.stderr)
+        return 4
     for name, text in docs.items():
         (out / name).write_text(text.rstrip() + "\n", encoding="utf-8")
-    readme_src = (out / "README.md") if (out / "README.md").exists() else REPO / "README.md"
-    (out / "README.md").write_text(update_readme(readme_src.read_text(encoding="utf-8"), r), encoding="utf-8")
+    (out / "README.md").write_text(readme, encoding="utf-8")
     cl_src = (out / "CHANGELOG.md") if (out / "CHANGELOG.md").exists() else REPO / "CHANGELOG.md"
     (out / "CHANGELOG.md").write_text(changelog(cl_src.read_text(encoding="utf-8")), encoding="utf-8")
     data_dir = out / "public" / "data"

@@ -8,7 +8,7 @@ The matching engine answers in microseconds on one CPU core. A PCIe round trip t
 
 ## Integer ticks, not float32 prices
 
-Near $100,000 a float32 has a spacing of 2^-7 dollars (about 0.78 cents), most of the one-cent tick, so a float32 spread is mostly rounding error (`tests/test_archive.py` shows the failure on a real price). Prices are int32 tick counts; spreads and level indices are exact integers on the device, sizes stay float32, and the microprice is kept as an offset from the mid so float32 does not lose it.
+At the archive's highest top-of-book price, $84,856.07, a float32 has a spacing of 0.78 cents, 78% of the one-cent tick, so a float32 spread is mostly rounding error (`tests/test_archive.py` shows the failure on a real price). Prices are int32 tick counts; spreads and level indices are exact integers on the device, sizes stay float32, and the microprice is kept as an offset from the mid so float32 does not lose it.
 
 ## Scan precision
 

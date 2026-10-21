@@ -10,7 +10,7 @@ The kernel is 25.8 times faster than single-threaded C++, but end to end it is 3
 
 ### 2. How close to the hardware limit is the best feature kernel?
 
-251.1 GB/s of minimum traffic, 95.6% of the 262.7 GB/s the read-only streaming kernel achieves (a copy is slower because half its traffic is writes) and {r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_theoretical', 'pct')}% of the theoretical figure.
+251.1 GB/s of minimum traffic, 95.6% of the 262.7 GB/s the read-only streaming kernel achieves (a copy is slower because half its traffic is writes) and 78.5% of the theoretical figure.
 
 ### 3. What did each rung of the ladder buy?
 
