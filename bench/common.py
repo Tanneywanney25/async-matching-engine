@@ -256,11 +256,17 @@ def read_cuda_source(name: str) -> str:
     return (REPO_ROOT / "cuda" / name).read_text(encoding="utf-8")
 
 
+def compiled_arch() -> str:
+    """The ``sm_XY`` target NVRTC compiles for: the current device's compute capability."""
+    return "sm_" + cupy().cuda.Device().compute_capability
+
+
 def raw_module(source_names: Sequence[str], name_expressions: Optional[Sequence[str]] = None, extra_options: Sequence[str] = ()):
-    """Compile ``cuda/*.cu`` sources for sm_75 with NVRTC through CuPy."""
+    """Compile ``cuda/*.cu`` with NVRTC through CuPy, which adds ``-arch`` for the current device
+    itself (a second ``-arch`` is an NVRTC error), so on a T4 this targets sm_75; see compiled_arch()."""
     cp = cupy()
     code = "\n".join(read_cuda_source(n) for n in source_names)
-    options = ("-arch=sm_75", "--std=c++17", "-default-device", "-I" + str(REPO_ROOT / "cuda"), *extra_options)
+    options = ("--std=c++17", "-default-device", "-I" + str(REPO_ROOT / "cuda"), *extra_options)
     return cp.RawModule(code=code, options=options, name_expressions=name_expressions)
 
 

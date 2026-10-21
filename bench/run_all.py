@@ -70,6 +70,7 @@ def gpu_block() -> dict:
             "l2_cache_bytes": int(props.get("l2CacheSize", 0)),
             "cupy_version": cp.__version__,
             "cuda_runtime": int(cp.cuda.runtime.runtimeGetVersion()),
+            "nvrtc_arch": "sm_" + cp.cuda.Device().compute_capability,
         })
     except Exception as exc:  # noqa: BLE001 - no CuPy or no card: record it and carry on
         block["error"] = repr(exc)
