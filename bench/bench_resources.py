@@ -226,6 +226,10 @@ def kernel_rows(launches: Dict[str, dict], per_file: Dict[str, dict], nvrtc: Dic
                 calc["launches"] = sum(c["launches"] for c in configs if c["block"][0] * c["block"][1] * c["block"][2] == block)
                 occ.append(calc)
             nv = nvrtc.get(name, {})
+            if nv.get("num_regs") is not None:  # the timed binary's own occupancy, where its counts differ
+                for calc in occ:
+                    nvo = kr.occupancy(nv["num_regs"], nv.get("shared_size_bytes") or 0, calc["block"], 0, hw)
+                    calc["nvrtc_blocks_per_sm"], calc["nvrtc_occupancy"] = nvo["blocks_per_sm"], nvo["occupancy"]
             rows.append({
                 "kernel": name, "file": file, "registers": stats["registers"], "spill_stores": stats["spill_stores"],
                 "spill_loads": stats["spill_loads"], "stack_bytes": stats["stack_bytes"], "total_spill_bytes": stats["total_spill_bytes"],
@@ -261,11 +265,19 @@ def run(bench: Bench, arch: dict, quick: bool) -> None:
     except Exception as exc:  # noqa: BLE001 - CUB is one row; never lose the rest of the table
         cub = {"error": repr(exc)[:500]}
     nvcc_version = _sh(["nvcc", "--version"]).stdout.strip().splitlines()[-2:]
+    try:
+        import cupy as cp
+
+        nvrtc_version = ".".join(map(str, cp.cuda.nvrtc.getVersion()))
+    except Exception as exc:  # noqa: BLE001
+        nvrtc_version = repr(exc)[:120]
     device = next((r["device"] for r in per_file.values() if r.get("device")), {})
     bench.section("resources", {
         "method": "nvcc -cubin -arch=sm_75 -Xptxas -v; cudaFuncGetAttributes and cudaOccupancyMaxActiveBlocksPerMultiprocessor "
                   "in a host program per file; NVRTC attributes of the benchmarked binaries for comparison",
-        "nvcc": nvcc_version, "device": device, "quick": quick,
+        "nvcc": nvcc_version, "cupy_nvrtc": nvrtc_version, "device": device, "quick": quick,
+        "occupancy_differs_for_nvrtc": sorted(r["kernel"] for r in rows for o in r["occupancy"]
+                                              if o.get("nvrtc_blocks_per_sm") not in (None, o["blocks_per_sm"])),
         "kernels": rows, "not_launched": sorted(n for names in files.values() for n in names if n not in launches),
         "errors": {f: r["error"] for f, r in per_file.items() if r.get("error")},
         "all_nvrtc_match": all(r["nvrtc_matches_nvcc"] for r in rows),

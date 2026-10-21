@@ -251,6 +251,34 @@ def hardware_block(r: Renderer) -> str:
     ])
 
 
+def clock_coverage(r: Renderer) -> Tuple[int, int, List[str]]:
+    """``(blocks with SM clock samples, timed blocks, runs whose blocks lack them)`` over rendered sections."""
+    sampled = total = 0
+    missing_runs = set()
+    for _name, (run, data) in r.sections.items():
+        for _path, m in walk_measurements(data):
+            total += 1
+            if m.get("sm_clock_before_mhz") is not None and m.get("sm_clock_after_mhz") is not None:
+                sampled += 1
+            else:
+                missing_runs.add(run.id)
+    return sampled, total, sorted(missing_runs)
+
+
+def clock_sentence(r: Renderer) -> str:
+    sampled, total, missing = clock_coverage(r)
+    if total and sampled == total:
+        return "the SM clock, memory clock, temperature and power were sampled before and after every block."
+    run_id = missing[0] if missing else r.latest.id
+    of = r.record(format_value(total, "int"), run_id, "derived: timed blocks rendered", total)
+    if not sampled:
+        return (f"no SM clock, memory clock, temperature or power samples exist for the {of} timed blocks on this page, "
+                "because the runs' sampler failed on the two-card session (see Clock throttling).")
+    got = r.record(format_value(sampled, "int"), run_id, "derived: timed blocks with SM clock samples", sampled)
+    return (f"SM clock, memory clock, temperature and power samples exist for {got} of the {of} timed blocks on this page; "
+            "the rest come from runs whose sampler failed on the two-card session (see Clock throttling).")
+
+
 def throttle_notes(r: Renderer) -> List[str]:
     notes = []
     for name, (run, data) in sorted(r.sections.items()):
@@ -260,6 +288,21 @@ def throttle_notes(r: Renderer) -> List[str]:
                                 m.get("clock_drop_pct"))
                 notes.append(f"- `{name}.{path}`: SM clock dropped {drop}% during the block.")
     return notes
+
+
+def clock_section(r: Renderer) -> List[str]:
+    sampled, total, missing = clock_coverage(r)
+    notes = throttle_notes(r)
+    lines = []
+    if sampled:
+        lines += notes or [("No timed block lost more than a tenth of its SM clock between the samples taken before and after it"
+                            + (", on every card the block used." if sampled == total else
+                               " among the blocks that have samples."))]
+    if sampled < total:
+        lines.append(f"Runs {', '.join(f'`{m}`' for m in missing)} recorded no clocks: on Kaggle's two-card T4 sessions their "
+                     "sampler parsed both cards' `nvidia-smi` lines as one and failed on every block (see `DECISIONS.md`), "
+                     "so nothing is claimed about throttling for their numbers.")
+    return lines
 
 
 def walk_measurements(obj: Any, prefix: str = ""):
@@ -300,8 +343,7 @@ def benchmarks_md(r: Renderer) -> str:
     out = ["# Benchmarks", "",
            "Every figure on this page is rendered by `scripts/render_docs.py` from `results/*/metrics.json` of real-data "
            "runs on a Kaggle Tesla T4 and links to the raw samples it came from. Times are medians of interleaved timed "
-           "iterations after discarded warmup runs, with the interquartile range (IQR) beside them; the SM clock, memory "
-           "clock, temperature and power were sampled before and after every block.", "",
+           "iterations after discarded warmup runs, with the interquartile range (IQR) beside them; " + clock_sentence(r), "",
            "## Hardware and data", "", hardware_block(r), ""]
     if r.has("bandwidth"):
         out += ["## Memory bandwidth ceiling", "",
@@ -442,11 +484,183 @@ def benchmarks_md(r: Renderer) -> str:
             out.append(f"| `{op}` | {r.fmt('engine', op + '.mean_us', 'us')} | {r.fmt('engine', op + '.p50_us', 'us')} | "
                        f"{r.fmt('engine', op + '.p95_us', 'us')} | {r.fmt('engine', op + '.p99_us', 'us')} |")
         out += ["", f"Raw latencies: {r.raw_link('engine', r.get('engine', 'raw_file'))}. The laptop's own figures are in the README's Benchmark table.", ""]
-    notes = throttle_notes(r)
-    out += ["## Clock throttling", "", *(notes or ["No timed block lost more than a tenth of its SM clock between the samples taken before and after it."]), ""]
+    if r.has("resources"):
+        out += resources_md(r)
+    out += ["## Clock throttling", "", *clock_section(r), ""]
     runs = sorted({run.id for run, _ in r.sections.values()})
     out += ["## Runs", "", *[f"- [`{rid}`](results/{rid}/manifest.json)" for rid in runs], ""]
     return "\n".join(out)
+
+
+# -- kernel resources ---------------------------------------------------------- #
+
+LIMIT_WORDS = {"registers": "registers", "shared_memory": "shared memory", "warps": "warp slots", "blocks": "the 16-block cap"}
+
+
+def limit_words(names: Sequence[str]) -> str:
+    return " and ".join(LIMIT_WORDS.get(n, n) for n in names) or "nothing"
+
+
+def primary_occupancy(row: dict) -> Tuple[int, Optional[dict]]:
+    """Index and entry of the occupancy computed at the kernel's benchmarked block size."""
+    for j, occ in enumerate(row.get("occupancy") or []):
+        if occ["block"] == row.get("primary_block"):
+            return j, occ
+    return -1, None
+
+
+def resource_kernel_rows(r: Renderer) -> List[Tuple[int, dict]]:
+    rows = r.get("resources", "kernels", []) or []
+    return sorted(enumerate(rows), key=lambda t: (t[1]["file"], t[1]["kernel"]))
+
+
+def cub_scan_launch(r: Renderer, size: str) -> Tuple[int, Optional[dict]]:
+    for j, launch in enumerate(r.get("resources", f"cub.launches.{size}", []) or []):
+        if launch.get("kernel") == "scan_kernel":
+            return j, launch
+    return -1, None
+
+
+def resources_md(r: Renderer) -> List[str]:
+    dev = "device"
+    rows = resource_kernel_rows(r)
+    n_cfg = sum(len(row.get("occupancy") or []) for _i, row in rows)
+    agree = sum(1 for _i, row in rows for o in row.get("occupancy") or [] if o.get("calculator_agrees"))
+    match = sum(1 for _i, row in rows if row.get("nvrtc_matches_nvcc"))
+    run_id = r.run_of("resources").id
+    out = ["## Kernel resources and theoretical occupancy", "",
+           f"Registers per thread, spills and static shared memory are `nvcc -cubin -arch=sm_75 -Xptxas -v` output "
+           f"(`{(r.get('resources', 'nvcc') or [''])[-1]}`); blocks per streaming multiprocessor come from "
+           "`cudaOccupancyMaxActiveBlocksPerMultiprocessor` at the block size each kernel was benchmarked with, recorded as the "
+           f"benchmarks ran. The card holds {r.fmt('resources', dev + '.regsPerMultiprocessor', 'int')} registers, "
+           f"{r.fmt('resources', dev + '.maxThreadsPerMultiProcessor', 'int')} threads, "
+           f"{r.fmt('resources', dev + '.sharedMemPerMultiprocessor', 'int')} bytes of shared memory and "
+           f"{r.fmt('resources', dev + '.maxBlocksPerMultiProcessor', 'int')} resident blocks per streaming multiprocessor. "
+           "Occupancy is the share of the multiprocessor's warp slots the resident blocks fill, and the last column names the "
+           "resource that stops one more block from fitting, from a reimplementation of the occupancy calculator that agreed "
+           f"with the API on {r.record(format_value(agree, 'int'), run_id, 'derived: configurations where the calculator agrees with the API', agree)} "
+           f"of {r.record(format_value(n_cfg, 'int'), run_id, 'derived: launched configurations', n_cfg)} launched configurations. "
+           f"For {r.record(format_value(match, 'int'), run_id, 'derived: kernels whose NVRTC binary matches nvcc', match)} of "
+           f"{r.record(format_value(len(rows), 'int'), run_id, 'derived: launched kernels', len(rows))} kernels the NVRTC binary "
+           f"that was actually timed (CuPy's NVRTC `{r.get('resources', 'cupy_nvrtc')}`) has the same register and shared-memory "
+           "counts as the nvcc build; where it differs the timed binary's count is shown in brackets"
+           + (", and for " + ", ".join(f"`{k}`" for k in r.get("resources", "occupancy_differs_for_nvrtc")) + " that changes its blocks per SM."
+              if r.get("resources", "occupancy_differs_for_nvrtc") else ", and in no case does that change the blocks per SM.") , "",
+           "| Kernel | Source | Registers per thread | Spill stores / loads, bytes | Static shared memory, bytes | Block | Blocks per SM | Occupancy % | Limited by |",
+           "|---|---|---:|---:|---:|---:|---:|---:|---|"]
+    for i, row in rows:
+        p = f"kernels.{i}"
+        j, occ = primary_occupancy(row)
+        if occ is None:
+            continue
+        q = f"{p}.occupancy.{j}"
+        bps = r.fmt("resources", q + ".api_blocks_per_sm", "int") if occ.get("api_blocks_per_sm") is not None else r.fmt("resources", q + ".blocks_per_sm", "int")
+        regs = r.fmt("resources", p + ".registers", "int")
+        if row.get("nvrtc_num_regs") not in (None, row["registers"]):
+            regs += f" (timed: {r.fmt('resources', p + '.nvrtc_num_regs', 'int')})"
+        out.append(f"| `{row['kernel']}` | `{row['file']}` | {regs} | "
+                   f"{r.fmt('resources', p + '.spill_stores', 'int')} / {r.fmt('resources', p + '.spill_loads', 'int')} | "
+                   f"{r.fmt('resources', p + '.static_smem_bytes', 'int')} | {r.fmt('resources', p + '.primary_block', 'int')} | {bps} | "
+                   f"{r.fmt('resources', q + '.occupancy', 'pct', 100.0)} | {limit_words(occ['limited_by'])} |")
+    for size in ("863153", "16777216"):
+        j, launch = cub_scan_launch(r, size)
+        k = r.get("resources", "cub.kernels.scan_kernel")
+        if launch is None or not k or "occupancy" not in launch:
+            continue
+        q = f"cub.launches.{size}.{j}"
+        out.append(f"| CUB scan kernel at {r.fmt('resources', q + '.grid', 'int')} tiles of {r.fmt('resources', q + '.block', 'int')} "
+                   f"x {r.fmt('resources', q + '.items_per_thread', 'int')} elements | `libscan_cub.so` | "
+                   f"{r.fmt('resources', 'cub.kernels.scan_kernel.registers', 'int')} | stack {r.fmt('resources', 'cub.kernels.scan_kernel.stack_bytes', 'int')} | "
+                   f"{r.fmt('resources', 'cub.kernels.scan_kernel.static_smem_bytes', 'int')} | {r.fmt('resources', q + '.block', 'int')} | "
+                   f"{r.fmt('resources', q + '.cub_blocks_per_sm', 'int')} | {r.fmt('resources', q + '.occupancy.occupancy', 'pct', 100.0)} | "
+                   f"{limit_words(launch['occupancy']['limited_by'])} |")
+    out += ["", "CUB's kernels are compiled into `libscan_cub.so`, so their registers and shared memory come from `cuobjdump "
+            "--dump-resource-usage` (which reports the stack frame rather than spills) and their launch shape and blocks per SM "
+            "from CUB's own `-DCUB_DEBUG_LOG` output, which computes occupancy with the same API. "
+            f"Raw: {r.raw_link('resources', 'raw/resources', 'ptxas logs and CUB log')}, "
+            f"{r.raw_link('resources', r.get('resources', 'launch_log'), 'launch configurations')}.", ""]
+    v4 = next((row for _i, row in rows if row["kernel"] == "v4_fused_vec4_gs"), None)
+    sweep = r.get("ladder", "sweep.table", []) or []
+    if v4 and len(v4.get("occupancy") or []) > 1 and sweep:
+        vi = next(i for i, row in rows if row is v4)
+        out += ["### Occupancy across the v4 launch sweep", "",
+                "| Block | Blocks per SM | Occupancy % | Limited by | Fastest grid's median ms |", "|---:|---:|---:|---|---:|"]
+        for j, occ in enumerate(v4["occupancy"]):
+            best = min(((k, t) for k, t in enumerate(sweep) if t["block_size"] == occ["block"]), key=lambda kt: kt[1]["median_ms"], default=None)
+            ms = r.fmt("ladder", f"sweep.table.{best[0]}.median_ms", "ms") if best else "not swept"
+            q = f"kernels.{vi}.occupancy.{j}"
+            out.append(f"| {r.fmt('resources', q + '.block', 'int')} | {r.fmt('resources', q + '.blocks_per_sm', 'int')} | "
+                       f"{r.fmt('resources', q + '.occupancy', 'pct', 100.0)} | {limit_words(occ['limited_by'])} | {ms} |")
+        out.append("")
+    return out
+
+
+# Kernels whose own launch has a measured median, for picking the heaviest ones in DESIGN.md.
+def kernel_launch_ms(r: Renderer) -> Dict[str, Tuple[str, str, float]]:
+    """``{kernel: (section, metrics path, median ms per launch)}`` for kernels timed on their own."""
+    out: Dict[str, Tuple[str, str, float]] = {}
+    for kernel, (section, path) in {"slippage_naive": ("slippage", "naive.ms.median_ms"), "slippage_warp": ("slippage", "warp.ms.median_ms"),
+                                     "ofi_stencil": ("ofi", "kernel_ms.median_ms")}.items():
+        if r.get(section, path) is not None:
+            out[kernel] = (section, path, float(r.get(section, path)))
+    for i, rung in enumerate(r.get("ladder", "rungs", []) or []):
+        kernel = {"v2_soa_fused": "v2_fused", "v3_soa_fused_vec4": "v3_fused_vec4", "v4_soa_fused_vec4_sweep": "v4_fused_vec4_gs"}.get(rung["name"])
+        if kernel:
+            out[kernel] = ("ladder", f"rungs.{i}.kernel_ms.median_ms", float(rung["kernel_ms"]["median_ms"]))
+    for layout in ("aos", "soa"):  # the Nsight Systems children time each layout kernel with events too
+        for name, ms in (r.get("layout", f"children.{layout}.event_median_ms", {}) or {}).items():
+            out[f"layout_{name}_{layout}"] = ("layout", f"children.{layout}.event_median_ms.{name}", float(ms))
+    return out
+
+
+def occupancy_design_note(r: Renderer) -> str:
+    rows = {row["kernel"]: (i, row) for i, row in resource_kernel_rows(r)}
+    timed = sorted(((ms, k, sec, path) for k, (sec, path, ms) in kernel_launch_ms(r).items() if k in rows), reverse=True)[:3]
+    if not timed:
+        return ""
+    parts = []
+    for _ms, kernel, sec, path in timed:
+        i, row = rows[kernel]
+        j, occ = primary_occupancy(row)
+        if occ is None:
+            continue
+        q = f"kernels.{i}.occupancy.{j}"
+        regs = r.fmt("resources", f"kernels.{i}.registers", "int")
+        smem = r.fmt("resources", f"kernels.{i}.static_smem_bytes", "int")
+        lim = occ["limits"]
+        spare = [k for k in ("registers", "shared_memory") if lim.get(k) is not None and lim[k] > occ["blocks_per_sm"]]
+        spare_txt = (f"; {limit_words(spare)} would allow "
+                     + " and ".join(f"{r.fmt('resources', f'{q}.limits.{k}', 'int')}" for k in spare) + " blocks") if spare else ""
+        parts.append(f"`{kernel}` ({r.fmt(sec, path, 'ms')} ms per launch) uses {regs} registers per thread and {smem} bytes of static "
+                     f"shared memory, so at {r.fmt('resources', f'kernels.{i}.primary_block', 'int')} threads per block "
+                     f"{r.fmt('resources', q + '.blocks_per_sm', 'int')} blocks fit on a multiprocessor, "
+                     f"{r.fmt('resources', q + '.occupancy', 'pct', 100.0)}% occupancy, and {limit_words(occ['limited_by'])} bind first{spare_txt}.")
+    return ("The three kernels with the longest measured launches, from the resource table in BENCHMARKS.md: " + " ".join(parts)
+            + " These are theoretical figures: without counters there is no achieved occupancy, so the table says what the "
+              "compiler and launch shape allow, not what the scheduler reached.")
+
+
+def resources_lab(r: Renderer) -> Optional[dict]:
+    if not r.has("resources"):
+        return None
+    out = []
+    for _i, row in resource_kernel_rows(r):
+        _j, occ = primary_occupancy(row)
+        if occ is None:
+            continue
+        out.append({"kernel": row["kernel"], "file": row["file"], "registers": row["registers"], "spill_stores": row["spill_stores"],
+                    "spill_loads": row["spill_loads"], "static_smem_bytes": row["static_smem_bytes"], "block": row["primary_block"],
+                    "blocks_per_sm": occ.get("api_blocks_per_sm", occ["blocks_per_sm"]), "occupancy": occ["occupancy"],
+                    "limited_by": occ["limited_by"], "calculator_agrees": occ.get("calculator_agrees")})
+    for size in ("16777216",):
+        _j, launch = cub_scan_launch(r, size)
+        k = r.get("resources", "cub.kernels.scan_kernel") or {}
+        if launch and "occupancy" in launch:
+            out.append({"kernel": "cub scan_kernel", "file": "libscan_cub.so", "registers": k.get("registers"), "spill_stores": None,
+                        "spill_loads": None, "static_smem_bytes": k.get("static_smem_bytes"), "block": launch["block"],
+                        "blocks_per_sm": launch["cub_blocks_per_sm"], "occupancy": launch["occupancy"]["occupancy"],
+                        "limited_by": launch["occupancy"]["limited_by"], "calculator_agrees": launch.get("calculator_agrees")})
+    return {"kernels": out, "device": r.get("resources", "device"), "run_id": r.run_of("resources").id}
 
 
 # -- README ------------------------------------------------------------------- #
@@ -614,6 +828,7 @@ def design_md(r: Renderer) -> str:
          f"levels with shuffles and lets each lane binary-search two sizes, so every lane does the same work. Measured: "
          f"{r.fmt('slippage', 'speedup_warp_vs_naive', 'x')} times faster, {r.fmt('slippage', 'divergence_penalty_pct', 'pct')}% of the "
          "naive kernel's time was divergence." if r.has("slippage") else ""), "",
+        *(["## What limits occupancy", "", occupancy_design_note(r), ""] if r.has("resources") else []),
         "## Nsight Systems rather than Nsight Compute", "",
         "Kaggle's container denies access to the GPU performance counters (`ERR_NVGPUCTRPERM`), so Nsight Compute cannot run "
         "there (it was tried, see `DECISIONS.md`). Nsight Systems needs no counters and answers what this project asks: total "
@@ -880,6 +1095,8 @@ def gpu_lab_json(r: Renderer) -> dict:
             bench_rows.append({"section": name, "name": path, "metric": "median", "value": m["median_ms"], "unit": "ms",
                                "run_id": run.id, "raw": f"results/{run.id}/{m.get('samples_file', 'metrics.json')}"})
     out["benchmarks"] = bench_rows
+    if r.has("resources"):
+        out["resources"] = resources_lab(r)
     if r.has("engine"):
         out["engine"] = {"p99_us": g("engine", "add_order.p99_us"), "p50_us": g("engine", "add_order.p50_us"),
                          "orders": g("engine", "orders"), "cpu_model": g("engine", "cpu_model"), "run_id": r.run_of("engine").id}

@@ -1,6 +1,6 @@
 # Benchmarks
 
-Every figure on this page is rendered by `scripts/render_docs.py` from `results/*/metrics.json` of real-data runs on a Kaggle Tesla T4 and links to the raw samples it came from. Times are medians of interleaved timed iterations after discarded warmup runs, with the interquartile range (IQR) beside them; the SM clock, memory clock, temperature and power were sampled before and after every block.
+Every figure on this page is rendered by `scripts/render_docs.py` from `results/*/metrics.json` of real-data runs on a Kaggle Tesla T4 and links to the raw samples it came from. Times are medians of interleaved timed iterations after discarded warmup runs, with the interquartile range (IQR) beside them; no SM clock, memory clock, temperature or power samples exist for the 42 timed blocks on this page, because the runs' sampler failed on the two-card session (see Clock throttling).
 
 ## Hardware and data
 
@@ -195,7 +195,7 @@ Raw latencies: [raw](results/bench_all-20261021-190618/raw/engine_latency_us.jso
 
 ## Clock throttling
 
-No timed block lost more than a tenth of its SM clock between the samples taken before and after it.
+Runs `bench_all-20261021-190618`, `bench_rerun-20261021-191923` recorded no clocks: on Kaggle's two-card T4 sessions their sampler parsed both cards' `nvidia-smi` lines as one and failed on every block (see `DECISIONS.md`), so nothing is claimed about throttling for their numbers.
 
 ## Runs
 

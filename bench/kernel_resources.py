@@ -150,20 +150,19 @@ def occupancy(registers: int, static_smem: int, block: int, dynamic_smem: int = 
     h = dict(SM75, **(hw or {}))
     warps_per_block = int(math.ceil(block / h["warp_size"]))
     max_warps = h["max_threads_per_sm"] // h["warp_size"]
-    limits: Dict[str, int] = {"blocks": h["max_blocks_per_sm"], "warps": max_warps // warps_per_block if warps_per_block else 0}
+    # A resource the kernel does not use has no limit (None) and can never be the binding one.
+    limits: Dict[str, Optional[int]] = {"blocks": h["max_blocks_per_sm"],
+                                        "warps": max_warps // warps_per_block if warps_per_block else 0,
+                                        "registers": None, "shared_memory": None}
     if registers:
         regs_per_warp = _ceil_to(registers * h["warp_size"], h["reg_alloc_unit"])
         warps_by_regs = (h["regs_per_sm"] // regs_per_warp) // h["warp_alloc_granularity"] * h["warp_alloc_granularity"]
         limits["registers"] = warps_by_regs // warps_per_block
-    else:
-        limits["registers"] = h["max_blocks_per_sm"]
     smem = static_smem + dynamic_smem
     if smem:
         per_block = _ceil_to(smem + h["reserved_shared_mem_per_block"], h["shared_alloc_unit"])
         limits["shared_memory"] = h["shared_mem_per_sm"] // per_block
-    else:
-        limits["shared_memory"] = h["max_blocks_per_sm"]
-    blocks = min(limits.values())
+    blocks = min(v for v in limits.values() if v is not None)
     binding = [k for k in ("registers", "shared_memory", "warps", "blocks") if limits[k] == blocks]
     warps = blocks * warps_per_block
     return {"block": block, "warps_per_block": warps_per_block, "limits": limits, "blocks_per_sm": blocks,

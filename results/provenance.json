@@ -1,5 +1,5 @@
 {
- "generated_unix": 1792622240.7224455,
+ "generated_unix": 1792623290.258959,
  "tokens": {
   "0": [
    {
@@ -2697,6 +2697,14 @@
     "path": "ladder.rungs.0.kernel_ms.median_ms",
     "run_id": "bench_rerun-20261021-191923",
     "value": 40.71713638305664
+   }
+  ],
+  "42": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived: timed blocks rendered",
+    "run_id": "bench_all-20261021-190618",
+    "value": 42
    }
   ],
   "433": [

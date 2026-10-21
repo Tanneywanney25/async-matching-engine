@@ -61,6 +61,11 @@ def test_occupancy_matches_the_calculator(regs, smem, block, blocks, limited, oc
     assert r["occupancy"] == pytest.approx(occ)
 
 
+def test_an_unused_resource_never_binds() -> None:
+    r = kr.occupancy(26, 0, 1)  # dd_block_offsets: one thread, no shared memory
+    assert r["limits"]["shared_memory"] is None and r["limited_by"] == ["blocks"]
+
+
 def test_occupancy_zero_when_a_block_cannot_fit() -> None:
     assert kr.occupancy(255, 0, 1024)["blocks_per_sm"] == 0
 
