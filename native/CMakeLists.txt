@@ -1,4 +1,4 @@
-# C++20 order book core: header-only library, native tests, pybind11 module.
+# C++20 order book core: header-only library, native tests, latency harness, pybind11 module.
 #
 #   cmake -S native -B build/native -DCMAKE_BUILD_TYPE=Release
 #   cmake --build build/native --parallel
@@ -39,6 +39,9 @@ add_test(NAME test_order_book COMMAND test_order_book)
 add_executable(test_no_alloc tests/test_no_alloc.cpp)
 target_link_libraries(test_no_alloc PRIVATE ee_core)
 add_test(NAME test_no_alloc COMMAND test_no_alloc)
+
+add_executable(bench_native bench/bench_native.cpp)
+target_link_libraries(bench_native PRIVATE ee_core)
 
 if(EE_BUILD_PYTHON)
   find_package(Python 3.10 COMPONENTS Interpreter Development.Module REQUIRED)
