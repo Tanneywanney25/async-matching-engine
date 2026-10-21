@@ -1,0 +1,95 @@
+"""Renderer, provenance check and bullet check, end to end on a temporary results tree.
+
+The fixture copies the committed smoke run (synthetic, quick) and relabels it as a full real
+T4 run inside the temporary directory only, so the renderer has something to render; nothing
+here touches the repository's documents or results.
+"""
+
+from __future__ import annotations
+
+import json
+import shutil
+from pathlib import Path
+
+import pytest
+
+import check_bullets
+import check_numbers
+import render_docs
+
+REPO = Path(__file__).resolve().parent.parent
+SMOKE = REPO / "results" / "bench_quick-20261021-185806"
+
+
+def _relabel(run_dir: Path, source: str = "real", quick: bool = False) -> None:
+    man = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
+    met = json.loads((run_dir / "metrics.json").read_text(encoding="utf-8"))
+    man["source"] = source
+    met["source"] = source
+    met.setdefault("run_all", {})["quick"] = quick
+    (run_dir / "manifest.json").write_text(json.dumps(man), encoding="utf-8")
+    (run_dir / "metrics.json").write_text(json.dumps(met), encoding="utf-8")
+
+
+@pytest.fixture()
+def tree(tmp_path: Path) -> Path:
+    if not SMOKE.exists():
+        pytest.skip("smoke results not present")
+    results = tmp_path / "results"
+    run = results / "fixture-run"
+    shutil.copytree(SMOKE, run)
+    _relabel(run)
+    for name in ("README.md", "CHANGELOG.md", "DECISIONS.md"):
+        shutil.copy(REPO / name, tmp_path / name)
+    return tmp_path
+
+
+def _render(tree: Path) -> int:
+    return render_docs.main(["--results", str(tree / "results"), "--out-dir", str(tree)])
+
+
+def test_render_then_checks_pass(tree: Path, monkeypatch) -> None:
+    monkeypatch.setattr(render_docs, "REPO", tree)
+    assert _render(tree) == 0
+    for name in ("BENCHMARKS.md", "BULLETS.md", "DESIGN.md", "INTERVIEW_NOTES.md", "README.md", "CHANGELOG.md"):
+        assert (tree / name).exists() and (tree / name).stat().st_size > 200, name
+    readme = (tree / "README.md").read_text(encoding="utf-8")
+    assert readme.count(render_docs.MARK_START) == 1 and "## License" in readme
+    data = json.loads((tree / "public" / "data" / "gpu_lab.json").read_text(encoding="utf-8"))
+    for key in ("ladder", "roofline", "pipeline", "precision", "scans", "slippage", "ofi", "benchmarks", "engine", "provenance"):
+        assert key in data, key
+    assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
+    assert check_bullets.main(["--file", str(tree / "BULLETS.md")]) == 0
+    interview = (tree / "INTERVIEW_NOTES.md").read_text(encoding="utf-8")
+    assert interview.count("\n### ") == 15
+
+
+def test_stray_number_fails_the_provenance_check(tree: Path, monkeypatch) -> None:
+    monkeypatch.setattr(render_docs, "REPO", tree)
+    assert _render(tree) == 0
+    path = tree / "BENCHMARKS.md"
+    path.write_text(path.read_text(encoding="utf-8") + "\nA made-up figure: 123.456 ms.\n", encoding="utf-8")
+    assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 1
+
+
+def test_synthetic_or_quick_input_is_refused(tree: Path) -> None:
+    run = tree / "results" / "fixture-run"
+    _relabel(run, source="synthetic")
+    assert _render(tree) == 2
+    _relabel(run, source="real", quick=True)
+    assert _render(tree) == 2
+
+
+def test_numbers_in_code_links_and_dates_are_ignored() -> None:
+    text = "See `run-20261021` and [raw](results/a1/raw/9.json) on 2026-10-21T07:49:23Z: 4.2 times."
+    assert check_numbers.tokens(text) == ["4.2"]
+
+
+def test_bullet_rules() -> None:
+    ok = ("Built CUDA C++ kernels on an NVIDIA T4 for spread, depth and order imbalance over 863,153 recorded book "
+          "snapshots, 45.2 times faster than single-threaded C++ per kernel and 1.6 times faster than NumPy end to end.")
+    lines = check_bullets.split_two_lines(ok)
+    assert lines and not check_bullets.problems(lines)
+    assert check_bullets.problems(["GPU kernels " + "x" * 90, "y" * 100])  # abbreviation and lengths
+    assert check_bullets.problems(lines, alternate=True)  # a three-item list is not allowed in alternates
+    assert check_bullets.split_two_lines("too short") is None

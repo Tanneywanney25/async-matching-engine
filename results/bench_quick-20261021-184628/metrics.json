@@ -1,0 +1,143 @@
+{
+  "archive": {
+    "bytes": 245300000,
+    "capture_end_ns": 1760031542297381535,
+    "capture_seconds": 31542.107849594,
+    "capture_start_ns": 1760000000189531941,
+    "content_hash": "805644066b5d802da56706841a2ac40c600e4f856a0c1e5147b8e555d1cbfae3",
+    "gap_count": 0,
+    "levels": 50,
+    "n_snapshots": 300000,
+    "n_trades": 100000,
+    "per_product_snapshots": {
+      "BTC-USD": 150000,
+      "ETH-USD": 150000
+    },
+    "source": "synthetic"
+  },
+  "created_unix": 1792608455.062074,
+  "errors": [
+    {
+      "error": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 786, in compile\n    nvrtc.compileProgram(self.ptr, options)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 125, in cupy_backends.cuda.libs.nvrtc.compileProgram\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 138, in cupy_backends.cuda.libs.nvrtc.compileProgram\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 53, in cupy_backends.cuda.libs.nvrtc.check_status\ncupy_backends.cuda.libs.nvrtc.NVRTCError: NVRTC_ERROR_INVALID_OPTION (5)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 135, in run_section\n    module.run(bench, arch, quick)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/repo/bench/bench_ladder.py\", line 289, in run\n    bw = measure_bandwidth(bench, quick)\n  File \"/kaggle/working/repo/bench/bench_ladder.py\", line 76, in measure_bandwidth\n    copy = module.get_function(\"copy_int4\")\n  File \"cupy/_core/raw.pyx\", line 498, in cupy._core.raw.RawModule.get_function\n  File \"cupy/_core/raw.pyx\", line 108, in cupy._core.raw.RawKernel.kernel.__get__\n  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n  File \"cupy/_core/raw.pyx\", line 549, in cupy._core.raw._get_raw_module\n  File \"cupy/_core/core.pyx\", line 2534, in cupy._core.core.compile_with_cache\n  File \"cupy/_core/core.pyx\", line 2552, in cupy._core.core.compile_with_cache\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 566, in _compile_module_with_cache\n    return _compile_with_cache_cuda(\n        source, options, arch, cache_dir, extra_source, backend,\n        enable_cooperative_groups, name_expressions, log_stream,\n        cache_in_memory, jitify, to_ltoir)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 618, in _compile_with_cache_cuda\n    base = _preprocess('', options, arch, backend)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 503, in _preprocess\n    result, _ = prog.compile(options)\n                ~~~~~~~~~~~~^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n    raise CompileException(log, self.src, self.name, options,\n                           'nvrtc' if not runtime.is_hip else 'hiprtc')\ncupy.cuda.compiler.CompileException: nvrtc: error: --gpu-architecture (-arch) defined more than once\n\n",
+      "seconds": 1.214,
+      "section": "ladder",
+      "type": "CompileException"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 134, in run_section\n    module = importlib.import_module(f\"bench.bench_{name}\")\n  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1395, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1324, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'bench.bench_scans'\n",
+      "seconds": 0.002,
+      "section": "scans",
+      "type": "ModuleNotFoundError"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 134, in run_section\n    module = importlib.import_module(f\"bench.bench_{name}\")\n  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1395, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1324, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'bench.bench_precision'\n",
+      "seconds": 0.001,
+      "section": "precision",
+      "type": "ModuleNotFoundError"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 134, in run_section\n    module = importlib.import_module(f\"bench.bench_{name}\")\n  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1395, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1324, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'bench.bench_layout'\n",
+      "seconds": 0.001,
+      "section": "layout",
+      "type": "ModuleNotFoundError"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 786, in compile\n    nvrtc.compileProgram(self.ptr, options)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 125, in cupy_backends.cuda.libs.nvrtc.compileProgram\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 138, in cupy_backends.cuda.libs.nvrtc.compileProgram\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 53, in cupy_backends.cuda.libs.nvrtc.check_status\ncupy_backends.cuda.libs.nvrtc.NVRTCError: NVRTC_ERROR_INVALID_OPTION (5)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 135, in run_section\n    module.run(bench, arch, quick)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/repo/bench/bench_slippage.py\", line 228, in run\n    gpu = SlippageGPU(arch, n=n, chunk=QUICK_CHUNK if quick else CHUNK_SNAPSHOTS)\n  File \"/kaggle/working/repo/bench/bench_slippage.py\", line 95, in __init__\n    \"naive\": self.module.get_function(\"slippage_naive\"),\n             ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"cupy/_core/raw.pyx\", line 498, in cupy._core.raw.RawModule.get_function\n  File \"cupy/_core/raw.pyx\", line 108, in cupy._core.raw.RawKernel.kernel.__get__\n  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n  File \"cupy/_core/raw.pyx\", line 549, in cupy._core.raw._get_raw_module\n  File \"cupy/_core/core.pyx\", line 2534, in cupy._core.core.compile_with_cache\n  File \"cupy/_core/core.pyx\", line 2552, in cupy._core.core.compile_with_cache\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 566, in _compile_module_with_cache\n    return _compile_with_cache_cuda(\n        source, options, arch, cache_dir, extra_source, backend,\n        enable_cooperative_groups, name_expressions, log_stream,\n        cache_in_memory, jitify, to_ltoir)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 618, in _compile_with_cache_cuda\n    base = _preprocess('', options, arch, backend)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 503, in _preprocess\n    result, _ = prog.compile(options)\n                ~~~~~~~~~~~~^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n    raise CompileException(log, self.src, self.name, options,\n                           'nvrtc' if not runtime.is_hip else 'hiprtc')\ncupy.cuda.compiler.CompileException: nvrtc: error: --gpu-architecture (-arch) defined more than once\n\n",
+      "seconds": 0.043,
+      "section": "slippage",
+      "type": "CompileException"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 786, in compile\n    nvrtc.compileProgram(self.ptr, options)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 125, in cupy_backends.cuda.libs.nvrtc.compileProgram\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 138, in cupy_backends.cuda.libs.nvrtc.compileProgram\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 53, in cupy_backends.cuda.libs.nvrtc.check_status\ncupy_backends.cuda.libs.nvrtc.NVRTCError: NVRTC_ERROR_INVALID_OPTION (5)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 135, in run_section\n    module.run(bench, arch, quick)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/repo/bench/bench_ofi.py\", line 91, in run\n    gpu = OfiGPU(arch, n=QUICK_SNAPSHOTS if quick else None)\n  File \"/kaggle/working/repo/bench/bench_ofi.py\", line 57, in __init__\n    self.kernel = self.module.get_function(\"ofi_stencil\")\n                  ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"cupy/_core/raw.pyx\", line 498, in cupy._core.raw.RawModule.get_function\n  File \"cupy/_core/raw.pyx\", line 108, in cupy._core.raw.RawKernel.kernel.__get__\n  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n  File \"cupy/_core/raw.pyx\", line 549, in cupy._core.raw._get_raw_module\n  File \"cupy/_core/core.pyx\", line 2534, in cupy._core.core.compile_with_cache\n  File \"cupy/_core/core.pyx\", line 2552, in cupy._core.core.compile_with_cache\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 566, in _compile_module_with_cache\n    return _compile_with_cache_cuda(\n        source, options, arch, cache_dir, extra_source, backend,\n        enable_cooperative_groups, name_expressions, log_stream,\n        cache_in_memory, jitify, to_ltoir)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 618, in _compile_with_cache_cuda\n    base = _preprocess('', options, arch, backend)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 503, in _preprocess\n    result, _ = prog.compile(options)\n                ~~~~~~~~~~~~^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n    raise CompileException(log, self.src, self.name, options,\n                           'nvrtc' if not runtime.is_hip else 'hiprtc')\ncupy.cuda.compiler.CompileException: nvrtc: error: --gpu-architecture (-arch) defined more than once\n\n",
+      "seconds": 0.015,
+      "section": "ofi",
+      "type": "CompileException"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 786, in compile\n    nvrtc.compileProgram(self.ptr, options)\n    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 125, in cupy_backends.cuda.libs.nvrtc.compileProgram\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 138, in cupy_backends.cuda.libs.nvrtc.compileProgram\n  File \"cupy_backends/cuda/libs/nvrtc.pyx\", line 53, in cupy_backends.cuda.libs.nvrtc.check_status\ncupy_backends.cuda.libs.nvrtc.NVRTCError: NVRTC_ERROR_INVALID_OPTION (5)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 135, in run_section\n    module.run(bench, arch, quick)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"/kaggle/working/repo/bench/bench_pipeline.py\", line 745, in run\n    pipe = DevicePipeline(staging)\n  File \"/kaggle/working/repo/bench/bench_pipeline.py\", line 406, in __init__\n    self.k32 = self.module.get_function(\"pipeline_features_i32\")\n               ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"cupy/_core/raw.pyx\", line 498, in cupy._core.raw.RawModule.get_function\n  File \"cupy/_core/raw.pyx\", line 108, in cupy._core.raw.RawKernel.kernel.__get__\n  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n  File \"cupy/_core/raw.pyx\", line 549, in cupy._core.raw._get_raw_module\n  File \"cupy/_core/core.pyx\", line 2534, in cupy._core.core.compile_with_cache\n  File \"cupy/_core/core.pyx\", line 2552, in cupy._core.core.compile_with_cache\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 566, in _compile_module_with_cache\n    return _compile_with_cache_cuda(\n        source, options, arch, cache_dir, extra_source, backend,\n        enable_cooperative_groups, name_expressions, log_stream,\n        cache_in_memory, jitify, to_ltoir)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 618, in _compile_with_cache_cuda\n    base = _preprocess('', options, arch, backend)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 503, in _preprocess\n    result, _ = prog.compile(options)\n                ~~~~~~~~~~~~^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n    raise CompileException(log, self.src, self.name, options,\n                           'nvrtc' if not runtime.is_hip else 'hiprtc')\ncupy.cuda.compiler.CompileException: nvrtc: error: --gpu-architecture (-arch) defined more than once\n\n",
+      "seconds": 0.166,
+      "section": "pipeline",
+      "type": "CompileException"
+    }
+  ],
+  "gpu": {
+    "compute_capability": "7.5",
+    "cuda_runtime": 12090,
+    "cupy_version": "14.0.1",
+    "l2_cache_bytes": 4194304,
+    "memory_bus_width_bits": 256,
+    "memory_clock_khz": 5001000,
+    "memory_gb": 15.636,
+    "name": "Tesla T4",
+    "shared_mem_per_sm_bytes": 65536,
+    "sm_count": 40,
+    "theoretical_bw_gbs": 320.06
+  },
+  "run_all": {
+    "argv": [
+      "--archive",
+      "/kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth",
+      "--out",
+      "/kaggle/working/results/bench_quick-20261021-184628",
+      "--source",
+      "synthetic",
+      "--quick",
+      "--sections",
+      "ladder,scans,precision,layout,slippage,ofi,pipeline",
+      "--budget-minutes",
+      "36"
+    ],
+    "engine": true,
+    "finished_unix": 1792608458.4637883,
+    "hostname": "505761b5bdd2",
+    "n_iters": 5,
+    "platform": "Linux-6.18.48+-x86_64-with-glibc2.39",
+    "python": "3.13.15",
+    "quick": true,
+    "sections_requested": [
+      "ladder",
+      "scans",
+      "precision",
+      "layout",
+      "slippage",
+      "ofi",
+      "pipeline"
+    ],
+    "started_unix": 1792608448.039477,
+    "wall_seconds": 10.4
+  },
+  "sections": {
+    "engine": {
+      "add_order": {
+        "mean_us": 10.41920306,
+        "p50_us": 7.714,
+        "p95_us": 22.438,
+        "p99_us": 32.827
+      },
+      "cancel_order": {
+        "mean_us": 1.818213,
+        "p50_us": 0.373,
+        "p95_us": 5.032,
+        "p99_us": 5.836
+      },
+      "cancels": 10000,
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+      "orders": 100000,
+      "python": "3.13.15",
+      "raw_file": "raw/engine_latency_us.json",
+      "runner": "scripts/benchmark.py --results-dir"
+    }
+  },
+  "source": "synthetic",
+  "timings_s": {
+    "engine": 1.681,
+    "ladder": 1.214,
+    "layout": 0.001,
+    "ofi": 0.015,
+    "pipeline": 0.166,
+    "precision": 0.001,
+    "scans": 0.002,
+    "slippage": 0.044
+  },
+  "updated_unix": 1792608458.4638016
+}

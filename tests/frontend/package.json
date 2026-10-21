@@ -1,0 +1,6 @@
+{
+  "name": "exchange-engine-frontend-tests",
+  "private": true,
+  "type": "module",
+  "description": "Lets `node --test tests/frontend/` run every *.test.mjs in this directory via index.js"
+}

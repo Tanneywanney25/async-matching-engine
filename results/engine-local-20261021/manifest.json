@@ -1,0 +1,15 @@
+{
+  "run_id": "engine-local-20261021",
+  "job": "engine_local",
+  "source": "real",
+  "gpu_name": "none (CPU benchmark)",
+  "cpu_model": "AMD Ryzen 5 7530U with Radeon Graphics",
+  "cpu_cores": 12,
+  "python": "3.14.7",
+  "os": "Windows-11-10.0.26300-SP0",
+  "git_sha": "d0dedb2f5f773630d13b4c5afd21997305a1b04e",
+  "started_unix": 1792607909.4245765,
+  "finished_unix": 1792607910.9952185,
+  "wall_seconds": 1.5706419944763184,
+  "status": "complete"
+}

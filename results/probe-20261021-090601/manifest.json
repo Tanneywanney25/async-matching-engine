@@ -1,0 +1,41 @@
+{
+  "archive_hash": null,
+  "clocks_at_end": {
+    "max_mem_clock_mhz": 5001.0,
+    "max_sm_clock_mhz": 1590.0,
+    "mem_clock_mhz": 5000.0,
+    "power_w": 29.79,
+    "sm_clock_mhz": 720.0,
+    "t": 1792573591.4778845,
+    "temperature_c": 60.0,
+    "util_pct": "3\n300"
+  },
+  "clocks_at_start": {
+    "max_mem_clock_mhz": 5001.0,
+    "max_sm_clock_mhz": 1590.0,
+    "mem_clock_mhz": 405.0,
+    "power_w": 11.71,
+    "sm_clock_mhz": 300.0,
+    "t": 1792573577.3776042,
+    "temperature_c": 57.0,
+    "util_pct": "0\n300"
+  },
+  "cpu_cores": 4,
+  "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+  "cuda_runtime": 12090,
+  "driver": "580.178.04",
+  "finished_unix": 1792573591.414094,
+  "git_sha": "d063993e9c3975571502ca63b14d0d9ea84b3be7",
+  "gpu_name": "Tesla T4",
+  "job": "probe",
+  "kaggle_kernel": "tanushbhatia/exchange-engine-gpu-probe",
+  "nsys": "",
+  "nvcc": "Cuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+  "probe": true,
+  "pulled_at": "2026-10-21T09:18:51Z",
+  "run_id": "probe-20261021-090601",
+  "source": "synthetic",
+  "started_unix": 1792573567.4214785,
+  "status": "complete",
+  "wall_seconds": 23.992616653442383
+}

@@ -1,0 +1,142 @@
+[{"stream_name":"stdout","time":0.823004898,"data":"[    0.1s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":0.823060991,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":4.881599336,"data":"[    4.1s] nsys missing; installing nsight-systems-cli from NVIDIA's apt repository\n"}
+,{"stream_name":"stdout","time":10.630304666,"data":"[    9.9s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":10.70423312,"data":"[   10.0s] probe start\n"}
+,{"stream_name":"stdout","time":11.092359625,"data":"$ nvidia-smi\n"}
+,{"stream_name":"stdout","time":11.09239489,"data":"Wed Oct 21 09:06:17 2026       \n"}
+,{"stream_name":"stdout","time":11.092401001,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":11.092405149,"data":"| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n"}
+,{"stream_name":"stdout","time":11.092409373,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":11.092413001,"data":"| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n"}
+,{"stream_name":"stdout","time":11.092416946,"data":"| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n"}
+,{"stream_name":"stdout","time":11.092420667,"data":"|                                         |                        |               MIG M. |\n"}
+,{"stream_name":"stdout","time":11.092424648,"data":"|=========================================+========================+======================|\n"}
+,{"stream_name":"stdout","time":11.092428333,"data":"|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":11.092431726,"data":"| N/A   57C    P8             11W /   70W |       3MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":11.092435421,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":11.092439402,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":11.09244326,"data":"|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n"}
+,{"stream_name":"stdout","time":11.092446752,"data":"| N/A   53C    P8             11W /   70W |       3MiB /  15360MiB |      0%      Default |\n"}
+,{"stream_name":"stdout","time":11.092450559,"data":"|                                         |                        |                  N/A |\n"}
+,{"stream_name":"stdout","time":11.09245413,"data":"+-----------------------------------------+------------------------+----------------------+\n"}
+,{"stream_name":"stdout","time":11.0924576,"data":"\n"}
+,{"stream_name":"stdout","time":11.09246084,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":11.092464313,"data":"| Processes:                                                                              |\n"}
+,{"stream_name":"stdout","time":11.092467792,"data":"|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n"}
+,{"stream_name":"stdout","time":11.092471254,"data":"|        ID   ID                                                               Usage      |\n"}
+,{"stream_name":"stdout","time":11.092485168,"data":"|=========================================================================================|\n"}
+,{"stream_name":"stdout","time":11.092488795,"data":"|  No running processes found                                                             |\n"}
+,{"stream_name":"stdout","time":11.092493453,"data":"+-----------------------------------------------------------------------------------------+\n"}
+,{"stream_name":"stdout","time":11.092496929,"data":"\n"}
+,{"stream_name":"stdout","time":11.092500071,"data":"\n"}
+,{"stream_name":"stdout","time":11.096802755,"data":"$ nvcc --version\n"}
+,{"stream_name":"stdout","time":11.096820677,"data":"nvcc: NVIDIA (R) Cuda compiler driver\n"}
+,{"stream_name":"stdout","time":11.096825441,"data":"Copyright (c) 2005-2025 NVIDIA Corporation\n"}
+,{"stream_name":"stdout","time":11.096829779,"data":"Built on Fri_Feb_21_20:23:50_PST_2025\n"}
+,{"stream_name":"stdout","time":11.096833979,"data":"Cuda compilation tools, release 12.8, V12.8.93\n"}
+,{"stream_name":"stdout","time":11.096838209,"data":"Build cuda_12.8.r12.8/compiler.35583870_0\n"}
+,{"stream_name":"stdout","time":11.096842517,"data":"\n"}
+,{"stream_name":"stdout","time":11.096846484,"data":"\n"}
+,{"stream_name":"stdout","time":11.098420397,"data":"$ nsys --version\n"}
+,{"stream_name":"stdout","time":11.098450556,"data":"\n"}
+,{"stream_name":"stdout","time":11.098456884,"data":"/bin/sh: 1: nsys: not found\n"}
+,{"stream_name":"stdout","time":11.098681918,"data":"\n"}
+,{"stream_name":"stdout","time":11.127443643,"data":"$ ncu --version\n"}
+,{"stream_name":"stdout","time":11.127461849,"data":"NVIDIA (R) Nsight Compute Command Line Profiler\n"}
+,{"stream_name":"stdout","time":11.127467088,"data":"Copyright (c) 2018-2025 NVIDIA Corporation\n"}
+,{"stream_name":"stdout","time":11.127471448,"data":"Version 2025.1.1.0 (build 35528883) (public-release)\n"}
+,{"stream_name":"stdout","time":11.127475423,"data":"\n"}
+,{"stream_name":"stdout","time":11.127479199,"data":"\n"}
+,{"stream_name":"stdout","time":11.133191341,"data":"$ g++ --version | head -1\n"}
+,{"stream_name":"stdout","time":11.133219684,"data":"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\n"}
+,{"stream_name":"stdout","time":11.133225081,"data":"\n"}
+,{"stream_name":"stdout","time":11.134148728,"data":"\n"}
+,{"stream_name":"stdout","time":11.138340152,"data":"$ which zstd tar sqlite3 cmake make\n"}
+,{"stream_name":"stdout","time":11.138361111,"data":"/usr/bin/tar\n"}
+,{"stream_name":"stdout","time":11.138366873,"data":"/usr/local/bin/cmake\n"}
+,{"stream_name":"stdout","time":11.138371552,"data":"/usr/bin/make\n"}
+,{"stream_name":"stdout","time":11.138414581,"data":"\n"}
+,{"stream_name":"stdout","time":11.138419157,"data":"\n"}
+,{"stream_name":"stdout","time":11.143838958,"data":"$ nproc\n"}
+,{"stream_name":"stdout","time":11.143911247,"data":"4\n"}
+,{"stream_name":"stdout","time":11.143918734,"data":"\n"}
+,{"stream_name":"stdout","time":11.143923254,"data":"\n"}
+,{"stream_name":"stdout","time":11.150865253,"data":"$ lscpu | grep -E 'Model name|Thread|Core|Socket|MHz|L3'\n"}
+,{"stream_name":"stdout","time":11.150881409,"data":"Model name:                              Intel(R) Xeon(R) CPU @ 2.00GHz\n"}
+,{"stream_name":"stdout","time":11.150905907,"data":"Thread(s) per core:                      2\n"}
+,{"stream_name":"stdout","time":11.150911695,"data":"Core(s) per socket:                      2\n"}
+,{"stream_name":"stdout","time":11.150916674,"data":"Socket(s):                               1\n"}
+,{"stream_name":"stdout","time":11.15092944,"data":"L3 cache:                                38.5 MiB (1 instance)\n"}
+,{"stream_name":"stdout","time":11.150934351,"data":"\n"}
+,{"stream_name":"stdout","time":11.151058174,"data":"\n"}
+,{"stream_name":"stdout","time":11.16204568,"data":"$ free -g\n"}
+,{"stream_name":"stdout","time":11.162062262,"data":"total        used        free      shared  buff/cache   available\n"}
+,{"stream_name":"stdout","time":11.16206758,"data":"Mem:              31           1          25           0           5          29\n"}
+,{"stream_name":"stdout","time":11.162071856,"data":"Swap:              0           0           0\n"}
+,{"stream_name":"stdout","time":11.162076244,"data":"\n"}
+,{"stream_name":"stdout","time":11.16208019,"data":"\n"}
+,{"stream_name":"stdout","time":11.167270032,"data":"$ df -h /kaggle/working /tmp\n"}
+,{"stream_name":"stdout","time":11.167285226,"data":"Filesystem      Size  Used Avail Use% Mounted on\n"}
+,{"stream_name":"stdout","time":11.167289513,"data":"/dev/loop2       20G  144K   20G   1% /kaggle/working\n"}
+,{"stream_name":"stdout","time":11.167293146,"data":"overlay         8.0T  7.0T  1.1T  87% /\n"}
+,{"stream_name":"stdout","time":11.167296803,"data":"\n"}
+,{"stream_name":"stdout","time":11.1673001,"data":"\n"}
+,{"stream_name":"stdout","time":14.732420419,"data":"$ pip list 2\u003e/dev/null | grep -i -E '^(cupy|numpy|numba|zstandard|scipy|pandas|pybind11) '\n"}
+,{"stream_name":"stdout","time":14.732452146,"data":"numba                                 0.61.2\n"}
+,{"stream_name":"stdout","time":14.732456772,"data":"numpy                                 2.1.3\n"}
+,{"stream_name":"stdout","time":14.732466484,"data":"pandas                                2.3.3\n"}
+,{"stream_name":"stdout","time":14.732469281,"data":"pybind11                              3.1.0\n"}
+,{"stream_name":"stdout","time":14.732471532,"data":"scipy                                 1.16.3\n"}
+,{"stream_name":"stdout","time":14.732473923,"data":"zstandard                             0.25.0\n"}
+,{"stream_name":"stdout","time":14.732476271,"data":"\n"}
+,{"stream_name":"stdout","time":14.732478413,"data":"\n"}
+,{"stream_name":"stdout","time":14.738549809,"data":"$ ls /usr/local/cuda/include/cub | head -3\n"}
+,{"stream_name":"stdout","time":14.738572814,"data":"agent\n"}
+,{"stream_name":"stdout","time":14.738578554,"data":"block\n"}
+,{"stream_name":"stdout","time":14.738583117,"data":"cmake\n"}
+,{"stream_name":"stdout","time":14.738587423,"data":"\n"}
+,{"stream_name":"stdout","time":14.738591812,"data":"\n"}
+,{"stream_name":"stdout","time":14.74268743,"data":"$ ls /usr/local/cuda/bin | tr '\\n' ' '\n"}
+,{"stream_name":"stdout","time":14.742708356,"data":"bin2c compute-sanitizer crt cudafe++ cuda-gdb cuda-gdb-minimal cuda-gdb-python3.10-tui cuda-gdb-python3.11-tui cuda-gdb-python3.12-tui cuda-gdb-python3.8-tui cuda-gdb-python3.9-tui cuda-gdbserver cu++filt cuobjdump fatbinary ncu ncu-ui nvcc __nvcc_device_query nvcc.profile nvdisasm nvlink nvprof nvprune ptxas\n"}
+,{"stream_name":"stdout","time":14.742715789,"data":"\n"}
+,{"stream_name":"stdout","time":14.742720004,"data":"\n"}
+,{"stream_name":"stdout","time":14.745071654,"data":"$ ls /opt/nvidia 2\u003e/dev/null\n"}
+,{"stream_name":"stdout","time":14.745089177,"data":"entrypoint.d\n"}
+,{"stream_name":"stdout","time":14.745093683,"data":"nsight-compute\n"}
+,{"stream_name":"stdout","time":14.745098001,"data":"nvidia_entrypoint.sh\n"}
+,{"stream_name":"stdout","time":14.745101786,"data":"\n"}
+,{"stream_name":"stdout","time":14.745114286,"data":"\n"}
+,{"stream_name":"stdout","time":14.747135201,"data":"$ cat /proc/sys/kernel/perf_event_paranoid\n"}
+,{"stream_name":"stdout","time":14.747150523,"data":"2\n"}
+,{"stream_name":"stdout","time":14.747155149,"data":"\n"}
+,{"stream_name":"stdout","time":14.747159099,"data":"\n"}
+,{"stream_name":"stdout","time":16.519337791,"data":"$ python -c \"import cupy; p=cupy.cuda.runtime.getDeviceProperties(0); print({k:(v if not isinstance(v,bytes) else v.decode()) for k,v in p.items() if k in ('name','multiProcessorCount','totalGlobalMem','sharedMemPerMultiprocessor','clockRate','memoryClockRate','memoryBusWidth','l2CacheSize','major','minor')})\"\n"}
+,{"stream_name":"stdout","time":16.519367137,"data":"{'name': 'Tesla T4', 'totalGlobalMem': 15636037632, 'clockRate': 1590000, 'major': 7, 'minor': 5, 'multiProcessorCount': 40, 'memoryClockRate': 5001000, 'memoryBusWidth': 256, 'l2CacheSize': 4194304, 'sharedMemPerMultiprocessor': 65536}\n"}
+,{"stream_name":"stdout","time":16.519373794,"data":"\n"}
+,{"stream_name":"stdout","time":16.519378211,"data":"\n"}
+,{"stream_name":"stdout","time":19.894344332,"data":"$ nvcc bw.cu \u0026\u0026 ./bw\n"}
+,{"stream_name":"stdout","time":19.894394965,"data":" copy kernel: 9.403 ms -\u003e 228.4 GB/s (read+write)\n"}
+,{"stream_name":"stdout","time":19.894400375,"data":"cudaMemcpy D2D: 8.900 ms -\u003e 241.3 GB/s (read+write)\n"}
+,{"stream_name":"stdout","time":19.894404753,"data":"device: Tesla T4 SMs=40 sharedPerSM=65536 memClock=5001000 kHz bus=256 bits -\u003e theoretical 320.1 GB/s \n"}
+,{"stream_name":"stdout","time":19.894408645,"data":" \n"}
+,{"stream_name":"stdout","time":19.897139958,"data":"$ nsys profile ...\n"}
+,{"stream_name":"stdout","time":19.897158537,"data":" /bin/sh: 1: nsys: not found \n"}
+,{"stream_name":"stdout","time":19.899882827,"data":"$ nsys stats ...\n"}
+,{"stream_name":"stdout","time":19.899899607000002,"data":" /bin/sh: 1: nsys: not found \n"}
+,{"stream_name":"stdout","time":19.994402837,"data":"$ nsys export sqlite ...\n"}
+,{"stream_name":"stdout","time":19.99442843,"data":" /bin/sh: 1: nsys: not found\n"}
+,{"stream_name":"stdout","time":19.994433324,"data":"[] \n"}
+,{"stream_name":"stdout","time":24.739824885,"data":"$ ncu ...\n"}
+,{"stream_name":"stdout","time":24.739860788,"data":" ==PROF== Connected to process 718 (/usr/bin/python3.13)\n"}
+,{"stream_name":"stdout","time":24.739864889,"data":"==ERROR== ERR_NVGPUCTRPERM - The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0. For instructions on enabling permissions and to get more information see https://developer.nvidia.com/ERR_NVGPUCTRPERM\n"}
+,{"stream_name":"stdout","time":24.739868361,"data":"==PROF== Disconnected from process 718 \n"}
+,{"stream_name":"stdout","time":24.804372051,"data":"[   24.1s] finished: complete 24s\n"}
+,{"stream_name":"stdout","time":24.81244559,"data":"RESULT_BUNDLE results_probe-20261021-090601.tar.gz\n"}
+,{"stream_name":"stderr","time":27.051963929,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":27.051990803,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":27.324384529,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":27.324417216,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":28.245450044,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":29.286551559,"data":"[NbConvertApp] Writing 326565 bytes to __results__.html\n"}
+]

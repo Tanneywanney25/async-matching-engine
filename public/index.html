@@ -38,6 +38,7 @@
       <span class="wordmark">EXCHANGE<span class="accent">ENGINE</span></span>
     </a>
     <div class="topbar-right">
+      <a class="source-link" href="#gpu-lab">GPU Lab</a>
       <a class="source-link" href="https://github.com/Tanneywanney25/async-matching-engine" target="_blank" rel="noopener noreferrer">View source</a>
       <div class="status" role="status" aria-live="polite">
         <span class="dot connecting" id="conn-dot" aria-hidden="true"></span>
@@ -217,11 +218,81 @@
     </section>
   </main>
 
+
+  <!-- GPU Lab: offline analytics on the recorded book, rendered from real NVIDIA T4 results -->
+  <section class="gpu-lab" id="gpu-lab" aria-labelledby="gpu-lab-title">
+    <div class="gpu-lab-head">
+      <h2 id="gpu-lab-title">GPU Lab</h2>
+      <span class="tag">NVIDIA T4 &middot; offline analytics</span>
+    </div>
+    <p class="gpu-note"><strong>The GPU is not in the live matching path:</strong> a PCIe round trip alone exceeds the
+      engine&rsquo;s matching latency, so the card only analyses recorded history.</p>
+    <p class="muted small" id="gpu-status" role="status" aria-live="polite">Loading GPU results&hellip;</p>
+    <div id="gpu-body">
+      <div class="gpu-tiles" id="gpu-speedups"></div>
+      <div class="gpu-grid">
+        <figure class="panel card-bold gpu-card" id="gpu-ladder">
+          <figcaption><h3>Optimization ladder</h3>
+            <p class="muted small">Median per-kernel time per rung (bars) with end-to-end ticks, against CPU and library baselines; log scale.</p></figcaption>
+          <div class="chart" id="gpu-ladder-chart"></div>
+        </figure>
+        <figure class="panel card-bold gpu-card" id="gpu-roofline">
+          <figcaption><h3>Roofline</h3>
+            <p class="muted small">Each rung by arithmetic intensity under the measured and theoretical bandwidth ceilings.</p></figcaption>
+          <div class="chart" id="gpu-roofline-chart"></div>
+          <div class="legend" id="gpu-roofline-legend"></div>
+        </figure>
+        <figure class="panel card-bold gpu-card gpu-wide" id="gpu-timeline">
+          <figcaption><h3>Copy / compute overlap (Nsight Systems)</h3>
+            <p class="muted small">Three streams over pinned chunks: copy in, kernels, copy out, from the exported trace.</p></figcaption>
+          <img id="gpu-timeline-img" alt="Nsight Systems timeline of host-to-device copies, kernels and device-to-host copies on three streams" loading="lazy" />
+          <div id="gpu-pipeline"></div>
+        </figure>
+        <section class="panel card-bold gpu-card gpu-wide" id="gpu-slippage" aria-label="Execution-cost surface">
+          <h3>Execution-cost surface</h3>
+          <div class="gpu-controls">
+            <label>Product <select id="gpu-slip-product"></select></label>
+            <label>Side <select id="gpu-slip-side"><option value="buy">buy</option><option value="sell">sell</option></select></label>
+          </div>
+          <div class="chart" id="gpu-slip-chart"></div>
+          <div class="heat-legend" id="gpu-slip-legend"></div>
+          <p class="muted small" id="gpu-slip-note"></p>
+          <details><summary>Summary by order size</summary><div id="gpu-slip-summary"></div></details>
+        </section>
+        <section class="panel card-bold gpu-card" aria-label="Prefix-sum precision">
+          <h3>Prefix-sum precision</h3>
+          <div id="gpu-precision"></div>
+        </section>
+        <section class="panel card-bold gpu-card" aria-label="Scan implementations">
+          <h3>Scan implementations</h3>
+          <div id="gpu-scans"></div>
+          <div class="gpu-tiles" id="gpu-engine"></div>
+        </section>
+        <section class="panel card-bold gpu-card gpu-wide" id="gpu-ofi" aria-label="Order flow imbalance">
+          <h3>Order flow imbalance</h3>
+          <p class="muted small">Out-of-sample fit of future mid change on multi-level order flow imbalance (time-ordered split).
+            A statistical description of the recorded window, not a trading claim.</p>
+          <div id="gpu-ofi-table"></div>
+          <div class="gpu-controls">
+            <label>Product <select id="gpu-ofi-product"></select></label>
+            <label>Horizon <select id="gpu-ofi-horizon"></select></label>
+          </div>
+          <div class="chart" id="gpu-ofi-chart"></div>
+        </section>
+        <section class="panel card-bold gpu-card gpu-wide" aria-label="All measurements">
+          <details><summary>All measurements (<span id="gpu-bench-count">0</span>) with raw files</summary><div id="gpu-bench"></div></details>
+          <details><summary>Runs</summary><div id="gpu-prov"></div></details>
+        </section>
+      </div>
+    </div>
+  </section>
+
   <footer class="footer">
     <span>Streams from <code>wss://advanced-trade-ws.coinbase.com</code> · public data · no API key.</span>
     <span>Matching &amp; analytics mirror the Python <code>exchange_engine</code> package. No real orders are placed.</span>
   </footer>
 
   <script src="/js/app.js" type="module"></script>
+  <script src="/js/gpu-lab.mjs" type="module"></script>
 </body>
 </html>

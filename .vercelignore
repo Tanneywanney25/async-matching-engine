@@ -11,3 +11,21 @@ CSS File/
 CSS File 3.0/
 prompt-async-matching-engine.txt
 Makefile
+# GPU analytics layer: only public/data/ ships; sources, results and data stay out of the deployment
+data/
+results/
+cuda/
+cpu/
+bench/
+remote/
+profiles/
+build/
+env/
+docs/
+DECISIONS.md
+DESIGN.md
+INTERVIEW_NOTES.md
+BULLETS.md
+BENCHMARKS.md
+GPU_LAYER_PROMPT.md
+setup_gpu_run.ps1

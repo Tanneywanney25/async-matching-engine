@@ -1,0 +1,43 @@
+{
+  "archive_hash": "805644066b5d802da56706841a2ac40c600e4f856a0c1e5147b8e555d1cbfae3",
+  "archive_snapshots": 300000,
+  "clocks_at_end": {
+    "max_mem_clock_mhz": 5001.0,
+    "max_sm_clock_mhz": 1590.0,
+    "mem_clock_mhz": 405.0,
+    "power_w": 10.04,
+    "sm_clock_mhz": 300.0,
+    "t": 1792608100.2957566,
+    "temperature_c": 43.0,
+    "util_pct": "0\n300"
+  },
+  "clocks_at_start": {
+    "max_mem_clock_mhz": 5001.0,
+    "max_sm_clock_mhz": 1590.0,
+    "mem_clock_mhz": 405.0,
+    "power_w": 9.94,
+    "sm_clock_mhz": 300.0,
+    "t": 1792608099.1936789,
+    "temperature_c": 43.0,
+    "util_pct": "0\n300"
+  },
+  "cpu_cores": 4,
+  "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+  "cuda_runtime": 12090,
+  "driver": "580.178.04",
+  "errors": [],
+  "finished_unix": 1792608100.2218628,
+  "git_sha": "fef77bf364583d61e0e5d7011074eaf003ca8137",
+  "gpu_name": "Tesla T4",
+  "job": "bench_quick",
+  "kaggle_kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+  "nsys": "NVIDIA Nsight Systems version 2025.1.1.0",
+  "nvcc": "Cuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+  "pulled_at": "2026-10-21T18:43:54Z",
+  "run_all_exit": 1,
+  "run_id": "bench_quick-20261021-184106",
+  "source": "synthetic",
+  "started_unix": 1792608073.7871366,
+  "status": "partial",
+  "wall_seconds": 26.43472719192505
+}

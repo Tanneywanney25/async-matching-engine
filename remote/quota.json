@@ -1,0 +1,192 @@
+{
+  "budget_gpu_hours": 20.0,
+  "datasets": [
+    {
+      "content_hash": "805644066b5d802da56706841a2ac40c600e4f856a0c1e5147b8e555d1cbfae3",
+      "id": "tanushbhatia/exchange-engine-archive-synth",
+      "mb": 145.3,
+      "n_snapshots": 300000,
+      "source": "synthetic",
+      "uploaded_at": "2026-10-21T09:17:01Z"
+    },
+    {
+      "content_hash": "201de73c12258a4778ab515f11e00407881d2b138d45230b829031fc81300d3a",
+      "id": "tanushbhatia/exchange-engine-archive",
+      "mb": 172.0,
+      "n_snapshots": 579678,
+      "source": "real",
+      "uploaded_at": "2026-10-21T14:08:40Z"
+    },
+    {
+      "content_hash": "10e3c7d79010feb6281d9c3833d00e6a05a51275dc9e1aa58c05c5aa75451959",
+      "id": "tanushbhatia/exchange-engine-archive",
+      "mb": 273.2,
+      "n_snapshots": 863153,
+      "source": "real",
+      "uploaded_at": "2026-10-21T19:03:40Z"
+    }
+  ],
+  "gpu_hours_used_estimate": 0.254,
+  "kaggle_reported": {
+    "checked_at": "2026-10-21T19:30:40Z",
+    "gpu": {
+      "remaining_hours": 29.8,
+      "total_hours": 30.0,
+      "used_hours": 0.2
+    },
+    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.20h  29.80h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
+    "tpu": {
+      "remaining_hours": 20.0,
+      "total_hours": 20.0,
+      "used_hours": 0.0
+    }
+  },
+  "runs": [
+    {
+      "datasets": [],
+      "git_sha": "d063993e9c3975571502ca63b14d0d9ea84b3be7",
+      "gpu_minutes": 0.4,
+      "gpu_name": "Tesla T4",
+      "job": "probe",
+      "kernel": "tanushbhatia/exchange-engine-gpu-probe",
+      "pushed_at": "2026-10-21T09:06:04Z",
+      "result_status": "complete",
+      "run_id": "probe-20261021-090601",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 20,
+      "wall_seconds": 23.992616653442383
+    },
+    {
+      "datasets": [],
+      "finished_at": "2026-10-21T09:23:50Z",
+      "git_sha": "2c6eb50a7d200cb655a1a48f8fcfc446abcea31b",
+      "gpu_minutes": 2.65,
+      "gpu_name": "Tesla T4",
+      "job": "nsys_probe",
+      "kernel": "tanushbhatia/exchange-engine-gpu-nsys-probe",
+      "pushed_at": "2026-10-21T09:20:56Z",
+      "result_status": "complete",
+      "run_id": "nsys_probe-20261021-092053",
+      "running_at": "2026-10-21T09:21:11Z",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 45,
+      "wall_seconds": 68.76347470283508
+    },
+    {
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive-synth"
+      ],
+      "finished_at": "2026-10-21T18:42:21Z",
+      "git_sha": "fef77bf364583d61e0e5d7011074eaf003ca8137",
+      "gpu_minutes": 1.06,
+      "gpu_name": "Tesla T4",
+      "job": "bench_quick",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+      "pushed_at": "2026-10-21T18:41:10Z",
+      "result_status": "partial",
+      "run_id": "bench_quick-20261021-184106",
+      "running_at": "2026-10-21T18:41:18Z",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 40,
+      "wall_seconds": 26.43472719192505
+    },
+    {
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive-synth"
+      ],
+      "finished_at": "2026-10-21T18:48:14Z",
+      "git_sha": "253e16dc1f881c70d448fa179b10e496efb839cc",
+      "gpu_minutes": 1.59,
+      "gpu_name": "Tesla T4",
+      "job": "bench_quick",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+      "pushed_at": "2026-10-21T18:46:31Z",
+      "result_status": "partial",
+      "run_id": "bench_quick-20261021-184628",
+      "running_at": "2026-10-21T18:46:38Z",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 40,
+      "wall_seconds": 64.30469608306885
+    },
+    {
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive-synth"
+      ],
+      "finished_at": "2026-10-21T18:54:03Z",
+      "git_sha": "575bbf7c7f31568376b8b9c59a7c493130f580bd",
+      "gpu_minutes": 1.06,
+      "gpu_name": "Tesla T4",
+      "job": "bench_quick",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+      "pushed_at": "2026-10-21T18:52:53Z",
+      "result_status": "partial",
+      "run_id": "bench_quick-20261021-185250",
+      "running_at": "2026-10-21T18:53:00Z",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 40,
+      "wall_seconds": 45.60629391670227
+    },
+    {
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive-synth"
+      ],
+      "finished_at": "2026-10-21T18:59:50Z",
+      "git_sha": "0ed2c4019c6dd229518229ce276b4fc6a4099e81",
+      "gpu_minutes": 1.6,
+      "gpu_name": "Tesla T4",
+      "job": "bench_quick",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+      "pushed_at": "2026-10-21T18:58:09Z",
+      "result_status": "complete",
+      "run_id": "bench_quick-20261021-185806",
+      "running_at": "2026-10-21T18:58:14Z",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 40,
+      "wall_seconds": 66.75871872901917
+    },
+    {
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive"
+      ],
+      "finished_at": "2026-10-21T19:11:12Z",
+      "git_sha": "88e198727b7b77a1e4eb40af5b2d70753aadf326",
+      "gpu_minutes": 4.77,
+      "gpu_name": "Tesla T4",
+      "job": "bench_all",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-all",
+      "pushed_at": "2026-10-21T19:06:21Z",
+      "result_status": "complete",
+      "run_id": "bench_all-20261021-190618",
+      "running_at": "2026-10-21T19:06:26Z",
+      "source": "real",
+      "status": "complete",
+      "timeout_minutes": 45,
+      "wall_seconds": 260.3661403656006
+    },
+    {
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive"
+      ],
+      "finished_at": "2026-10-21T19:21:37Z",
+      "git_sha": "efd6932b58333af977a4c1b4a4668187e2157de7",
+      "gpu_minutes": 2.1,
+      "gpu_name": "Tesla T4",
+      "job": "bench_rerun",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-rerun",
+      "pushed_at": "2026-10-21T19:19:26Z",
+      "result_status": "complete",
+      "run_id": "bench_rerun-20261021-191923",
+      "running_at": "2026-10-21T19:19:31Z",
+      "source": "real",
+      "status": "complete",
+      "timeout_minutes": 45,
+      "wall_seconds": 108.51989579200745
+    }
+  ]
+}

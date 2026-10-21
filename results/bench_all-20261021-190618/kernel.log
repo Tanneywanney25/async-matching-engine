@@ -1,0 +1,73 @@
+[{"stream_name":"stdout","time":0.80179118,"data":"[    0.0s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":0.801846014,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":23.040606415,"data":"[   22.3s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"NVIDIA Nsight Systems version 2025.1.1.0\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":24.401820103,"data":"[   23.6s] repo at 88e198727b7b77a1e4eb40af5b2d70753aadf326\n"}
+,{"stream_name":"stdout","time":25.042318474,"data":"[   24.3s] archive: /kaggle/input/datasets/tanushbhatia/exchange-engine-archive\n"}
+,{"stream_name":"stdout","time":25.195119154,"data":"[   24.4s] archive source=real snapshots=863153 trades=280818 hash=10e3c7d79010feb6\n"}
+,{"stream_name":"stdout","time":25.202766523,"data":"[   24.4s] running: /usr/bin/python3 -u -m bench.run_all --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --out /kaggle/working/results/bench_all-20261021-190618 --source real --budget-minutes 36\n"}
+,{"stream_name":"stdout","time":46.973642935,"data":"[run_all] archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive (real, 863,153 snapshots, 280,818 trades) -\u003e /kaggle/working/results/bench_all-20261021-190618\n"}
+,{"stream_name":"stdout","time":46.973676176,"data":"[run_all] gpu Tesla T4; sections ladder, scans, precision, layout, slippage, ofi, pipeline; engine 100,000 orders / 10,000 cancels; iters 30; quick False\n"}
+,{"stream_name":"stdout","time":49.316658699,"data":"[ladder] bandwidth: kernel 222.5 GB/s, cudaMemcpy 237.8 GB/s, theoretical 320.1\n"}
+,{"stream_name":"stdout","time":52.086236056,"data":"[ladder] n=863,153 levels=50 n_stride=863,156\n"}
+,{"stream_name":"stdout","time":52.640142023,"data":"[ladder] verify v0_aos: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":52.730459912,"data":"[ladder] verify v1_soa: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":52.819586513,"data":"[ladder] verify v2_soa_fused: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":52.910170062,"data":"[ladder] verify v3_soa_fused_vec4: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":53.003115457,"data":"[ladder] verify v4_soa_fused_vec4_sweep: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":54.813828145,"data":"[ladder] sweep best: block 128 grid 80 1.4787 ms\n"}
+,{"stream_name":"stdout","time":92.084187943,"data":"[ladder] best rung v4_soa_fused_vec4_sweep: kernel 1.4860 ms (251.5 GB/s, 105.8% of ceiling), e2e 31.82 ms; speedups {'best_rung': 'v4_soa_fused_vec4_sweep', 'e2e_vs_numpy': 2.870148972109259, 'e2e_vs_numpy_pageable': 1.1313924295153581, 'kernel_vs_cupy': 2.9629395085456656, 'e2e_vs_cupy': 1.109065451820939, 'v0_to_best_kernel': 26.8724307780897, 'kernel_vs_cpp_single': 24.465656773219195, 'kernel_vs_cpp_omp': 11.48612717601379, 'e2e_vs_cpp_single': 1.1425634249638312}\n"}
+,{"stream_name":"stdout","time":92.143509123,"data":"[run_all] ladder         45.2 s  ok\n"}
+,{"stream_name":"stdout","time":102.835670409,"data":"[scans] scans n=863,153: winner cub_device_scan; n=16,777,216: winner cub_device_scan\n"}
+,{"stream_name":"stdout","time":103.4335215,"data":"[scans] rolling vwap: 0.574 ms, decimal max rel err 2.68e-12, {'1s': {'nan_pattern_equal': True, 'max_rel_err': 9.11244760342931e-05, 'coverage_pct': 74.33965936514151}, '10s': {'nan_pattern_equal': True, 'max_rel_err': 5.6972741447815e-06, 'coverage_pct': 99.86051140411955}}\n"}
+,{"stream_name":"stdout","time":103.951401757,"data":"[scans] rolling book: 1.227 ms, spread err 0.00e+00, imbalance err 1.79e-07\n"}
+,{"stream_name":"stdout","time":103.959492357,"data":"[run_all] scans          11.5 s  ok\n"}
+,{"stream_name":"stdout","time":104.028418983,"data":"[precision] n=1,726,306 values, window=100\n"}
+,{"stream_name":"stdout","time":105.284918569,"data":"[precision] exact reference in 1.3 s ({'base_exponent': -32, 'max_shift_bits': 36, 'values': 1726306})\n"}
+,{"stream_name":"stdout","time":112.588998216,"data":"[precision] float32_naive: window max 3.485e+00 median 2.467e-04; prefix max 2.210e-07\n"}
+,{"stream_name":"stdout","time":112.671814801,"data":"[precision] float64: window max 1.777e-08 median 4.134e-15; prefix max 4.039e-16\n"}
+,{"stream_name":"stdout","time":112.770348136,"data":"[precision] kahan_float32: window max 1.254e-04 median 9.994e-09; prefix max 7.091e-08\n"}
+,{"stream_name":"stdout","time":112.875458045,"data":"[precision] block_rebased_float32: window max 4.722e-03 median 2.069e-07; prefix max 2.210e-07\n"}
+,{"stream_name":"stdout","time":113.086143911,"data":"[precision] Window sums of 100 values over 1,726,306 top-of-book notionals: float32 naive reaches a maximum relative error of 3.49e+00 because two large prefixes cancel; float64 keeps the maximum at 1.78e-08, inside the 1.2e-08 budget (a tenth of a tick at 8,485,607 ticks), and is the fastest variant that does (none qualify), at +6.3% time versus float32 naive.\n"}
+,{"stream_name":"stdout","time":113.089745599,"data":"[run_all] precision       9.1 s  ok\n"}
+,{"stream_name":"stdout","time":137.242898152,"data":"[run_all] layout         24.1 s  ok\n"}
+,{"stream_name":"stdout","time":230.410049519,"data":"[run_all] slippage       93.2 s  ok\n"}
+,{"stream_name":"stdout","time":244.853012964,"data":"[run_all] ofi            14.3 s  ok\n"}
+,{"stream_name":"stdout","time":244.902509832,"data":"[bench_pipeline] n=863153 (archive 863153), levels=50, chunks=16, quick=False, int16=False\n"}
+,{"stream_name":"stdout","time":245.800220459,"data":"[bench_pipeline] staged 690.5 MB pinned in 784 ms; device buffers 132.7 MB\n"}
+,{"stream_name":"stdout","time":246.102837999,"data":"[bench_pipeline] verified serial=True overlapped=True max_abs_err={'spread_ticks': 0, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset': 0.00012264311612852907} bad_books=0\n"}
+,{"stream_name":"stdout","time":250.196901176,"data":"[bench_pipeline] overlapped 57.99 ms, serial 62.31 ms, saved 6.9%\n"}
+,{"stream_name":"stdout","time":253.940613451,"data":"[bench_pipeline] breakdown h2d 57.66 ms (12.0 GB/s), kernel 3.64 ms, d2h 1.70 ms (10.2 GB/s), transfer share 94.2%\n"}
+,{"stream_name":"stdout","time":253.993424308,"data":"[bench_pipeline] nsys profile: /opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/nsys profile --trace=cuda,nvtx --stats=false --force-overwrite true -o /kaggle/working/results/bench_all-20261021-190618/raw/pipeline /usr/bin/python3 -m bench.bench_pipeline --nsys-child --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --chunks 16\n"}
+,{"stream_name":"stdout","time":259.048422767,"data":"[bench_pipeline] nsys timeline: {'h2d': 16, 'kernel': 16, 'd2h': 16} bars, overlap 8.6% of 56.52 ms\n"}
+,{"stream_name":"stdout","time":259.227793855,"data":"[bench_pipeline] done\n"}
+,{"stream_name":"stdout","time":259.232204106,"data":"[run_all] pipeline       14.3 s  ok\n"}
+,{"stream_name":"stdout","time":259.232528296,"data":"[run_all] $ python /kaggle/working/repo/scripts/benchmark.py --orders 100000 --cancels 10000 --results-dir /kaggle/working/results/bench_all-20261021-190618/engine\n"}
+,{"stream_name":"stdout","time":260.89853349,"data":"    Benchmarking OrderBook with 100,000 orders (mid=64,000)...\n"}
+,{"stream_name":"stdout","time":260.898556928,"data":"\n"}
+,{"stream_name":"stdout","time":260.898561396,"data":"    add_order (insert + match) (100,000 ops)\n"}
+,{"stream_name":"stdout","time":260.898565127,"data":"      mean :    10.39 us\n"}
+,{"stream_name":"stdout","time":260.898568722,"data":"      p50  :     7.69 us\n"}
+,{"stream_name":"stdout","time":260.898571956,"data":"      p95  :    22.28 us\n"}
+,{"stream_name":"stdout","time":260.898575199,"data":"      p99  :    32.21 us\n"}
+,{"stream_name":"stdout","time":260.898578648,"data":"\n"}
+,{"stream_name":"stdout","time":260.898581909,"data":"    cancel_order (10,000 ops)\n"}
+,{"stream_name":"stdout","time":260.898585103,"data":"      mean :     1.98 us\n"}
+,{"stream_name":"stdout","time":260.898588564,"data":"      p50  :     0.38 us\n"}
+,{"stream_name":"stdout","time":260.898591762,"data":"      p95  :     5.63 us\n"}
+,{"stream_name":"stdout","time":260.898595242,"data":"      p99  :     7.07 us\n"}
+,{"stream_name":"stdout","time":260.898598928,"data":"\n"}
+,{"stream_name":"stdout","time":260.898602556,"data":"    Target: median add_order under 50 us.\n"}
+,{"stream_name":"stdout","time":260.898605952,"data":"\n"}
+,{"stream_name":"stdout","time":260.898609173,"data":"    Wrote /kaggle/working/results/bench_all-20261021-190618/engine/metrics.json, /kaggle/working/results/bench_all-20261021-190618/engine/manifest.json and /kaggle/working/results/bench_all-20261021-190618/engine/raw/engine_latency_us.json\n"}
+,{"stream_name":"stdout","time":260.902283924,"data":"[run_all] engine          1.7 s  ok\n"}
+,{"stream_name":"stdout","time":260.903743278,"data":"[run_all] done in 235.4 s: 10 section(s) in /kaggle/working/results/bench_all-20261021-190618/metrics.json, 0 error(s)\n"}
+,{"stream_name":"stdout","time":261.123251329,"data":"[  260.4s] run_all exit code 0\n"}
+,{"stream_name":"stdout","time":261.191891156,"data":"[  260.4s] finished: complete 260s\n"}
+,{"stream_name":"stdout","time":262.188333255,"data":"RESULT_BUNDLE results_bench_all-20261021-190618.tar.gz\n"}
+,{"stream_name":"stderr","time":264.417119734,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":264.417147121,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":264.672698334,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":264.672725855,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":265.671311991,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":266.688322314,"data":"[NbConvertApp] Writing 331099 bytes to __results__.html\n"}
+]

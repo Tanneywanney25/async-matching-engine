@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 212" width="100%" role="img" aria-labelledby="pipeline-timeline-title" style="max-width:100%;height:auto;font-family:system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title id="pipeline-timeline-title">Three-stream pipeline, 16 chunks of 7 MB: 8.4% of the trace has two or more lanes active</title>
+<desc>copy in (host to device): 16 copies, 8.61 ms busy · compute (kernels): 16 kernels, 0.44 ms busy · copy out (device to host): 16 copies, 0.34 ms busy · window 8.78 ms</desc>
+<text class="title" x="84" y="20" font-size="15" font-weight="600" fill="#6f7a8d">Three-stream pipeline, 16 chunks of 7 MB: 8.4% of the trace has two or more lanes active</text>
+<text class="legend" x="84" y="38" font-size="10.5" fill="#6f7a8d">copy in (host to device): 16 copies, 8.61 ms busy · compute (kernels): 16 kernels, 0.44 ms busy · copy out (device to host): 16 copies, 0.34 ms busy · window 8.78 ms</text>
+<g class="lane" data-lane="h2d">
+<rect class="band" x="84" y="48" width="698" height="40" fill="#8892a6" fill-opacity="0.1"/>
+<rect class="swatch" x="68" y="63.0" width="10" height="10" rx="2" fill="#3987e5"/>
+<text class="label" x="62" y="73.0" text-anchor="end" font-size="15" font-weight="600" fill="#6f7a8d">H2D<title>copy in (host to device)</title></text>
+<rect class="bar" data-lane="h2d" x="84.00" y="56.0" width="42.47" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.542 ms at 0.000 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="127.70" y="56.0" width="42.39" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.541 ms at 0.550 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="171.23" y="56.0" width="42.23" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.539 ms at 1.097 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="214.68" y="56.0" width="42.41" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.541 ms at 1.644 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="258.37" y="56.0" width="42.25" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.539 ms at 2.194 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="301.78" y="56.0" width="42.38" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.541 ms at 2.740 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="345.37" y="56.0" width="42.24" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.539 ms at 3.288 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="388.84" y="56.0" width="42.20" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.539 ms at 3.835 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="432.27" y="56.0" width="42.04" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.536 ms at 4.382 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="475.52" y="56.0" width="42.08" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.537 ms at 4.926 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="518.74" y="56.0" width="42.04" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.536 ms at 5.469 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="561.89" y="56.0" width="42.10" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.537 ms at 6.012 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="605.18" y="56.0" width="41.92" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.535 ms at 6.557 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="648.35" y="56.0" width="42.01" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.536 ms at 7.100 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="691.52" y="56.0" width="42.17" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.538 ms at 7.643 ms, 6.2 MiB, stream 14</title></rect>
+<rect class="bar" data-lane="h2d" x="734.84" y="56.0" width="41.94" height="24" rx="2" fill="#3987e5"><title>copy in (host to device): memcpy host to device, 0.535 ms at 8.188 ms, 6.2 MiB, stream 14</title></rect>
+</g>
+<g class="lane" data-lane="kernel">
+<rect class="band" x="84" y="88" width="698" height="40" fill="#8892a6" fill-opacity="0.05"/>
+<rect class="swatch" x="68" y="103.0" width="10" height="10" rx="2" fill="#d95926"/>
+<text class="label" x="62" y="113.0" text-anchor="end" font-size="15" font-weight="600" fill="#6f7a8d">GPU<title>compute (kernels)</title></text>
+<rect class="bar" data-lane="kernel" x="127.71" y="96.0" width="1.65" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.028 ms at 0.550 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="171.35" y="96.0" width="1.56" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.027 ms at 1.099 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="215.22" y="96.0" width="1.62" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.028 ms at 1.651 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="258.38" y="96.0" width="1.57" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.027 ms at 2.194 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="301.97" y="96.0" width="1.58" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.027 ms at 2.742 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="345.95" y="96.0" width="1.61" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.028 ms at 3.296 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="388.85" y="96.0" width="1.57" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.027 ms at 3.835 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="432.26" y="96.0" width="1.56" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.027 ms at 4.382 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="476.03" y="96.0" width="1.63" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.028 ms at 4.932 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="519.23" y="96.0" width="1.56" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.027 ms at 5.476 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="562.11" y="96.0" width="1.57" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.027 ms at 6.015 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="605.74" y="96.0" width="1.61" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.028 ms at 6.564 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="648.45" y="96.0" width="1.59" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.028 ms at 7.101 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="691.68" y="96.0" width="1.60" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.028 ms at 7.645 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="735.56" y="96.0" width="1.62" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.028 ms at 8.197 ms, stream 15</title></rect>
+<rect class="bar" data-lane="kernel" x="778.19" y="96.0" width="1.99" height="24" rx="2" fill="#d95926"><title>compute (kernels): pipeline_features_i32, 0.025 ms at 8.734 ms, stream 15</title></rect>
+</g>
+<g class="lane" data-lane="d2h">
+<rect class="band" x="84" y="128" width="698" height="40" fill="#8892a6" fill-opacity="0.1"/>
+<rect class="swatch" x="68" y="143.0" width="10" height="10" rx="2" fill="#199e70"/>
+<text class="label" x="62" y="153.0" text-anchor="end" font-size="15" font-weight="600" fill="#6f7a8d">D2H<title>copy out (device to host)</title></text>
+<rect class="bar" data-lane="d2h" x="130.53" y="136.0" width="1.74" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.022 ms at 0.585 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="174.23" y="136.0" width="1.73" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.022 ms at 1.135 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="218.18" y="136.0" width="1.67" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.021 ms at 1.688 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="261.45" y="136.0" width="1.72" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.022 ms at 2.233 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="304.92" y="136.0" width="1.58" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.020 ms at 2.779 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="348.84" y="136.0" width="1.77" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.022 ms at 3.332 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="391.95" y="136.0" width="1.67" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.021 ms at 3.874 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="435.33" y="136.0" width="1.61" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.020 ms at 4.420 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="478.87" y="136.0" width="1.82" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.023 ms at 4.968 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="522.12" y="136.0" width="1.89" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.024 ms at 5.512 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="564.90" y="136.0" width="1.73" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.022 ms at 6.050 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="608.61" y="136.0" width="1.71" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.022 ms at 6.600 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="651.58" y="136.0" width="1.71" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.022 ms at 7.141 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="694.71" y="136.0" width="1.68" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.021 ms at 7.683 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="738.91" y="136.0" width="1.60" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.020 ms at 8.240 ms, 160.0 KiB, stream 16</title></rect>
+<rect class="bar" data-lane="d2h" x="780.83" y="136.0" width="1.17" height="24" rx="2" fill="#199e70"><title>copy out (device to host): memcpy device to host, 0.015 ms at 8.767 ms, 160.0 KiB, stream 16</title></rect>
+</g>
+<g class="axis" fill="#6f7a8d" font-size="11">
+<line x1="84" y1="176" x2="782" y2="176" stroke="#6f7a8d" stroke-opacity="0.6" stroke-width="1"/>
+<line x1="84.00" y1="176" x2="84.00" y2="181" stroke="#6f7a8d" stroke-opacity="0.6"/>
+<text x="84.00" y="194" text-anchor="middle">0</text>
+<line x1="242.97" y1="176" x2="242.97" y2="181" stroke="#6f7a8d" stroke-opacity="0.6"/>
+<text x="242.97" y="194" text-anchor="middle">2</text>
+<line x1="401.94" y1="176" x2="401.94" y2="181" stroke="#6f7a8d" stroke-opacity="0.6"/>
+<text x="401.94" y="194" text-anchor="middle">4</text>
+<line x1="560.91" y1="176" x2="560.91" y2="181" stroke="#6f7a8d" stroke-opacity="0.6"/>
+<text x="560.91" y="194" text-anchor="middle">6</text>
+<line x1="719.87" y1="176" x2="719.87" y2="181" stroke="#6f7a8d" stroke-opacity="0.6"/>
+<text x="719.87" y="194" text-anchor="middle">8</text>
+<text x="782" y="209" text-anchor="end">time (ms)</text>
+</g>
+</svg>

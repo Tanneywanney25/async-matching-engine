@@ -12,6 +12,7 @@ instance. Use ``POST /api/reset`` to clear it.
 
 from __future__ import annotations
 
+import json
 import sys
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -80,6 +81,19 @@ async def health() -> Dict[str, object]:
 async def order_endpoint(payload: Dict = Body(...)) -> Dict[str, object]:
     """Submit a synthetic order to the stateless serverless simulator."""
     return _order(payload)
+
+
+ANALYTICS_PATH = Path(__file__).resolve().parent.parent / "public" / "data" / "gpu_lab.json"
+
+
+@app.get("/analytics")
+@app.get("/api/analytics")
+async def analytics_endpoint() -> Dict[str, object]:
+    """GPU analytics results rendered from real T4 runs (static JSON)."""
+    try:
+        return json.loads(ANALYTICS_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise HTTPException(status_code=404, detail="analytics not published") from exc
 
 
 @app.post("/reset")

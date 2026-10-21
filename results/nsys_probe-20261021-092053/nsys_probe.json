@@ -1,0 +1,53 @@
+{
+  "os": {
+    "rc": 0,
+    "out": "PRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\nNAME=\"Ubuntu\"\namd64\n0",
+    "err": ""
+  },
+  "apt-sources": {
+    "rc": 0,
+    "out": "archive_uri-https_cloud_r-project_org_bin_linux_ubuntu-noble.list\narchive_uri-https_r2u_stat_illinois_edu_ubuntu-noble.list\ncuda.list\ndeadsnakes-ubuntu-ppa-noble.sources\ngithub-cli.list\ngraphics-drivers-ubuntu-ppa-noble.sources\nubuntu.sources\ndeb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64 /",
+    "err": ""
+  },
+  "apt-update": {
+    "rc": 0,
+    "out": "Get:22 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64  Packages [1,938 kB]\nGet:23 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu noble/main amd64 Packages [60.1 kB]\nGet:24 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 Packages [3,071 kB]\nGet:25 https://r2u.stat.illinois.edu/ubuntu noble/main all Packages [10.4 MB]\nFetched 27.3 MB in 4s (7,118 kB/s)\nReading package lists...\nW: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.\nW: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu noble InRelease' does not seem to provide it (sources.list entry misspelt?)\nrc=0",
+    "err": ""
+  },
+  "apt-search": {
+    "rc": 0,
+    "out": "cuda-nsight-systems-12-5 - NVIDIA Nsight Systems\nnsight-systems-2024.2.3 - Nsight Systems is a statistical sampling profiler with tracing features.\ncuda-nsight-systems-12-6 - NVIDIA Nsight Systems\nnsight-systems-2024.4.2 - Nsight Systems is a statistical sampling profiler with tracing features.\nnsight-systems-2024.5.1 - Nsight Systems is a statistical sampling profiler with tracing features.\ncuda-nsight-systems-12-8 - NVIDIA Nsight Systems\nnsight-systems-2024.6.2 - Nsight Systems is a statistical sampling profiler with tracing features.\ncuda-nsight-systems-12-9 - NVIDIA Nsight Systems\nnsight-systems-2025.1.3 - Nsight Systems is a statistical sampling profiler with tracing features.\ncuda-nsight-systems-13-0 - NVIDIA Nsight Systems\ncuda-nsight-systems-12-8:\n  Installed: (none)\n  Candidate: 12.8.2-1\n  Version table:\n     12.8.2-1 500",
+    "err": ""
+  },
+  "install-meta": {
+    "rc": 0,
+    "out": "/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc_proxy.so.2 is not a symbolic link\n\n/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc.so.2 is not a symbolic link\n\n/sbin/ldconfig.real: /usr/local/lib/libhwloc.so.15 is not a symbolic link",
+    "err": ""
+  },
+  "find-nsys-1": {
+    "rc": 0,
+    "out": "/opt/nvidia/nsight-systems/2024.6.2/bin\n/usr/local/cuda-12.8/bin\n/usr/local/cuda-12/bin\n/usr/local/cuda/bin\n/var/lib/dpkg/alternatives/nsys\n/opt/nvidia/nsight-systems/2024.6.2/target-linux-x64/nsys\n/opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/nsys\n/usr/local/cuda-12.8/bin/nsys",
+    "err": ""
+  },
+  "nsys_path": "/var/lib/dpkg/alternatives/nsys",
+  "version": {
+    "rc": 0,
+    "out": "NVIDIA Nsight Systems version 2025.1.1.0",
+    "err": ""
+  },
+  "profile": {
+    "rc": 0,
+    "out": "Generating '/tmp/nsys-report-d00f.qdstrm'\n\n[1/1] [0%                          ] probe_nsys.nsys-rep\n[1/1] [0%                          ] probe_nsys.nsys-rep\n[1/1] [6%                          ] probe_nsys.nsys-rep\n[1/1] [7%                          ] probe_nsys.nsys-rep\n[1/1] [8%                          ] probe_nsys.nsys-rep\n[1/1] [9%                          ] probe_nsys.nsys-rep\n[1/1] [======================90%   ] probe_nsys.nsys-rep\n[1/1] [======================91%   ] probe_nsys.nsys-rep\n[1/1] [========================100%] probe_nsys.nsys-rep\n[1/1] [========================100%] probe_nsys.nsys-rep\nGenerated:\n    /kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.nsys-rep",
+    "err": ""
+  },
+  "stats": {
+    "rc": 0,
+    "out": "Generating SQLite file /kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.sqlite from /kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.nsys-rep\nProcessing [/kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.sqlite] with [/opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/reports/cuda_gpu_kern_sum.py] to [/kaggle/working/results/nsys_probe-20261021-092053/raw/probe_kern_sum_cuda_gpu_kern_sum.csv]... PROCESSED\n\nprobe_kern_sum_cuda_gpu_kern_sum.csv\nprobe_nsys.nsys-rep\nprobe_nsys.sqlite\nTime (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name\n66.1,3330783,5,666156.6,665363.0,664307,670579,2516.1,cupy_multiply__float32_float_float32\n25.9,1303239,5,260647.8,260539.0,260155,261339,465.7,\"void cub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceKernel<cub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::detail::reduce::policy_hub<float, unsigned int, cuda::std::__4::plus<void>>::Policy1000, float *, unsigned int, cuda::std::__4::plus<void>, float, cuda::std::__4::identity>(T2, T5 *, T3, cub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::GridEvenShare<T3>, T4, T6)\"\n7.4,375033,1,375033.0,375033.0,375033,375033,0.0,cupy_arange__float_float_float32\n0.5,26240,5,5248.0,5216.0,5184,5344,64.0,\"void cub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel<cub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::detail::reduce::policy_hub<float, unsigned int, cuda::std::__4::plus<void>>::Policy1000, float *, float *, int, cuda::std::__4::plus<void>, float, float, cuda::std::__4::identity>(T2, T3, T4, T5, T6, T8)\"",
+    "err": ""
+  },
+  "export": {
+    "rc": 1,
+    "out": "Exportation error: File already exists: '/kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.sqlite'.\nUse `--force-overwrite true` to overwrite existing files.\n['CUPTI_ACTIVITY_KIND_RUNTIME', 'CUPTI_ACTIVITY_KIND_KERNEL', 'CUPTI_ACTIVITY_KIND_SYNCHRONIZATION']\n[(1681060411, 1681435444, 0, 1, 0, 7, 259, 281488331374592, 44, 44, 44, 1, 3, 18, 131072, 1, 1, 128, 1, 1, 0, 0, 0, 23592960, 1, 32768, None, 0)]\n['start', 'end', 'deviceId', 'contextId', 'greenContextId', 'streamId', 'correlationId', 'globalPid', 'demangledName', 'shortName', 'mangledName', 'launchType', 'cacheConfig', 'registersPerThread', 'gridX', 'gridY', 'gridZ', 'blockX', 'blockY', 'blockZ', 'staticSharedMemory', 'dynamicSharedMemory', 'localMemoryPerThread', 'localMemoryTotal', 'gridId', 'sharedMemoryExecuted', 'graphNodeId', 'sharedMemoryLimitConfig']",
+    "err": "('select * from CUPTI_ACTIVITY_KIND_KERNEL limit 1'))); print([d[0] for d in c.execute('select * from CUPTI_ACTIVITY_KIND_KERNEL limit 1').description]); print([d[0] for d in c.execute('select * from CUPTI_ACTIVITY_KIND_MEMCPY limit 1').description])\n                                                                                                                                                                                                                                                                                                                                                                                                                                    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nsqlite3.OperationalError: no such table: CUPTI_ACTIVITY_KIND_MEMCPY"
+  }
+}

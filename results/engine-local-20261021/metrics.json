@@ -1,0 +1,24 @@
+{
+  "sections": {
+    "engine": {
+      "add_order": {
+        "mean_us": 10.908567,
+        "p50_us": 7.7,
+        "p95_us": 23.7,
+        "p99_us": 36.8
+      },
+      "cancel_order": {
+        "mean_us": 2.72178,
+        "p50_us": 0.6,
+        "p95_us": 8.1,
+        "p99_us": 10.6
+      },
+      "cancels": 10000,
+      "cpu_model": "AMD Ryzen 5 7530U with Radeon Graphics",
+      "orders": 100000,
+      "python": "3.14.7",
+      "raw_file": "raw/engine_latency_us.json"
+    }
+  },
+  "source": "real"
+}

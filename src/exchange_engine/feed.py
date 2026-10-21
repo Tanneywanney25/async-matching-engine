@@ -97,6 +97,7 @@ class CoinbaseFeed:
         url: str = COINBASE_WS_URL,
         on_event: Optional[EventCallback] = None,
         max_trades: int = 500,
+        max_message_bytes: Optional[int] = 64 * 1024 * 1024,
     ) -> None:
         """Configure the feed.
 
@@ -105,11 +106,15 @@ class CoinbaseFeed:
             url: WebSocket endpoint (overridable for testing).
             on_event: Optional coroutine/callable invoked for each parsed event.
             max_trades: Cap on the per-product recent-trades buffer.
+            max_message_bytes: Largest WebSocket frame accepted. A full BTC-USD
+                level2 snapshot is several megabytes, well above the
+                ``websockets`` default of 1 MiB; ``None`` disables the limit.
         """
         self.product_ids = list(product_ids)
         self.url = url
         self.on_event = on_event
         self.max_trades = max_trades
+        self.max_message_bytes = max_message_bytes
 
         self.books: Dict[str, ProductBook] = {pid: ProductBook() for pid in self.product_ids}
         self.trades: Dict[str, Deque[Trade]] = {
@@ -292,7 +297,9 @@ class CoinbaseFeed:
         backoff = 2
         while self._running:
             try:
-                async with websockets.connect(self.url, ping_interval=None) as ws:
+                async with websockets.connect(
+                    self.url, ping_interval=None, max_size=self.max_message_bytes
+                ) as ws:
                     logger.info("connected to %s", self.url)
                     await self._subscribe(ws)
                     backoff = 2  # reset after a healthy connect

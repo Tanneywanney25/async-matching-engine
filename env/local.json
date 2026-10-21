@@ -1,0 +1,51 @@
+{
+  "checked_at": "2026-10-21T03:45:00-04:00",
+  "repository": "C:\Users\Code4\Projects\async-matching-engine",
+  "branch": "gpu-analytics",
+  "base_commit": "aba2b95",
+  "os": "Windows 11 Home 10.0.26300",
+  "shell": "PowerShell 5.1 (Git Bash also available)",
+  "python": {
+    "venv": ".venv (Python 3.14.7)",
+    "system": "Python 3.12.10 (AppData/Local/Programs/Python/Python312)",
+    "venv_packages": {
+      "numpy": "2.5.4",
+      "zstandard": "0.25.0",
+      "hypothesis": "6.170.5",
+      "pytest": "9.1.1",
+      "pytest-asyncio": "1.4.0",
+      "fastapi": "0.141.1",
+      "websockets": "17.1",
+      "sortedcontainers": "2.4.0",
+      "httpx": "0.28.1"
+    }
+  },
+  "node": "v24.18.0",
+  "npm": "11.16.0",
+  "gh": {
+    "version": "2.101.0 (2026-09-15)",
+    "authenticated": true,
+    "account": "Tanneywanney25",
+    "scopes": ["gist", "read:org", "repo", "workflow"]
+  },
+  "kaggle": {
+    "cli": "2.2.4 (system Python 3.12)",
+    "auth": "new-style Kaggle access token at ~/.kaggle/access_token (never printed or committed)",
+    "kernels_list_mine": "ok (2 existing kernels listed)",
+    "account": "tanushbhatia"
+  },
+  "local_gpu": "none (no nvidia-smi, no nvcc)",
+  "make": "not required; every step runs as python -m ...",
+  "prior_state": {
+    "gpu_analytics_branch": "did not exist, created from main",
+    "data_dir": "absent",
+    "recorder_pid": "absent",
+    "results_dir": "absent",
+    "kaggle_dataset": "none found"
+  },
+  "baseline_tests": {
+    "pytest": "53 passed",
+    "node_test_file_form": "12 passed",
+    "node_test_directory_form": "failed before Phase 0 fix (Node 24 treats a bare directory as a module path)"
+  }
+}

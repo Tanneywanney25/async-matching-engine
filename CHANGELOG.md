@@ -3,6 +3,15 @@
 All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.0] - 2026-10-21
+
+### Added
+- Raw Coinbase recorder (`recorder.py`, `scripts/record.py`) and a deterministic tick-encoded level-major snapshot archive.
+- Kaggle T4 runner (`remote/`), benchmark harness (`bench/`) and CUDA kernels (`cuda/`): feature ladder, scans, precision study,
+  layout profiling, execution-cost surface, order flow imbalance and a three-stream pipeline.
+- Hypothesis invariants and a differential fuzzer for the matching engine.
+- GPU Lab dashboard section, `/analytics` routes, documentation rendered from committed results.
+
 ## [0.1.0] - 2026-09-21
 
 ### Added

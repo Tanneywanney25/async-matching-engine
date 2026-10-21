@@ -1,0 +1,78 @@
+name: GPU pipeline (Kaggle T4)
+
+# Manual only. Runs the Kaggle T4 benchmark job when the KAGGLE_API_TOKEN repository secret
+# exists; see remote/README.md for how to add it. The token is written to a file and never echoed.
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Archive to benchmark"
+        type: choice
+        options: [real, synthetic]
+        default: real
+      quick:
+        description: "Short smoke job instead of the full run"
+        type: boolean
+        default: false
+
+jobs:
+  kaggle-t4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+    steps:
+      - name: Check for the Kaggle token
+        id: token
+        run: |
+          if [ -z "$KAGGLE_API_TOKEN" ]; then
+            echo "::notice::KAGGLE_API_TOKEN is not set; add it under Settings > Secrets and variables > Actions to run this workflow."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.token.outputs.present == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.token.outputs.present == 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        if: steps.token.outputs.present == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]" "kaggle>=1.8.0"
+
+      - name: Write the token file
+        if: steps.token.outputs.present == 'true'
+        run: |
+          mkdir -p ~/.kaggle
+          printf '%s' "$KAGGLE_API_TOKEN" > ~/.kaggle/access_token
+          chmod 600 ~/.kaggle/access_token
+
+      - name: Run the remote pipeline
+        if: steps.token.outputs.present == 'true'
+        run: |
+          ARGS="--source ${{ inputs.source }} --skip-upload"
+          if [ "${{ inputs.quick }}" = "true" ]; then ARGS="$ARGS --quick"; fi
+          if [ "${{ inputs.source }}" = "real" ]; then
+            # the raw log is not in the repository, so reuse the archive already on Kaggle
+            python -m remote.kaggle run --job bench_all --dataset tanushbhatia/exchange-engine-archive --source real --timeout-minutes 45
+            python scripts/render_docs.py && python scripts/check_numbers.py && python scripts/check_bullets.py
+          else
+            python -m bench.reproduce $ARGS
+          fi
+
+      - name: Upload results
+        if: steps.token.outputs.present == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-results
+          path: |
+            results/
+            BENCHMARKS.md
+            BULLETS.md
+            public/data/
