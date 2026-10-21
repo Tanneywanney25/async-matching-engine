@@ -6,7 +6,11 @@ __pycache__/
 # Virtual environments
 .venv/
 venv/
-env/
+env/bin/
+env/Scripts/
+env/lib/
+env/Lib/
+env/pyvenv.cfg
 
 # Test / tooling caches
 .pytest_cache/
@@ -31,3 +35,10 @@ node_modules/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# GPU analytics layer: credentials and recorded market data never enter git
+access_token
+kaggle.json
+data/
+build/
+*.nsys-rep.tmp
