@@ -26,20 +26,26 @@
       "uploaded_at": "2026-10-21T19:03:40Z"
     }
   ],
-  "gpu_hours_used_estimate": 0.254,
+  "gpu_hours_used_estimate": 0.288,
   "kaggle_reported": {
-    "checked_at": "2026-10-21T19:30:40Z",
+    "checked_at": "2026-10-21T23:00:10Z",
     "gpu": {
-      "remaining_hours": 29.8,
+      "remaining_hours": 29.76,
       "total_hours": 30.0,
-      "used_hours": 0.2
+      "used_hours": 0.24
     },
-    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.20h  29.80h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
+    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.24h  29.76h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
     "tpu": {
       "remaining_hours": 20.0,
       "total_hours": 20.0,
       "used_hours": 0.0
     }
+  },
+  "phase2": {
+    "budget_gpu_hours": 6.0,
+    "gpu_hours_used_estimate": 0.035,
+    "kaggle_used_hours_at_start": 0.2,
+    "started_at": "2026-10-21T22:25:01Z"
   },
   "runs": [
     {
@@ -187,6 +193,27 @@
       "status": "complete",
       "timeout_minutes": 45,
       "wall_seconds": 108.51989579200745
+    },
+    {
+      "branch": "gpu-phase2",
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive-synth"
+      ],
+      "env": {},
+      "finished_at": "2026-10-21T22:55:06Z",
+      "git_sha": "cd58e60c5a66dbd3ab2fc19c85b0b245b65ff5c4",
+      "gpu_minutes": 2.08,
+      "gpu_name": "Tesla T4",
+      "job": "bench_quick",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+      "pushed_at": "2026-10-21T22:52:51Z",
+      "result_status": "complete",
+      "run_id": "bench_quick-20261021-225248",
+      "running_at": "2026-10-21T22:53:01Z",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 30,
+      "wall_seconds": 114.42295360565186
     }
   ]
 }

@@ -1,0 +1,75 @@
+[{"stream_name":"stdout","time":0.920630255,"data":"[    0.0s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":0.920688189,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":22.544776365,"data":"[   21.7s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"NVIDIA Nsight Systems version 2025.1.1.0\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":23.994808844,"data":"[   23.1s] repo at cd58e60c5a66dbd3ab2fc19c85b0b245b65ff5c4 on gpu-phase2\n"}
+,{"stream_name":"stdout","time":24.245006401,"data":"[   23.4s] archive: /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth\n"}
+,{"stream_name":"stdout","time":24.332963874,"data":"[   23.5s] archive source=synthetic snapshots=300000 trades=100000 hash=805644066b5d802d\n"}
+,{"stream_name":"stdout","time":24.338887225,"data":"[   23.5s] running: /usr/bin/python3 -u -m bench.run_all --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth --out /kaggle/working/results/bench_quick-20261021-225248 --source synthetic --quick --sections ladder,scans,precision,layout,slippage,ofi,pipeline,resources --budget-minutes 36\n"}
+,{"stream_name":"stdout","time":31.802228215,"data":"[run_all] archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth (synthetic, 300,000 snapshots, 100,000 trades) -\u003e /kaggle/working/results/bench_quick-20261021-225248\n"}
+,{"stream_name":"stdout","time":31.802254206,"data":"[run_all] gpu Tesla T4; sections ladder, scans, precision, layout, slippage, ofi, pipeline, resources; engine 100,000 orders / 10,000 cancels; iters 5; quick True\n"}
+,{"stream_name":"stdout","time":33.625336717,"data":"[ladder] bandwidth: copy kernel 228.9 GB/s, cudaMemcpy 241.6 GB/s, read-only 254.0 GB/s, theoretical 320.1\n"}
+,{"stream_name":"stdout","time":34.116540473,"data":"[ladder] n=50,000 levels=50 n_stride=50,000\n"}
+,{"stream_name":"stdout","time":34.255262241,"data":"[ladder] verify v0_aos: True max_abs {'spread_ticks': 0, 'spread_usd': 1.862645149230957e-09, 'depth_bid': 1.1168420314788818e-05, 'depth_ask': 1.5307217836380005e-05, 'imbalance10': 1.7376876787489337e-07, 'microprice_offset_ticks': 4.77181554270345e-07}\n"}
+,{"stream_name":"stdout","time":34.259510956,"data":"[ladder] verify v1_soa: True max_abs {'spread_ticks': 0, 'spread_usd': 1.862645149230957e-09, 'depth_bid': 1.1168420314788818e-05, 'depth_ask': 1.5307217836380005e-05, 'imbalance10': 1.7376876787489337e-07, 'microprice_offset_ticks': 4.77181554270345e-07}\n"}
+,{"stream_name":"stdout","time":34.263348595,"data":"[ladder] verify v2_soa_fused: True max_abs {'spread_ticks': 0, 'spread_usd': 1.862645149230957e-09, 'depth_bid': 1.1168420314788818e-05, 'depth_ask': 1.5307217836380005e-05, 'imbalance10': 1.7376876787489337e-07, 'microprice_offset_ticks': 4.77181554270345e-07}\n"}
+,{"stream_name":"stdout","time":34.267274022,"data":"[ladder] verify v3_soa_fused_vec4: True max_abs {'spread_ticks': 0, 'spread_usd': 1.862645149230957e-09, 'depth_bid': 1.1168420314788818e-05, 'depth_ask': 1.5307217836380005e-05, 'imbalance10': 1.7376876787489337e-07, 'microprice_offset_ticks': 4.77181554270345e-07}\n"}
+,{"stream_name":"stdout","time":34.271093732,"data":"[ladder] verify v4_soa_fused_vec4_sweep: True max_abs {'spread_ticks': 0, 'spread_usd': 1.862645149230957e-09, 'depth_bid': 1.1168420314788818e-05, 'depth_ask': 1.5307217836380005e-05, 'imbalance10': 1.7376876787489337e-07, 'microprice_offset_ticks': 4.77181554270345e-07}\n"}
+,{"stream_name":"stdout","time":34.403088871,"data":"[ladder] sweep best: block 128 grid 160 0.1034 ms\n"}
+,{"stream_name":"stdout","time":37.63152005,"data":"[ladder] best rung v3_soa_fused_vec4: kernel 0.1045 ms (207.2 GB/s, 81.6% of ceiling), e2e 1.97 ms; speedups {'best_rung': 'v3_soa_fused_vec4', 'e2e_vs_numpy': 1.7952108667145155, 'e2e_vs_numpy_pageable': 0.7452383654379868, 'kernel_vs_cupy': 10.075344995831156, 'e2e_vs_cupy': 1.1562703373437437, 'v0_to_best_kernel': 6.0646249451261305, 'kernel_vs_cpp_single': 19.729460495219527, 'kernel_vs_cpp_omp': 8.2271057961658, 'e2e_vs_cpp_single': 1.0454751094470407}\n"}
+,{"stream_name":"stdout","time":37.63727408,"data":"[run_all] ladder          5.8 s  ok\n"}
+,{"stream_name":"stdout","time":46.742201522,"data":"[scans] scans n=100,000: winner cub_device_scan; n=1,048,576: winner cub_device_scan\n"}
+,{"stream_name":"stdout","time":47.28612464,"data":"[scans] rolling vwap: 0.671 ms, decimal max rel err 2.42e-16, {'1s': {'nan_pattern_equal': True, 'max_rel_err': 0.0, 'reference': 'math.fsum over each sampled window', 'sample': 2000, 'float64_cumsum_max_rel_err': 7.2956890145424164e-09, 'gpu_vs_numpy_cumsum_max_rel_err': 9.134142656271785e-09, 'coverage_pct': 79.60300000000001}, '10s': {'nan_pattern_equal': True, 'max_rel_err': 1.693313064781238e-16, 'reference': 'math.fsum over each sampled window', 'sample': 2000, 'float64_cumsum_max_rel_err': 9.012639521336294e-11, 'gpu_vs_numpy_cumsum_max_rel_err': 1.2448827595567228e-10, 'coverage_pct': 99.993}}\n"}
+,{"stream_name":"stdout","time":47.461812111,"data":"[scans] rolling book: 0.236 ms, spread err 0.00e+00, imbalance err 9.69e-08\n"}
+,{"stream_name":"stdout","time":47.46495786,"data":"[run_all] scans           9.8 s  ok\n"}
+,{"stream_name":"stdout","time":47.48109634,"data":"[precision] n=200,000 values, window=100\n"}
+,{"stream_name":"stdout","time":47.61839012,"data":"[precision] exact reference in 0.1 s ({'base_exponent': -13, 'max_shift_bits': 17, 'values': 200000})\n"}
+,{"stream_name":"stdout","time":55.275262706,"data":"[precision] float32_naive: window max 4.625e-04 median 1.986e-05; prefix max 2.041e-07\n"}
+,{"stream_name":"stdout","time":55.284986746,"data":"[precision] float64: window max 0.000e+00 median 0.000e+00; prefix max 0.000e+00\n"}
+,{"stream_name":"stdout","time":55.297733745,"data":"[precision] kahan_float32: window max 8.651e-08 median 1.018e-08; prefix max 5.933e-08\n"}
+,{"stream_name":"stdout","time":55.31025037,"data":"[precision] block_rebased_float32: window max 2.839e-06 median 1.901e-07; prefix max 1.403e-07\n"}
+,{"stream_name":"stdout","time":55.319451631,"data":"[precision] double_double: window max 0.000e+00 median 0.000e+00; prefix max 0.000e+00\n"}
+,{"stream_name":"stdout","time":55.452210889,"data":"[precision] Window sums of 100 values over 200,000 top-of-book notionals: float32 naive reaches a maximum relative error of 4.62e-04 because two large prefixes cancel; float64 keeps the maximum at 0.00e+00, inside the 9.1e-09 budget (a tenth of a tick at 11,000,307 ticks), and is the fastest variant that does (float64, double_double qualify), at -26.9% time versus float32 naive.\n"}
+,{"stream_name":"stdout","time":55.453811707,"data":"[run_all] precision       8.0 s  ok\n"}
+,{"stream_name":"stdout","time":73.222222306,"data":"[run_all] layout         17.8 s  ok\n"}
+,{"stream_name":"stdout","time":76.195826433,"data":"[run_all] slippage        3.0 s  ok\n"}
+,{"stream_name":"stdout","time":76.537103762,"data":"[run_all] ofi             0.3 s  ok\n"}
+,{"stream_name":"stdout","time":76.559754213,"data":"[bench_pipeline] n=131072 (archive 300000), levels=50, chunks=16, quick=True, int16=False\n"}
+,{"stream_name":"stdout","time":76.793307103,"data":"[bench_pipeline] staged 104.9 MB pinned in 115 ms; device buffers 20.2 MB\n"}
+,{"stream_name":"stdout","time":76.842041364,"data":"[bench_pipeline] verified serial=True overlapped=True max_abs_err={'spread_ticks': 0, 'depth_bid': 1.1168420314788818e-05, 'depth_ask': 1.5307217836380005e-05, 'imbalance10': 1.7376876787489337e-07, 'microprice_offset': 4.991138498056102e-07} bad_books=0\n"}
+,{"stream_name":"stdout","time":77.114207956,"data":"[bench_pipeline] overlapped 9.00 ms, serial 9.73 ms, saved 7.5%\n"}
+,{"stream_name":"stdout","time":77.229885411,"data":"[bench_pipeline] breakdown h2d 8.91 ms (11.8 GB/s), kernel 0.55 ms, d2h 0.39 ms (6.7 GB/s), transfer share 94.4%\n"}
+,{"stream_name":"stdout","time":77.284145516,"data":"[bench_pipeline] nsys profile: /opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/nsys profile --trace=cuda,nvtx --stats=false --force-overwrite true -o /kaggle/working/results/bench_quick-20261021-225248/raw/pipeline /usr/bin/python3 -m bench.bench_pipeline --nsys-child --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth --chunks 16 --subset 131072\n"}
+,{"stream_name":"stdout","time":81.243286833,"data":"[bench_pipeline] nsys timeline: {'h2d': 16, 'kernel': 16, 'd2h': 16} bars, overlap 7.8% of 8.71 ms\n"}
+,{"stream_name":"stdout","time":81.269059007,"data":"[bench_pipeline] done\n"}
+,{"stream_name":"stdout","time":81.270582522,"data":"[run_all] pipeline        4.7 s  ok\n"}
+,{"stream_name":"stdout","time":113.336649023,"data":"[run_all] resources      32.1 s  ok\n"}
+,{"stream_name":"stdout","time":113.33707207,"data":"[run_all] $ python /kaggle/working/repo/scripts/benchmark.py --orders 100000 --cancels 10000 --results-dir /kaggle/working/results/bench_quick-20261021-225248/engine\n"}
+,{"stream_name":"stdout","time":115.064272031,"data":"    Benchmarking OrderBook with 100,000 orders (mid=64,000)...\n"}
+,{"stream_name":"stdout","time":115.064300252,"data":"\n"}
+,{"stream_name":"stdout","time":115.064305797,"data":"    add_order (insert + match) (100,000 ops)\n"}
+,{"stream_name":"stdout","time":115.064310193,"data":"      mean :    10.73 us\n"}
+,{"stream_name":"stdout","time":115.064314962,"data":"      p50  :     7.92 us\n"}
+,{"stream_name":"stdout","time":115.06431915,"data":"      p95  :    23.27 us\n"}
+,{"stream_name":"stdout","time":115.064323257,"data":"      p99  :    33.72 us\n"}
+,{"stream_name":"stdout","time":115.064327243,"data":"\n"}
+,{"stream_name":"stdout","time":115.064331368,"data":"    cancel_order (10,000 ops)\n"}
+,{"stream_name":"stdout","time":115.064336014,"data":"      mean :     2.23 us\n"}
+,{"stream_name":"stdout","time":115.064340683,"data":"      p50  :     0.41 us\n"}
+,{"stream_name":"stdout","time":115.064345124,"data":"      p95  :     6.15 us\n"}
+,{"stream_name":"stdout","time":115.064349228,"data":"      p99  :    11.53 us\n"}
+,{"stream_name":"stdout","time":115.06435342,"data":"\n"}
+,{"stream_name":"stdout","time":115.064357578,"data":"    Target: median add_order under 50 us.\n"}
+,{"stream_name":"stdout","time":115.064361813,"data":"\n"}
+,{"stream_name":"stdout","time":115.064366057,"data":"    Wrote /kaggle/working/results/bench_quick-20261021-225248/engine/metrics.json, /kaggle/working/results/bench_quick-20261021-225248/engine/manifest.json and /kaggle/working/results/bench_quick-20261021-225248/engine/raw/engine_latency_us.json\n"}
+,{"stream_name":"stdout","time":115.069979867,"data":"[run_all] engine          1.7 s  ok\n"}
+,{"stream_name":"stdout","time":115.072414861,"data":"[run_all] done in 90.4 s: 11 section(s) in /kaggle/working/results/bench_quick-20261021-225248/metrics.json, 0 error(s)\n"}
+,{"stream_name":"stdout","time":115.292642309,"data":"[  114.4s] run_all exit code 0\n"}
+,{"stream_name":"stdout","time":115.363289953,"data":"[  114.5s] finished: complete 114s\n"}
+,{"stream_name":"stdout","time":116.229557713,"data":"RESULT_BUNDLE results_bench_quick-20261021-225248.tar.gz\n"}
+,{"stream_name":"stderr","time":118.476247077,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":118.476274704,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":118.725789685,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":118.725816545,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":119.700633392,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":120.737259246,"data":"[NbConvertApp] Writing 322531 bytes to __results__.html\n"}
+]

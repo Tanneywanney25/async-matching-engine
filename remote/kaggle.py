@@ -157,6 +157,16 @@ import tarfile as _tarfile
 with _tarfile.open(f"/kaggle/working/results_{RUN_ID}.tar.gz", "w:gz") as _tf:
     _tf.add(OUT, arcname=RUN_ID)
 print("RESULT_BUNDLE", f"results_{RUN_ID}.tar.gz", flush=True)
+# Everything left in /kaggle/working is downloaded file by file by `kaggle kernels output`; the
+# repository clone alone is hundreds of files, so only the bundle (and the log) stay behind.
+try:
+    os.chdir("/kaggle/working")
+    for _left in os.listdir("/kaggle/working"):
+        if _left != f"results_{RUN_ID}.tar.gz":
+            _path = os.path.join("/kaggle/working", _left)
+            shutil.rmtree(_path, ignore_errors=True) if os.path.isdir(_path) else os.remove(_path)
+except Exception as _exc:  # the bundle is already written; a failed cleanup only makes the pull slower
+    print("cleanup of /kaggle/working failed:", repr(_exc), flush=True)
 '''
     env = "".join(f"os.environ[{k!r}] = {v!r}\n" for k, v in sorted(spec.env.items()))
     return header + "\n" + env + spec.body + "\n" + footer

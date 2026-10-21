@@ -1,0 +1,41 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'layout_cumdepth_soa' for 'sm_75'
+ptxas info    : Function properties for layout_cumdepth_soa
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 23.626 ms
+ptxas info    : Compiling entry function 'layout_imbalance_soa' for 'sm_75'
+ptxas info    : Function properties for layout_imbalance_soa
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 10.234 ms
+ptxas info    : Compiling entry function 'layout_depth_soa' for 'sm_75'
+ptxas info    : Function properties for layout_depth_soa
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 16.768 ms
+ptxas info    : Compiling entry function 'layout_spread_soa' for 'sm_75'
+ptxas info    : Function properties for layout_spread_soa
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 8 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 1.178 ms
+ptxas info    : Compiling entry function 'layout_cumdepth_aos' for 'sm_75'
+ptxas info    : Function properties for layout_cumdepth_aos
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 14.114 ms
+ptxas info    : Compiling entry function 'layout_imbalance_aos' for 'sm_75'
+ptxas info    : Function properties for layout_imbalance_aos
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 8.478 ms
+ptxas info    : Compiling entry function 'layout_depth_aos' for 'sm_75'
+ptxas info    : Function properties for layout_depth_aos
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 62 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 8.110 ms
+ptxas info    : Compiling entry function 'layout_spread_aos' for 'sm_75'
+ptxas info    : Function properties for layout_spread_aos
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 1.234 ms
