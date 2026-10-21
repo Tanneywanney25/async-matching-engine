@@ -42,3 +42,7 @@ kaggle.json
 data/
 build/
 *.nsys-rep.tmp
+
+# Generated kernel bundles and dataset staging for the remote runner
+remote/.push/
+remote/.datasets/
