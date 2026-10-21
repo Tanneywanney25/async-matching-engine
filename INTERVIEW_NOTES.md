@@ -58,7 +58,7 @@ Not the future mid at these horizons: out of sample the fit is no better than th
 
 ### 14. Why is the matching engine in Python, and how fast is it?
 
-Clarity and Decimal exactness. On the job's host CPU `add_order` p99 was 34.57 microseconds for the matching path alone; the GPU would add a PCIe round trip on top.
+Clarity and Decimal exactness. On the job's host CPU `add_order` p99 was 39.35 microseconds for the matching path alone; the GPU would add a PCIe round trip on top.
 
 ### 15. Why integer ticks?
 

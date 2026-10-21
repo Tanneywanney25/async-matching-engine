@@ -1,6 +1,7 @@
 {
   "1": "levels are numbered from the top of the book; also 'v1' style rung labels written as words",
   "10": "top-10 levels in the imbalance definition (metrics.book_imbalance with levels=10)",
+  "20": "the C++20 language standard, written as part of a name (C++20), not a measurement",
   "30": "the time-ordered 70/30 split leaves the last 30% of each series for testing",
   "32": "threads per warp on every NVIDIA GPU, a hardware constant (DESIGN.md's coalescing note)",
   "99": "99th percentile (the latency statistic named in bullet 3)",

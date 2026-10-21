@@ -11,7 +11,7 @@ Every figure on this page is rendered by `scripts/render_docs.py` from `results/
 | Driver / CUDA runtime / nvcc | `580.178.04` / `12090` / `Cuda compilation tools, release 12.8, V12.8.93` |
 | Nsight Systems | `NVIDIA Nsight Systems version 2025.1.1.0` |
 | Host CPU | `Intel(R) Xeon(R) CPU @ 2.00GHz`, 4 logical cores |
-| Run | `bench_rerun-20261021-233009` at git `efd7713cca47`, NVRTC target `sm_75` |
+| Run | `bench_rerun-20261021-233814` at git `e6cfe66cafc9`, NVRTC target `sm_75` |
 | Archive | 863,153 snapshots, 280,818 trades, source `real` |
 | Capture window | `2026-10-21T07:49:24Z` to `2026-10-21T17:10:57Z` (9.36 hours), sequence gaps: 0 |
 | Archive content hash | `10e3c7d79010feb6281d9c3833d00e6a05a51275dc9e1aa58c05c5aa75451959` |
@@ -218,10 +218,25 @@ Two cards take 56.3 ms against 56.4 ms on one, a speedup of 1.00 (50.1% of perfe
 
 | Operation | Mean µs | p50 µs | p95 µs | p99 µs |
 |---|---:|---:|---:|---:|
-| `add_order` | 11.05 | 8.19 | 23.90 | 34.57 |
-| `cancel_order` | 2.29 | 0.46 | 6.34 | 9.34 |
+| `add_order` | 11.18 | 7.90 | 24.64 | 39.35 |
+| `cancel_order` | 2.42 | 0.47 | 6.33 | 12.71 |
 
-Raw latencies: [raw](results/bench_all-20261021-230301/raw/engine_latency_us.json). The laptop's own figures are in the README's Benchmark table.
+Raw latencies: [raw](results/bench_rerun-20261021-233814/raw/engine_latency_us.json). The laptop's own figures are in the README's Benchmark table.
+
+## C++20 order book core (CPU)
+
+`native/`, built with CMake in the same Kaggle job (`c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0`, -O3 (CMake Release), C++20) and run on its host CPU (`Intel(R) Xeon(R) CPU @ 2.00GHz`). Its native tests passed 2,482,227 checks, among them a randomized differential test against a `std::map` and `std::deque` reference book, and a counting allocator saw 0 heap allocations over 200,000 operations once the book was built. The differential fuzzer ran 10,000 seeded streams (548,317 operations) against the reference book with 0 divergences, comparing fills, statuses, best prices and depth after every operation.
+
+Stream: scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids. Every path below replays the same operations in one process; they agreed on fills, resting orders and cancels found: yes.
+
+| Path | add p50 µs | add p99 µs | add p99.9 µs | cancel p50 µs | cancel p99 µs | cancel p99.9 µs |
+|---|---:|---:|---:|---:|---:|---:|
+| C++ core, native harness (no Python in the loop) | 0.083 | 0.417 | 0.627 | 0.050 | 0.400 | 0.551 |
+| C++ core through the pybind11 binding, integer ticks and lots | 0.516 | 1.194 | 6.878 | 0.412 | 0.969 | 4.877 |
+| C++ core through `NativeOrderBook`, Decimal orders | 3.663 | 17.0 | 35.0 | 0.586 | 2.784 | 18.7 |
+| Python engine (the reference implementation) | 6.333 | 29.1 | 56.2 | 0.434 | 5.968 | 15.3 |
+
+At p99 the native `add` is 69.9 times faster than the Python engine's, 24.4 times through the binding and 1.7 times with Decimal orders, where converting and building Python objects costs more than the matching. The native harness reads `std::chrono::steady_clock` twice per operation; a pair of reads costs 0.024 µs at the median, included above, not subtracted. Raw: [raw](results/bench_rerun-20261021-233814/raw/synthetic_native_engine_latency_us.json).
 
 ## Kernel resources and theoretical occupancy
 
@@ -298,3 +313,4 @@ No timed block lost more than a tenth of its SM clock between the samples taken 
 - [`bench_all-20261021-230301`](results/bench_all-20261021-230301/manifest.json)
 - [`bench_rerun-20261021-232245`](results/bench_rerun-20261021-232245/manifest.json)
 - [`bench_rerun-20261021-233009`](results/bench_rerun-20261021-233009/manifest.json)
+- [`bench_rerun-20261021-233814`](results/bench_rerun-20261021-233814/manifest.json)

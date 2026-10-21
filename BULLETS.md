@@ -18,7 +18,7 @@ structure-of-arrays order for coalesced reads, cutting measured kernel time 95.8
 
 <!-- bullet:3 -->
 Asynchronous Python matching engine with price-time priority, partial fills and cancellations on Coinbase's
-live WebSocket order book feed, benchmarked over 100,000 orders at 34.57 microseconds 99th-percentile latency.
+live WebSocket order book feed, benchmarked over 100,000 orders at 39.35 microseconds 99th-percentile latency.
 
 ## Alternate: GPU performance (percentage of peak bandwidth)
 

@@ -366,7 +366,8 @@ def native_engine_md(r: Renderer, key: str = "") -> List[str]:
                 + (f"The differential fuzzer ran {r.fmt(sec, 'fuzz.streams', 'int')} seeded streams ({r.fmt(sec, 'fuzz.operations', 'int')} "
                    f"operations) against the reference book with {r.fmt(sec, 'fuzz.divergences', 'int')} divergences, comparing fills, "
                    "statuses, best prices and depth after every operation." if r.get(sec, "fuzz") else ""), ""]
-    out += [f"Stream: {base.get('stream', '')}. Every path below replays the same operations in one process; they agreed on fills, "
+    stream = r.record(str(base.get("stream", "")), r.run_of(sec).id, f"{sec}.{key}stream (the run's own description)", base.get("stream"))
+    out += [f"Stream: {stream}. Every path below replays the same operations in one process; they agreed on fills, "
             f"resting orders and cancels found: {'yes' if r.get(sec, key + 'consistent') else 'NO'}.", "",
             "| Path | add p50 µs | add p99 µs | add p99.9 µs | cancel p50 µs | cancel p99 µs | cancel p99.9 µs |",
             "|---|---:|---:|---:|---:|---:|---:|"]

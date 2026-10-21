@@ -1,17 +1,29 @@
 {
- "generated_unix": 1792625572.332984,
+ "generated_unix": 1792626112.6955643,
  "tokens": {
   "0": [
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.gap_count",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 0
    },
    {
     "doc": "BENCHMARKS.md",
     "path": "scans.lookback_check.repeat_failures",
     "run_id": "bench_rerun-20261021-232245",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.build.test_no_alloc.allocations",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.fuzz.divergences",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 0
    },
    {
@@ -773,7 +785,7 @@
    {
     "doc": "README.md (GPU section)",
     "path": "archive.gap_count",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 0
    }
   ],
@@ -783,6 +795,14 @@
     "path": "ofi.per_product.ETH-USD.h1s.r2_oos",
     "run_id": "bench_all-20261021-230301",
     "value": 0.0007151876366484622
+   }
+  ],
+  "0.001": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.stream (the run's own description)",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
    }
   ],
   "0.0015": [
@@ -1257,6 +1277,14 @@
     "value": 0.01789596676826477
    }
   ],
+  "0.024": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.native.timer_overhead_us.p50",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.024
+   }
+  ],
   "0.0254": [
    {
     "doc": "BENCHMARKS.md",
@@ -1305,6 +1333,14 @@
     "value": 0.041984500057878904
    }
   ],
+  "0.050": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.native.cancel_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.05
+   }
+  ],
   "0.0509": [
    {
     "doc": "BENCHMARKS.md",
@@ -1343,6 +1379,14 @@
     "path": "ofi.kernel_ms.iqr_ms",
     "run_id": "bench_all-20261021-230301",
     "value": 0.07710397243499756
+   }
+  ],
+  "0.083": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.native.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.083
    }
   ],
   "0.0e+00": [
@@ -1455,6 +1499,14 @@
     "value": 386725846.1135337
    }
   ],
+  "0.400": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.native.cancel_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.4
+   }
+  ],
   "0.406": [
    {
     "doc": "BENCHMARKS.md",
@@ -1469,12 +1521,36 @@
     "value": 0.4059839993715286
    }
   ],
+  "0.412": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding.cancel_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.412
+   }
+  ],
+  "0.417": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.native.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.417
+   }
+  ],
   "0.432": [
    {
     "doc": "BENCHMARKS.md",
     "path": "precision.variants.1.ms.median_ms",
     "run_id": "bench_all-20261021-230301",
     "value": 0.43169599771499634
+   }
+  ],
+  "0.434": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.python_engine.cancel_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.434
    }
   ],
   "0.448": [
@@ -1485,12 +1561,12 @@
     "value": 0.4481920003890991
    }
   ],
-  "0.46": [
+  "0.47": [
    {
     "doc": "BENCHMARKS.md",
     "path": "engine.cancel_order.p50_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 0.46
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.473
    }
   ],
   "0.504": [
@@ -1507,6 +1583,38 @@
     "path": "precision.variants.4.ms.iqr_ms",
     "run_id": "bench_all-20261021-230301",
     "value": 0.5074241757392883
+   }
+  ],
+  "0.516": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.516
+   }
+  ],
+  "0.551": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.native.cancel_order.p999_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.551
+   }
+  ],
+  "0.586": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding_decimal.cancel_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.586
+   }
+  ],
+  "0.627": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.native.add_order.p999_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.627
    }
   ],
   "0.664": [
@@ -1537,6 +1645,14 @@
     "path": "precision.variants.2.ms.median_ms",
     "run_id": "bench_all-20261021-230301",
     "value": 0.9256480038166046
+   }
+  ],
+  "0.969": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding.cancel_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.969
    }
   ],
   "0.987": [
@@ -1576,6 +1692,12 @@
    },
    {
     "doc": "BENCHMARKS.md",
+    "path": "native_engine.stream (the run's own description)",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
+   },
+   {
+    "doc": "BENCHMARKS.md",
     "path": "resources.kernels.4.primary_block",
     "run_id": "bench_all-20261021-230301",
     "value": 1
@@ -1589,13 +1711,13 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 1
    },
    {
     "doc": "BULLETS.md",
     "path": "bullet_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": "1"
    }
   ],
@@ -1753,6 +1875,14 @@
     "path": "ladder.speedups.e2e_vs_numpy_pageable",
     "run_id": "bench_rerun-20261021-232245",
     "value": 1.0975644892877718
+   }
+  ],
+  "1.194": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 1.194
    }
   ],
   "1.21": [
@@ -2085,6 +2215,14 @@
     "value": 1688519853.8055408
    }
   ],
+  "1.7": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.p99_add_python_engine_over_binding_decimal",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 1.7099671284339046
+   }
+  ],
   "1.71": [
    {
     "doc": "BENCHMARKS.md",
@@ -2223,7 +2361,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 10
    }
   ],
@@ -2231,8 +2369,20 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "engine.cancels",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 10000
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.fuzz.streams",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 10000
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.stream (the run's own description)",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
    }
   ],
   "10,240": [
@@ -2281,13 +2431,19 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "engine.orders",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 100000
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.stream (the run's own description)",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
    },
    {
     "doc": "BULLETS.md",
     "path": "engine.orders",
-    "run_id": "bench_all-20261021-230301",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 100000
    }
   ],
@@ -2603,16 +2759,16 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 11
    }
   ],
-  "11.05": [
+  "11.18": [
    {
     "doc": "BENCHMARKS.md",
     "path": "engine.add_order.mean_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 11.05427006
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 11.177903559999999
    }
   ],
   "11.8": [
@@ -2681,7 +2837,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 12
    }
   ],
@@ -2705,6 +2861,14 @@
     "path": "pipeline.two_gpu.h2d_gbs_two_gpu_aggregate",
     "run_id": "bench_rerun-20261021-233009",
     "value": 12.354303915234716
+   }
+  ],
+  "12.71": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.cancel_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 12.706
    }
   ],
   "127,759": [
@@ -2821,7 +2985,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 13
    }
   ],
@@ -2857,7 +3021,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 14
    }
   ],
@@ -2885,15 +3049,23 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 15
+   }
+  ],
+  "15.3": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.python_engine.cancel_order.p999_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 15.283
    }
   ],
   "15.6": [
    {
     "doc": "BENCHMARKS.md",
     "path": "gpu.memory_gb",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 15.636
    }
   ],
@@ -3029,6 +3201,14 @@
     "value": 17
    }
   ],
+  "17.0": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding_decimal.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 17.036
+   }
+  ],
   "17.6": [
    {
     "doc": "BENCHMARKS.md",
@@ -3053,6 +3233,14 @@
     "value": 18725
    }
   ],
+  "18.7": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding_decimal.cancel_order.p999_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 18.732
+   }
+  ],
   "184.9": [
    {
     "doc": "BENCHMARKS.md",
@@ -3075,6 +3263,14 @@
     "value": 194.21705450002946
    }
   ],
+  "1e-6": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.stream (the run's own description)",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
+   }
+  ],
   "2": [
    {
     "doc": "BENCHMARKS.md",
@@ -3091,13 +3287,13 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 2
    },
    {
     "doc": "BULLETS.md",
     "path": "bullet_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": "2"
    }
   ],
@@ -3107,6 +3303,22 @@
     "path": "scans.rolling_vwap.time_windows.1s.sample",
     "run_id": "bench_rerun-20261021-232245",
     "value": 2000
+   }
+  ],
+  "2,482,227": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.build.test_order_book.checks",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 2482227
+   }
+  ],
+  "2.0": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.stream (the run's own description)",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
    }
   ],
   "2.02": [
@@ -3147,12 +3359,12 @@
     "value": 2.0690802834125008e-07
    }
   ],
-  "2.29": [
+  "2.42": [
    {
     "doc": "BENCHMARKS.md",
     "path": "engine.cancel_order.mean_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 2.2935977
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 2.4191319
    }
   ],
   "2.51": [
@@ -3177,6 +3389,14 @@
     "path": "scans.large.implementations.1.ms.median_ms",
     "run_id": "bench_rerun-20261021-232245",
     "value": 2.7832319736480713
+   }
+  ],
+  "2.784": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding_decimal.cancel_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 2.784
    }
   ],
   "2.8": [
@@ -3257,6 +3477,14 @@
     "path": "layout.soa_total_kernel_ms",
     "run_id": "bench_all-20261021-230301",
     "value": 200.465929
+   }
+  ],
+  "200,000": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.build.test_no_alloc.operations",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 200000
    }
   ],
   "209.8": [
@@ -3447,14 +3675,6 @@
     "value": -23.747249512417856
    }
   ],
-  "23.90": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "engine.add_order.p95_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 23.9
-   }
-  ],
   "230.1": [
    {
     "doc": "BENCHMARKS.md",
@@ -3539,6 +3759,22 @@
     "path": "pipeline.int16_encoding.bytes_saved_pct",
     "run_id": "bench_rerun-20261021-233009",
     "value": 23.999335658528484
+   }
+  ],
+  "24.4": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.p99_add_python_engine_over_binding",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 24.39782244556114
+   }
+  ],
+  "24.64": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.add_order.p95_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 24.641
    }
   ],
   "240.1": [
@@ -4099,7 +4335,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.n_trades",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 280818
    },
    {
@@ -4111,7 +4347,7 @@
    {
     "doc": "README.md (GPU section)",
     "path": "archive.n_trades",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 280818
    }
   ],
@@ -4145,6 +4381,14 @@
     "value": 29.022576006621886
    }
   ],
+  "29.1": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.python_engine.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 29.131
+   }
+  ],
   "3": [
    {
     "doc": "BENCHMARKS.md",
@@ -4155,13 +4399,13 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 3
    },
    {
     "doc": "BULLETS.md",
     "path": "bullet_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": "3"
    }
   ],
@@ -4263,6 +4507,14 @@
     "path": "pipeline.breakdown.kernel_ms",
     "run_id": "bench_rerun-20261021-233009",
     "value": 3.6519200056791306
+   }
+  ],
+  "3.663": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding_decimal.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 3.663
    }
   ],
   "3.97": [
@@ -4389,7 +4641,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "gpu.theoretical_bw_gbs",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 320.06
    },
    {
@@ -4407,32 +4659,20 @@
     "value": 33
    }
   ],
-  "34.57": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "engine.add_order.p99_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 34.568
-   },
-   {
-    "doc": "INTERVIEW_NOTES.md",
-    "path": "engine.add_order.p99_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 34.568
-   },
-   {
-    "doc": "BULLETS.md",
-    "path": "engine.add_order.p99_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 34.568
-   }
-  ],
   "34.9": [
    {
     "doc": "BENCHMARKS.md",
     "path": "baselines.cpp_single.ms.median_ms",
     "run_id": "bench_rerun-20261021-232245",
     "value": 34.94009599998549
+   }
+  ],
+  "35.0": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding_decimal.add_order.p999_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 35.035
    }
   ],
   "36.6": [
@@ -4471,11 +4711,31 @@
     "value": 38
    }
   ],
+  "39.35": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 39.346
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "engine.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 39.346
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "engine.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 39.346
+   }
+  ],
   "4": [
    {
     "doc": "BENCHMARKS.md",
     "path": "manifest.cpu_cores",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 4
    },
    {
@@ -4739,7 +4999,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 4
    }
   ],
@@ -4863,11 +5123,19 @@
     "value": 0.004721926720344517
    }
   ],
+  "4.877": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding.cancel_order.p999_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 4.877
+   }
+  ],
   "40": [
    {
     "doc": "BENCHMARKS.md",
     "path": "gpu.sm_count",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 40
    },
    {
@@ -4928,6 +5196,12 @@
    }
   ],
   "42": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.stream (the run's own description)",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
+   },
    {
     "doc": "BENCHMARKS.md",
     "path": "resources.kernels.11.registers",
@@ -5087,7 +5361,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 5
    }
   ],
@@ -5097,6 +5371,14 @@
     "path": "pipeline.two_gpu.host_memcpy_gbs",
     "run_id": "bench_rerun-20261021-233009",
     "value": 5.597417500042739
+   }
+  ],
+  "5.968": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.python_engine.cancel_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 5.968
    }
   ],
   "50": [
@@ -5211,6 +5493,14 @@
     "value": 54
    }
   ],
+  "548,317": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.fuzz.operations",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 548317
+   }
+  ],
   "55.8": [
    {
     "doc": "BENCHMARKS.md",
@@ -5245,6 +5535,14 @@
     "path": "pipeline.breakdown.h2d_ms",
     "run_id": "bench_rerun-20261021-233009",
     "value": 56.07115197181702
+   }
+  ],
+  "56.2": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.python_engine.add_order.p999_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 56.188
    }
   ],
   "56.3": [
@@ -5333,7 +5631,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 6
    }
   ],
@@ -5361,12 +5659,28 @@
     "value": 6.111785888671875
    }
   ],
-  "6.34": [
+  "6.33": [
    {
     "doc": "BENCHMARKS.md",
     "path": "engine.cancel_order.p95_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 6.344
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 6.329
+   }
+  ],
+  "6.333": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.python_engine.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 6.333
+   }
+  ],
+  "6.878": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding.add_order.p999_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 6.878
    }
   ],
   "60.7": [
@@ -5593,6 +5907,14 @@
     "value": 67.63233971288084
    }
   ],
+  "69.9": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.p99_add_python_engine_over_native",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 69.85851318944844
+   }
+  ],
   "690,536,448": [
    {
     "doc": "BENCHMARKS.md",
@@ -5617,7 +5939,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 7
    }
   ],
@@ -5655,6 +5977,14 @@
     "path": "scans.implementations.3.elements_per_s",
     "run_id": "bench_rerun-20261021-232245",
     "value": 7296059347.717989
+   }
+  ],
+  "7.90": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 7.896
    }
   ],
   "70.5": [
@@ -5815,7 +6145,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 8
    }
   ],
@@ -5841,14 +6171,6 @@
     "path": "resources.kernels.40.static_smem_bytes",
     "run_id": "bench_all-20261021-230301",
     "value": 8712
-   }
-  ],
-  "8.19": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "engine.add_order.p50_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 8.194
    }
   ],
   "80": [
@@ -5955,7 +6277,7 @@
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.n_snapshots",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 863153
    },
    {
@@ -5991,13 +6313,13 @@
    {
     "doc": "BULLETS.md",
     "path": "archive.n_snapshots",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 863153
    },
    {
     "doc": "README.md (GPU section)",
     "path": "archive.n_snapshots",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 863153
    }
   ],
@@ -6005,7 +6327,7 @@
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 9
    }
   ],
@@ -6037,25 +6359,17 @@
     "value": 9.211663722991943
    }
   ],
-  "9.34": [
-   {
-    "doc": "BENCHMARKS.md",
-    "path": "engine.cancel_order.p99_us",
-    "run_id": "bench_all-20261021-230301",
-    "value": 9.335
-   }
-  ],
   "9.36": [
    {
     "doc": "BENCHMARKS.md",
     "path": "archive.capture_seconds",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 33692.928069
    },
    {
     "doc": "README.md (GPU section)",
     "path": "archive.capture_seconds",
-    "run_id": "bench_rerun-20261021-233009",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 33692.928069
    }
   ],

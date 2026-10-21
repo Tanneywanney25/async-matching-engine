@@ -1,0 +1,46 @@
+[    0.0s] nvidia-smi: Tesla T4, 580.178.04
+Tesla T4, 580.178.04
+[   16.3s] env: {"gpu_line": "Tesla T4, 580.178.04\nTesla T4, 580.178.04", "nvcc": "Cuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0", "nsys": "NVIDIA Nsight Systems version 2025.1.1.0", "gxx": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0", "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz", "cpu_cores": 4, "cupy": "14.0.1", "numpy": "2.1.3"}
+[   18.7s] repo at e6cfe66cafc93396ce25df105585d851387f00d4 on gpu-phase2
+[   19.1s] archive: /kaggle/input/datasets/tanushbhatia/exchange-engine-archive
+[   19.1s] archive source=real snapshots=863153 trades=280818 hash=10e3c7d79010feb6
+[   19.1s] running: /usr/bin/python3 -u -m bench.run_all --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --out /kaggle/working/results/bench_rerun-20261021-233814 --source real --sections none --budget-minutes 36
+[run_all] archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive (real, 863,153 snapshots, 280,818 trades) -> /kaggle/working/results/bench_rerun-20261021-233814
+[run_all] gpu Tesla T4; sections none; engine 100,000 orders / 10,000 cancels; iters 30; quick False
+[run_all] $ python /kaggle/working/repo/scripts/benchmark.py --orders 100000 --cancels 10000 --results-dir /kaggle/working/results/bench_rerun-20261021-233814/engine
+    Benchmarking OrderBook with 100,000 orders (mid=64,000)...
+
+    add_order (insert + match) (100,000 ops)
+      mean :    11.18 us
+      p50  :     7.90 us
+      p95  :    24.64 us
+      p99  :    39.35 us
+
+    cancel_order (10,000 ops)
+      mean :     2.42 us
+      p50  :     0.47 us
+      p95  :     6.33 us
+      p99  :    12.71 us
+
+    Target: median add_order under 50 us.
+
+    Wrote /kaggle/working/results/bench_rerun-20261021-233814/engine/metrics.json, /kaggle/working/results/bench_rerun-20261021-233814/engine/manifest.json and /kaggle/working/results/bench_rerun-20261021-233814/engine/raw/engine_latency_us.json
+[run_all] engine          1.8 s  ok
+[run_all] $ python /kaggle/working/repo/scripts/benchmark_native.py --results-dir /kaggle/working/results/bench_rerun-20261021-233814/native_engine --orders 100000 --cancels 10000
+    fuzz: 10,000 streams, 548,317 operations, 0 divergences
+    native           add p50    0.083 p99    0.417 p99.9    0.627 us | cancel p50    0.050 p99    0.400 p99.9    0.551 us
+    binding          add p50    0.516 p99    1.194 p99.9    6.878 us | cancel p50    0.412 p99    0.969 p99.9    4.877 us
+    binding_decimal  add p50    3.663 p99   17.036 p99.9   35.035 us | cancel p50    0.586 p99    2.784 p99.9   18.732 us
+    python_engine    add p50    6.333 p99   29.131 p99.9   56.188 us | cancel p50    0.434 p99    5.968 p99.9   15.283 us
+    consistent across all four: True {'native': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}, 'binding': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}, 'binding_decimal': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}, 'python_engine': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}}
+[run_all] native         48.4 s  ok
+[run_all] done in 60.2 s: 2 section(s) in /kaggle/working/results/bench_rerun-20261021-233814/metrics.json, 0 error(s)
+[   80.9s] run_all exit code 0
+[   80.9s] finished: complete 81s
+RESULT_BUNDLE results_bench_rerun-20261021-233814.tar.gz
+/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\|'
+  cells[i][c] = re.sub('\\\\\|', '|', cell)
+/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\_'
+  text = re.sub(r'_', '\_', text) # Escape underscores in display text
+[NbConvertApp] Converting notebook __script__.ipynb to html
+[NbConvertApp] Writing 325610 bytes to __results__.html
