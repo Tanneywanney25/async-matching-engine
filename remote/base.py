@@ -150,7 +150,7 @@ if not nsys_path:
     ]
     for step in steps:
         rc_, o_, e_ = sh(step, timeout=1200)
-        log(f"  [{rc_}] {step[:60]}: {(o_ or e_)[-200:]}")
+        log(f"  [{{rc_}}] {{step[:60]}}: {{(o_ or e_)[-200:]}}")
     nsys_path = find_nsys()
     if not nsys_path:
         steps = [
@@ -160,7 +160,7 @@ if not nsys_path:
         ]
         for step in steps:
             rc_, o_, e_ = sh(step, timeout=1200)
-            log(f"  [{rc_}] {step[:60]}: {(o_ or e_)[-200:]}")
+            log(f"  [{{rc_}}] {{step[:60]}}: {{(o_ or e_)[-200:]}}")
         nsys_path = find_nsys()
     env["nsys_installed_here"] = bool(nsys_path)
 if nsys_path:
