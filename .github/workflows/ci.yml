@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, gpu-analytics]
   pull_request:
     branches: [main]
 
@@ -29,7 +29,19 @@ jobs:
         run: pytest -q
 
       - name: Run frontend logic tests
-        run: node --test tests/frontend/core.test.mjs
+        run: node --test tests/frontend/
+
+      - name: Documentation provenance and bullet checks
+        run: |
+          if [ -f BULLETS.md ]; then
+            python scripts/check_numbers.py
+            python scripts/check_bullets.py
+          else
+            echo "documents not rendered yet"
+          fi
+
+      - name: GPU tests are skipped on CPU runners
+        run: pytest -q -rs tests/test_gpu_marker.py
 
       - name: Smoke-test the benchmark
         run: python scripts/benchmark.py --orders 5000 --cancels 500
