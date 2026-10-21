@@ -26,9 +26,9 @@
       "uploaded_at": "2026-10-21T19:03:40Z"
     }
   ],
-  "gpu_hours_used_estimate": 0.247,
+  "gpu_hours_used_estimate": 0.254,
   "kaggle_reported": {
-    "checked_at": "2026-10-21T19:25:27Z",
+    "checked_at": "2026-10-21T19:30:40Z",
     "gpu": {
       "remaining_hours": 29.8,
       "total_hours": 30.0,
@@ -45,6 +45,7 @@
     {
       "datasets": [],
       "git_sha": "d063993e9c3975571502ca63b14d0d9ea84b3be7",
+      "gpu_minutes": 0.4,
       "gpu_name": "Tesla T4",
       "job": "probe",
       "kernel": "tanushbhatia/exchange-engine-gpu-probe",
@@ -52,7 +53,7 @@
       "result_status": "complete",
       "run_id": "probe-20261021-090601",
       "source": "synthetic",
-      "status": "pushed",
+      "status": "complete",
       "timeout_minutes": 20,
       "wall_seconds": 23.992616653442383
     },
