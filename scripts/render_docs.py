@@ -340,6 +340,42 @@ def ladder_table(r: Renderer, with_raw: bool = True) -> str:
     return "\n".join(rows)
 
 
+def lookback_check_lines(r: Renderer) -> List[str]:
+    """What the decoupled look-back scan passed (in a child process with a timeout) before it was timed."""
+    chk = r.get("scans", "lookback_check")
+    if not chk:
+        return []
+    if not chk.get("passed"):
+        return [f"The single-pass decoupled look-back scan did not pass its pre-timing check in this run "
+                f"(`{str(chk.get('error', 'a case failed'))[:160]}`), so it is not timed below.", ""]
+    cases = chk.get("cases") or []
+    ints = [c for c in cases if c.get("input") == "integer"]
+    n_min, n_max = min(c["n"] for c in cases), max(c["n"] for c in cases)
+    run_id = r.run_of("scans").id
+    return [f"Before it was timed, the single-pass decoupled look-back scan (Merrill and Garland, 2016) passed "
+            f"{r.record(format_value(len(cases), 'int'), run_id, 'scans.lookback_check.cases (count)', len(cases))} correctness cases "
+            f"in a child process with a timeout, at sizes from {r.record(format_value(n_min, 'int'), run_id, 'scans.lookback_check.cases.n (min)', n_min)} "
+            f"to {r.record(format_value(n_max, 'int'), run_id, 'scans.lookback_check.cases.n (max)', n_max)} elements: "
+            f"{r.record(format_value(len(ints), 'int'), run_id, 'scans.lookback_check.cases (integer inputs)', len(ints))} of them on integer-valued "
+            "inputs, whose partial sums are exact in float64, so they must equal `numpy.cumsum` bit for bit whatever order the "
+            f"look-back adds the tiles in, and {r.fmt('scans', 'lookback_check.repeats', 'int')} repeated runs at "
+            f"{r.fmt('scans', 'lookback_check.repeat_n', 'int')} elements with {r.fmt('scans', 'lookback_check.repeat_failures', 'int')} "
+            "mismatches.", ""]
+
+
+def lookback_gap_sentence(r: Renderer, key: str) -> str:
+    gap = r.get("scans", key + "lookback_vs_cub")
+    if not gap:
+        return ""
+    p = key + "lookback_vs_cub"
+    if gap["lookback_ms"] > gap["cub_ms"]:
+        return (f" The decoupled look-back scan ran in {r.fmt('scans', p + '.lookback_ms', 'ms')} ms against CUB's "
+                f"{r.fmt('scans', p + '.cub_ms', 'ms')} ms: CUB is still faster, and the hand-written single pass is "
+                f"{r.fmt('scans', p + '.pct_slower_than_cub', 'pct')}% slower.")
+    return (f" The decoupled look-back scan ran in {r.fmt('scans', p + '.lookback_ms', 'ms')} ms against CUB's "
+            f"{r.fmt('scans', p + '.cub_ms', 'ms')} ms, {r.fmt('scans', p + '.pct_slower_than_cub', 'pct', -1.0)}% faster.")
+
+
 def benchmarks_md(r: Renderer) -> str:
     out = ["# Benchmarks", "",
            "Every figure on this page is rendered by `scripts/render_docs.py` from `results/*/metrics.json` of real-data "
@@ -396,19 +432,26 @@ def benchmarks_md(r: Renderer) -> str:
                 "faster than the CuPy chain with its own transfers. From pageable memory the end-to-end advantage over NumPy "
                 f"shrinks to {r.fmt('ladder', sp + '.e2e_vs_numpy_pageable', 'x')} times.", ""]
     if r.has("scans"):
-        out += ["## Prefix scans", ""]
+        out += ["## Prefix scans", "",
+                "GB/s counts every float64 element twice, once read and once written; the last column compares that with "
+                "the read-only streaming ceiling measured in the same job.", ""]
+        out += lookback_check_lines(r)
         for key, title in (("", "Archive-length series"), ("large.", "Large series")):
             n = r.fmt("scans", key + "n_elements", "int")
-            out += [f"### {title} ({n} float64 elements)", "", "| Implementation | Median ms (IQR) | Elements per second (billions) | GB/s | Verified | Raw |",
-                    "|---|---:|---:|---:|:---:|---|"]
+            out += [f"### {title} ({n} float64 elements)", "",
+                    "| Implementation | Median ms (IQR) | Elements per second (billions) | GB/s | % of read ceiling | Verified | Raw |",
+                    "|---|---:|---:|---:|---:|:---:|---|"]
             for i, impl in enumerate(r.get("scans", key + "implementations", []) or []):
                 p = f"{key}implementations.{i}"
                 if not impl.get("ms"):
-                    out.append(f"| {impl['name']} | not run: {impl.get('error', '')[:80]} | | | | |")
+                    out.append(f"| {impl['name']} | not timed: {impl.get('error', '')[:80]} | | | | | |")
                     continue
+                pct = (r.fmt("scans", p + ".pct_of_read_ceiling", "pct") if impl.get("pct_of_read_ceiling") is not None
+                       else r.fmt("scans", p + ".gbs", "pct", 100.0 / (r.get("bandwidth", "ceiling_gbs") or float("nan"))))
                 out.append(f"| {impl['name']} | {r.fmt_m('scans', p + '.ms')} | {r.fmt('scans', p + '.elements_per_s', 'billions')} | "
-                           f"{r.fmt('scans', p + '.gbs', 'gbs')} | {'yes' if impl.get('verified') else 'NO'} | {r.raw_link('scans', impl['ms'].get('samples_file'))} |")
-            out += ["", f"Winner: `{r.get('scans', key + 'winner')}`.", ""]
+                           f"{r.fmt('scans', p + '.gbs', 'gbs')} | {pct} | {'yes' if impl.get('verified') else 'NO'} | "
+                           f"{r.raw_link('scans', impl['ms'].get('samples_file'))} |")
+            out += ["", f"Winner: `{r.get('scans', key + 'winner')}`." + lookback_gap_sentence(r, key), ""]
         out += ["### Rolling windows", "",
                 f"- Rolling volume-weighted average price over {r.fmt('scans', 'rolling_vwap.n_trades', 'int')} trades (100-trade window, and "
                 f"time windows sampled at {r.fmt('scans', 'rolling_vwap.n_snapshots', 'int')} snapshots): {r.fmt_m('scans', 'rolling_vwap.ms')} ms "

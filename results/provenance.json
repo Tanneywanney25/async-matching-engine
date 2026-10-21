@@ -1,5 +1,5 @@
 {
- "generated_unix": 1792624263.921141,
+ "generated_unix": 1792624484.6170857,
  "tokens": {
   "0": [
    {
@@ -3069,6 +3069,14 @@
     "value": 209.6639328002858
    }
   ],
+  "21.3": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.0.gbs*0.381345",
+    "run_id": "bench_all-20261021-230301",
+    "value": 55.73403542706553
+   }
+  ],
   "217.8": [
    {
     "doc": "BENCHMARKS.md",
@@ -3415,6 +3423,14 @@
     "path": "resources.kernels.30.nvrtc_num_regs",
     "run_id": "bench_all-20261021-230301",
     "value": 25
+   }
+  ],
+  "25.8": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.0.gbs*0.381345",
+    "run_id": "bench_all-20261021-230301",
+    "value": 67.60699220781908
    }
   ],
   "250.3": [
@@ -3851,6 +3867,14 @@
     "value": 28
    }
   ],
+  "28.9": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.1.gbs*0.381345",
+    "run_id": "bench_all-20261021-230301",
+    "value": 75.78165289656228
+   }
+  ],
   "280,818": [
    {
     "doc": "BENCHMARKS.md",
@@ -4175,6 +4199,14 @@
     "path": "baselines.cpp_single.ms.median_ms",
     "run_id": "bench_all-20261021-230301",
     "value": 36.30637899999556
+   }
+  ],
+  "36.8": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.1.gbs*0.381345",
+    "run_id": "bench_all-20261021-230301",
+    "value": 96.44517042289819
    }
   ],
   "38": [
@@ -4709,6 +4741,14 @@
     "value": 44
    }
   ],
+  "44.8": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.implementations.2.gbs*0.381345",
+    "run_id": "bench_all-20261021-230301",
+    "value": 117.37190828411025
+   }
+  ],
   "46": [
    {
     "doc": "BENCHMARKS.md",
@@ -4925,6 +4965,14 @@
     "path": "ladder.rungs.1.pct_of_theoretical",
     "run_id": "bench_all-20261021-230301",
     "value": 57.49190475199577
+   }
+  ],
+  "59.3": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "scans.large.implementations.2.gbs*0.381345",
+    "run_id": "bench_all-20261021-230301",
+    "value": 155.40359051373065
    }
   ],
   "6": [

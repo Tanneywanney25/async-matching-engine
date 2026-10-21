@@ -6,5 +6,6 @@
   "99": "99th percentile (the latency statistic named in bullet 3)",
   "100": "the 100-trade window of metrics.rolling_vwap",
   "128": "128-bit (16-byte) vectorized loads, a property of the code, not a measurement",
-  "2014": "Cont, Kukanov and Stoikov (2014), the order flow imbalance reference"
+  "2014": "Cont, Kukanov and Stoikov (2014), the order flow imbalance reference",
+  "2016": "Merrill and Garland (2016), the single-pass decoupled look-back scan reference"
 }

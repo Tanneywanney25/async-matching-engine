@@ -89,23 +89,25 @@ Best rung: `v4_soa_fused_vec4_sweep`. Per kernel it is 24.3 times faster than si
 
 ## Prefix scans
 
+GB/s counts every float64 element twice, once read and once written; the last column compares that with the read-only streaming ceiling measured in the same job.
+
 ### Archive-length series (863,153 float64 elements)
 
-| Implementation | Median ms (IQR) | Elements per second (billions) | GB/s | Verified | Raw |
-|---|---:|---:|---:|:---:|---|
-| blelloch_shared | 0.248 (IQR 0.00393) | 3.48 | 55.7 | yes | [raw](results/bench_all-20261021-230301/raw/scan_snapshots__blelloch_shared.json) |
-| warp_shuffle | 0.182 (IQR 0.00514) | 4.74 | 75.8 | yes | [raw](results/bench_all-20261021-230301/raw/scan_snapshots__warp_shuffle.json) |
-| cub_device_scan | 0.118 (IQR 0.00462) | 7.34 | 117.4 | yes | [raw](results/bench_all-20261021-230301/raw/scan_snapshots__cub_device_scan.json) |
+| Implementation | Median ms (IQR) | Elements per second (billions) | GB/s | % of read ceiling | Verified | Raw |
+|---|---:|---:|---:|---:|:---:|---|
+| blelloch_shared | 0.248 (IQR 0.00393) | 3.48 | 55.7 | 21.3 | yes | [raw](results/bench_all-20261021-230301/raw/scan_snapshots__blelloch_shared.json) |
+| warp_shuffle | 0.182 (IQR 0.00514) | 4.74 | 75.8 | 28.9 | yes | [raw](results/bench_all-20261021-230301/raw/scan_snapshots__warp_shuffle.json) |
+| cub_device_scan | 0.118 (IQR 0.00462) | 7.34 | 117.4 | 44.8 | yes | [raw](results/bench_all-20261021-230301/raw/scan_snapshots__cub_device_scan.json) |
 
 Winner: `cub_device_scan`.
 
 ### Large series (16,777,216 float64 elements)
 
-| Implementation | Median ms (IQR) | Elements per second (billions) | GB/s | Verified | Raw |
-|---|---:|---:|---:|:---:|---|
-| blelloch_shared | 3.97 (IQR 0.00798) | 4.23 | 67.6 | yes | [raw](results/bench_all-20261021-230301/raw/scan_large__blelloch_shared.json) |
-| warp_shuffle | 2.78 (IQR 0.00433) | 6.03 | 96.4 | yes | [raw](results/bench_all-20261021-230301/raw/scan_large__warp_shuffle.json) |
-| cub_device_scan | 1.73 (IQR 0.00578) | 9.71 | 155.4 | yes | [raw](results/bench_all-20261021-230301/raw/scan_large__cub_device_scan.json) |
+| Implementation | Median ms (IQR) | Elements per second (billions) | GB/s | % of read ceiling | Verified | Raw |
+|---|---:|---:|---:|---:|:---:|---|
+| blelloch_shared | 3.97 (IQR 0.00798) | 4.23 | 67.6 | 25.8 | yes | [raw](results/bench_all-20261021-230301/raw/scan_large__blelloch_shared.json) |
+| warp_shuffle | 2.78 (IQR 0.00433) | 6.03 | 96.4 | 36.8 | yes | [raw](results/bench_all-20261021-230301/raw/scan_large__warp_shuffle.json) |
+| cub_device_scan | 1.73 (IQR 0.00578) | 9.71 | 155.4 | 59.3 | yes | [raw](results/bench_all-20261021-230301/raw/scan_large__cub_device_scan.json) |
 
 Winner: `cub_device_scan`.
 
