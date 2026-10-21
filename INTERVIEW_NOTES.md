@@ -50,7 +50,7 @@ On 1,000 random snapshots against a Decimal book walker, exact in ticks for the 
 
 ### 12. Did the three streams actually overlap?
 
-Yes, the Nsight Systems timeline shows copy and compute lanes active together; overlap saved 7.0% of the serial wall time, and transfers were still 94.1% of stage time.
+Yes, the Nsight Systems timeline shows copy and compute lanes active together; overlap saved 7.1% of the serial wall time, and transfers were still 94.1% of stage time.
 
 ### 13. Does order flow imbalance predict anything?
 

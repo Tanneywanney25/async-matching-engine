@@ -358,9 +358,12 @@ def int16_md(r: Renderer) -> List[str]:
             f"| Host to device, summed over chunks (ms) | {r.fmt('pipeline', 'breakdown.h2d_ms', 'ms')} | {r.fmt('pipeline', q + '.breakdown.h2d_ms', 'ms')} |",
             "",
             f"The encoding moves {r.fmt('pipeline', q + '.bytes_saved_pct', 'pct')}% fewer bytes; "
-            f"{r.fmt('pipeline', q + '.overflow_fallbacks', 'int')} of {r.fmt('pipeline', q + '.chunks', 'int')} chunks "
-            f"({r.fmt('pipeline', q + '.snapshots_in_fallback_chunks', 'int')} snapshots) fell back to int32 because a level sat more than "
-            f"32,767 ticks from the best price. End to end the pass is {change_txt}% {'faster' if change < 0 else 'slower'}, and its "
+            + (f"{r.fmt('pipeline', q + '.overflow_fallbacks', 'int')} of {r.fmt('pipeline', q + '.chunks', 'int')} chunks "
+               f"({r.fmt('pipeline', q + '.snapshots_in_fallback_chunks', 'int')} snapshots) fell back to int32 because a level sat more than "
+               "32,767 ticks from the best price." if e.get("overflow_fallbacks") else
+               f"none of the {r.fmt('pipeline', q + '.chunks', 'int')} chunks needed the int32 fallback, because every recorded level sat "
+               "within 32,767 ticks of its side's best price.")
+            + f" End to end the pass is {change_txt}% {'faster' if change < 0 else 'slower'}, and its "
             f"outputs are {'bit-for-bit identical to' if same else 'NOT identical to'} the int32 pass's "
             f"({'verified' if e.get('ok') else 'check failed'} against the NumPy reference too).", ""]
 
@@ -381,14 +384,20 @@ def two_gpu_md(r: Renderer) -> List[str]:
         verdict = ("the two cards' copies run side by side at close to each card's own rate, so each T4 has its own path "
                    "to host memory and the transfer-bound pipeline scales with the second card")
     elif ratio <= 1.25:
-        verdict = ("two cards together copy barely faster than one, so the limit sits upstream of the cards, on a path both "
-                   "share: the second card adds compute this pipeline does not need")
+        verdict = (("two cards together copy no faster than one" if ratio <= 1.05 else "two cards together copy barely faster than one")
+                   + ", so the limit sits upstream of the cards' own links, on a path both share, and the second card only adds "
+                   "compute this transfer-bound pipeline does not need")
     else:
         verdict = ("the second card adds copy bandwidth but not a full card's worth, so part of the path to host memory is "
                    "shared between them")
+    cards = []
+    for line in t.get("pcie") or []:
+        parts = [x.strip() for x in line.split(",")]
+        if len(parts) == 4:
+            cards.append(f"`GPU{parts[0]}` at `{parts[1]}` on a `Gen{parts[2]} x{parts[3]}` link")
     return ["### One card against two", "",
             f"`nvidia-smi topo -m` reports the two cards as `{link}`, connected {meaning}; each has its own PCIe link "
-            f"({', '.join(f'`{x}`' for x in t.get('pcie') or [])}). The archive is split in two contiguous halves of "
+            f"({', '.join(cards)}). The archive is split in two contiguous halves of "
             f"{r.fmt('pipeline', q + '.chunks_per_device', 'int')} chunks, each card with its own pinned host buffer, module, "
             "streams and device buffers, and the two cards' chunks are issued alternately.", "",
             "| Measurement | One card | Two cards |", "|---|---:|---:|",
@@ -396,9 +405,10 @@ def two_gpu_md(r: Renderer) -> List[str]:
             f"| Copy-only pass, host to device (median ms, IQR) | {r.fmt_m('pipeline', q + '.h2d_only_one_gpu_ms')} | {r.fmt_m('pipeline', q + '.h2d_only_two_gpu_ms')} |",
             f"| Host-to-device bandwidth (GB/s, aggregate for two) | {r.fmt('pipeline', q + '.h2d_gbs_one_gpu', 'gbs')} | {r.fmt('pipeline', q + '.h2d_gbs_two_gpu_aggregate', 'gbs')} |",
             "",
-            f"Two cards finish the pipeline {r.fmt('pipeline', q + '.speedup', 'x')} times faster than one "
-            f"({r.fmt('pipeline', q + '.scaling_efficiency_pct', 'pct')}% of perfect scaling), and copy "
-            f"{r.fmt('pipeline', q + '.h2d_aggregate_vs_one_gpu', 'x')} times as many bytes per second: {verdict}. A single-threaded "
+            f"Two cards take {r.fmt('pipeline', q + '.two_gpu_ms.median_ms', 'ms')} ms against {r.fmt('pipeline', q + '.one_gpu_ms.median_ms', 'ms')} ms "
+            f"on one, a speedup of {r.fmt('pipeline', q + '.speedup', 'num')} ({r.fmt('pipeline', q + '.scaling_efficiency_pct', 'pct')}% of "
+            f"perfect scaling), and copy {r.fmt('pipeline', q + '.h2d_aggregate_vs_one_gpu', 'num')} times as many bytes per second as one "
+            f"card: {verdict}. A single-threaded "
             f"host memcpy on this machine runs at {r.fmt('pipeline', q + '.host_memcpy_gbs', 'gbs')} GB/s for comparison. The "
             f"two-card outputs are {'bit-for-bit identical to' if (t.get('identical_to_one_gpu') or {}).get('identical') else 'NOT identical to'} "
             f"the one-card outputs and {'match' if (t.get('verification') or {}).get('verified') else 'do NOT match'} the NumPy reference.", ""]

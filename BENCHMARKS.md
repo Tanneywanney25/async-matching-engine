@@ -11,7 +11,7 @@ Every figure on this page is rendered by `scripts/render_docs.py` from `results/
 | Driver / CUDA runtime / nvcc | `580.178.04` / `12090` / `Cuda compilation tools, release 12.8, V12.8.93` |
 | Nsight Systems | `NVIDIA Nsight Systems version 2025.1.1.0` |
 | Host CPU | `Intel(R) Xeon(R) CPU @ 2.00GHz`, 4 logical cores |
-| Run | `bench_rerun-20261021-232245` at git `d86371921eaf`, NVRTC target `sm_75` |
+| Run | `bench_rerun-20261021-233009` at git `efd7713cca47`, NVRTC target `sm_75` |
 | Archive | 863,153 snapshots, 280,818 trades, source `real` |
 | Capture window | `2026-10-21T07:49:24Z` to `2026-10-21T17:10:57Z` (9.36 hours), sequence gaps: 0 |
 | Archive content hash | `10e3c7d79010feb6281d9c3833d00e6a05a51275dc9e1aa58c05c5aa75451959` |
@@ -178,15 +178,39 @@ A statistical description of the recorded window only; no trading or profit clai
 
 | Measurement | Value |
 |---|---:|
-| Overlapped pass (wall clock) | 57.2 (IQR 0.0572) ms |
-| Serial pass, one stream | 61.5 (IQR 0.0419) ms |
-| Saved by overlap | 7.0% |
-| Host to device | 56.9 ms at 12.1 GB/s |
-| Kernels | 3.66 ms |
-| Device to host | 1.69 ms at 10.2 GB/s |
+| Overlapped pass (wall clock) | 56.4 (IQR 0.0522) ms |
+| Serial pass, one stream | 60.7 (IQR 0.0420) ms |
+| Saved by overlap | 7.1% |
+| Host to device | 56.1 ms at 12.3 GB/s |
+| Kernels | 3.65 ms |
+| Device to host | 1.68 ms at 10.3 GB/s |
 | Transfer share of stage time | 94.1% |
 
-Timeline: [SVG from the Nsight Systems trace](results/bench_all-20261021-230301/raw/pipeline_timeline.svg).
+Timeline: [SVG from the Nsight Systems trace](results/bench_rerun-20261021-233009/raw/pipeline_timeline.svg).
+
+### Narrower prices on the wire: int16 tick offsets
+
+Each side's best price travels as int32 per snapshot and every level as an int16 offset from it, decoded inside the kernel; a chunk holding any offset beyond 32,767 ticks is sent as int32 instead.
+
+| Measurement | int32 | int16 offsets |
+|---|---:|---:|
+| Bytes host to device per pass | 690,536,448 | 524,812,288 |
+| End to end, overlapped (median ms, IQR) | 56.4 (IQR 0.0259) | 43.0 (IQR 0.0256) |
+| Host to device, summed over chunks (ms) | 56.1 | 42.7 |
+
+The encoding moves 24.0% fewer bytes; none of the 16 chunks needed the int32 fallback, because every recorded level sat within 32,767 ticks of its side's best price. End to end the pass is 23.7% faster, and its outputs are bit-for-bit identical to the int32 pass's (verified against the NumPy reference too).
+
+### One card against two
+
+`nvidia-smi topo -m` reports the two cards as `PHB`, connected through a PCIe host bridge, that is the CPU; each has its own PCIe link (`GPU0` at `00000000:00:04.0` on a `Gen3 x16` link, `GPU1` at `00000000:00:05.0` on a `Gen3 x16` link). The archive is split in two contiguous halves of 8 chunks, each card with its own pinned host buffer, module, streams and device buffers, and the two cards' chunks are issued alternately.
+
+| Measurement | One card | Two cards |
+|---|---:|---:|
+| Whole pipeline, overlapped (median ms, IQR) | 56.4 (IQR 0.0289) | 56.3 (IQR 0.0254) |
+| Copy-only pass, host to device (median ms, IQR) | 55.8 (IQR 0.0154) | 55.9 (IQR 0.0153) |
+| Host-to-device bandwidth (GB/s, aggregate for two) | 12.4 | 12.4 |
+
+Two cards take 56.3 ms against 56.4 ms on one, a speedup of 1.00 (50.1% of perfect scaling), and copy 0.999 times as many bytes per second as one card: two cards together copy no faster than one, so the limit sits upstream of the cards' own links, on a path both share, and the second card only adds compute this transfer-bound pipeline does not need. A single-threaded host memcpy on this machine runs at 5.6 GB/s for comparison. The two-card outputs are bit-for-bit identical to the one-card outputs and match the NumPy reference.
 
 ## Matching engine (CPU)
 
@@ -273,3 +297,4 @@ No timed block lost more than a tenth of its SM clock between the samples taken 
 
 - [`bench_all-20261021-230301`](results/bench_all-20261021-230301/manifest.json)
 - [`bench_rerun-20261021-232245`](results/bench_rerun-20261021-232245/manifest.json)
+- [`bench_rerun-20261021-233009`](results/bench_rerun-20261021-233009/manifest.json)
