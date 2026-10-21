@@ -6,8 +6,9 @@ Rules baked in here (from the build spec):
 * variants in a block are interleaved (rotating order each iteration) rather
   than run back to back;
 * ``nvidia-smi`` SM clock, memory clock, temperature and power are sampled
-  before and after each block, and a result is flagged when the SM clock
-  dropped more than 10% between the two samples;
+  before and after each block, for every card the block uses, and a result is
+  flagged when any of those cards' SM clock dropped more than 10% between the
+  two samples;
 * results are written incrementally to ``metrics.json`` so a job that hits its
   time limit still leaves everything it finished.
 
@@ -18,6 +19,7 @@ end-to-end numbers), so the two never get mixed.
 
 from __future__ import annotations
 
+import atexit
 import json
 import os
 import statistics
@@ -101,15 +103,45 @@ def to_aos(arch: dict) -> np.ndarray:
 # --------------------------------------------------------------------------- #
 
 
-def gpu_state() -> dict:
-    """Sample SM clock, memory clock, temperature and power from nvidia-smi."""
+GPU_QUERY = "index,clocks.sm,clocks.mem,temperature.gpu,power.draw,clocks.max.sm"
+GPU_KEYS = ("sm_clock_mhz", "mem_clock_mhz", "temperature_c", "power_w", "max_sm_clock_mhz")
+
+
+def parse_gpu_query(text: str) -> Dict[int, dict]:
+    """Parse ``nvidia-smi --query-gpu=<GPU_QUERY> --format=csv,noheader,nounits``: one line per card.
+
+    Kaggle's T4 sessions have two cards, so the output has two lines; splitting the whole output
+    on commas (what 0.2.0 did) raised, and every block recorded an error instead of its clocks.
+    """
+    cards: Dict[int, dict] = {}
+    for line in text.strip().splitlines():
+        fields = [x.strip() for x in line.split(",")]
+        if len(fields) != 1 + len(GPU_KEYS):
+            raise ValueError(f"unexpected nvidia-smi line {line!r}")
+        values = {}
+        for key, raw in zip(GPU_KEYS, fields[1:]):
+            try:
+                values[key] = float(raw)
+            except ValueError:  # "[N/A]" on some fields of some boards
+                values[key] = None
+        cards[int(fields[0])] = values
+    return cards
+
+
+def gpu_state(devices: Sequence[int] = (0,)) -> dict:
+    """Sample SM clock, memory clock, temperature and power from nvidia-smi.
+
+    The first device's values sit at the top level (the shape every section and the renderer
+    read); ``per_gpu`` holds every requested device, keyed by its index as a string.
+    """
     try:
-        out = subprocess.run(
-            ["nvidia-smi", "--query-gpu=clocks.sm,clocks.mem,temperature.gpu,power.draw,clocks.max.sm",
-             "--format=csv,noheader,nounits"], capture_output=True, text=True, timeout=10).stdout
-        sm, mem, temp, power, max_sm = [x.strip() for x in out.strip().split(",")]
-        return {"sm_clock_mhz": float(sm), "mem_clock_mhz": float(mem), "temperature_c": float(temp),
-                "power_w": float(power), "max_sm_clock_mhz": float(max_sm), "t": time.time()}
+        out = subprocess.run(["nvidia-smi", f"--query-gpu={GPU_QUERY}", "--format=csv,noheader,nounits"],
+                             capture_output=True, text=True, timeout=10).stdout
+        cards = parse_gpu_query(out)
+        state: dict = dict(cards[devices[0]])
+        state["per_gpu"] = {str(d): cards[d] for d in devices}
+        state["t"] = time.time()
+        return state
     except Exception as exc:  # noqa: BLE001 - CPU-only machines
         return {"error": repr(exc), "t": time.time()}
 
@@ -140,13 +172,22 @@ def summarize(samples_ms: Sequence[float], before: Optional[dict] = None, after:
     }
     if samples_file:
         out["samples_file"] = samples_file
-    if before and after and "sm_clock_mhz" in before and "sm_clock_mhz" in after:
+    if before and after and before.get("sm_clock_mhz") and after.get("sm_clock_mhz") is not None:
         b, a = before["sm_clock_mhz"], after["sm_clock_mhz"]
         drop = (b - a) / b * 100.0 if b else 0.0
         out["sm_clock_before_mhz"] = b
         out["sm_clock_after_mhz"] = a
         out["clock_drop_pct"] = round(drop, 2)
         out["throttle_flag"] = bool(drop > 10.0)
+        per_b, per_a = before.get("per_gpu") or {}, after.get("per_gpu") or {}
+        if len(per_b) > 1:
+            drops = {d: round((v["sm_clock_mhz"] - per_a[d]["sm_clock_mhz"]) / v["sm_clock_mhz"] * 100.0, 2)
+                     for d, v in per_b.items() if v.get("sm_clock_mhz") and (per_a.get(d) or {}).get("sm_clock_mhz") is not None}
+            out["clock_drop_pct_per_gpu"] = drops
+            out["clock_drop_pct"] = max([out["clock_drop_pct"], *drops.values()])
+            out["throttle_flag"] = bool(out["clock_drop_pct"] > 10.0)
+    elif before is not None or after is not None:
+        out["clocks_missing"] = (before or {}).get("error") or (after or {}).get("error") or "no SM clock sample"
         out["temperature_before_c"] = before.get("temperature_c")
         out["temperature_after_c"] = after.get("temperature_c")
         out["power_before_w"] = before.get("power_w")
@@ -216,11 +257,15 @@ class Bench:
         path.write_text(json.dumps(obj, default=_json_default), encoding="utf-8")
         return f"raw/{name}.json"
 
-    def block(self, name: str, variants: Dict[str, Callable[[], float]], n_iters: Optional[int] = None) -> Dict[str, dict]:
-        """Run an interleaved block and return ``{variant: summary}`` with raw samples saved."""
-        before = gpu_state()
+    def block(self, name: str, variants: Dict[str, Callable[[], float]], n_iters: Optional[int] = None,
+              devices: Sequence[int] = (0,)) -> Dict[str, dict]:
+        """Run an interleaved block and return ``{variant: summary}`` with raw samples saved.
+
+        ``devices`` lists the cards the block runs on; their clocks are sampled before and after.
+        """
+        before = gpu_state(devices)
         samples = run_interleaved(variants, n_iters or self.n_iters, self.warmup)
-        after = gpu_state()
+        after = gpu_state(devices)
         summaries: Dict[str, dict] = {}
         for variant, xs in samples.items():
             raw = self.save_raw(f"{name}__{variant}", {"ms": xs, "before": before, "after": after})
@@ -263,11 +308,114 @@ def compiled_arch() -> str:
 
 def raw_module(source_names: Sequence[str], name_expressions: Optional[Sequence[str]] = None, extra_options: Sequence[str] = ()):
     """Compile ``cuda/*.cu`` with NVRTC through CuPy, which adds ``-arch`` for the current device
-    itself, as it does -default-device (a duplicate is an NVRTC error; NVRTC defaults to C++17), so on a T4 this targets sm_75; see compiled_arch()."""
+    itself, as it does -default-device (a duplicate is an NVRTC error; NVRTC defaults to C++17), so on a T4 this targets sm_75; see compiled_arch().
+
+    Kernels fetched with ``get_function`` record every distinct launch configuration they are
+    called with (see :class:`LaunchRecorder`), which the ``resources`` section turns into
+    theoretical occupancy for exactly the configurations that were benchmarked."""
     cp = cupy()
     code = "\n".join(read_cuda_source(n) for n in source_names)
     options = ("-I" + str(REPO_ROOT / "cuda"), *extra_options)  # CuPy adds -arch and -default-device itself
-    return cp.RawModule(code=code, options=options, name_expressions=name_expressions)
+    return RecordingModule(cp.RawModule(code=code, options=options, name_expressions=name_expressions),
+                           tuple(source_names), tuple(options))
+
+
+# --------------------------------------------------------------------------- #
+# Launch recorder
+# --------------------------------------------------------------------------- #
+
+
+def _dim3(value) -> tuple:
+    dims = tuple(int(v) for v in value) if isinstance(value, (tuple, list)) else (int(value),)
+    return dims + (1,) * (3 - len(dims))
+
+
+class LaunchRecorder:
+    """Distinct ``(grid, block, dynamic shared memory)`` configurations per kernel, with launch counts.
+
+    One instance per process (:data:`LAUNCHES`). When ``BENCH_LAUNCH_LOG_DIR`` is set (``run_all``
+    sets it to ``<out>/raw/launches``) the registry is written there at exit, so kernels launched in
+    the Nsight Systems child processes are counted too.
+    """
+
+    def __init__(self) -> None:
+        self.kernels: Dict[str, dict] = {}
+
+    def note(self, name: str, sources: tuple, options: tuple, grid, block, shared_mem: int) -> None:
+        entry = self.kernels.get(name)
+        if entry is None:
+            entry = self.kernels[name] = {"sources": list(sources), "options": list(options), "configs": {}}
+        key = f"{_dim3(grid)}|{_dim3(block)}|{int(shared_mem)}"
+        cfg = entry["configs"].get(key)
+        if cfg is None:
+            cfg = entry["configs"][key] = {"grid": list(_dim3(grid)), "block": list(_dim3(block)),
+                                           "shared_mem": int(shared_mem), "launches": 0}
+        cfg["launches"] += 1
+
+    def snapshot(self) -> Dict[str, dict]:
+        return {name: {"sources": e["sources"], "options": e["options"], "configs": list(e["configs"].values())}
+                for name, e in self.kernels.items()}
+
+    def dump(self, directory: Optional[str] = None) -> Optional[Path]:
+        directory = directory or os.environ.get("BENCH_LAUNCH_LOG_DIR")
+        if not directory or not self.kernels:
+            return None
+        path = Path(directory) / f"launches_{os.getpid()}.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(self.snapshot()), encoding="utf-8")
+        return path
+
+
+LAUNCHES = LaunchRecorder()
+atexit.register(LAUNCHES.dump)
+
+
+def merge_launch_logs(snapshots: Sequence[Dict[str, dict]]) -> Dict[str, dict]:
+    """Combine registries from several processes, summing launch counts per configuration."""
+    merged: Dict[str, dict] = {}
+    for snap in snapshots:
+        for name, entry in snap.items():
+            dst = merged.setdefault(name, {"sources": entry["sources"], "options": entry["options"], "configs": {}})
+            for cfg in entry["configs"]:
+                key = f"{tuple(cfg['grid'])}|{tuple(cfg['block'])}|{cfg['shared_mem']}"
+                if key in dst["configs"]:
+                    dst["configs"][key]["launches"] += cfg["launches"]
+                else:
+                    dst["configs"][key] = dict(cfg)
+    return {name: {**e, "configs": list(e["configs"].values())} for name, e in merged.items()}
+
+
+class RecordingKernel:
+    """A CuPy ``RawKernel`` that notes its launch configuration; everything else is forwarded."""
+
+    __slots__ = ("_kernel", "_name", "_sources", "_options")
+
+    def __init__(self, kernel, name: str, sources: tuple, options: tuple) -> None:
+        self._kernel, self._name, self._sources, self._options = kernel, name, sources, options
+
+    def __call__(self, grid, block, args, **kwargs):
+        LAUNCHES.note(self._name, self._sources, self._options, grid, block, kwargs.get("shared_mem", 0))
+        return self._kernel(grid, block, args, **kwargs)
+
+    def __getattr__(self, attr):
+        return getattr(self._kernel, attr)
+
+    @property
+    def raw(self):
+        return self._kernel
+
+
+class RecordingModule:
+    """A CuPy ``RawModule`` whose ``get_function`` returns :class:`RecordingKernel` objects."""
+
+    def __init__(self, module, sources: tuple, options: tuple) -> None:
+        self._module, self.sources, self.options = module, sources, options
+
+    def get_function(self, name: str) -> RecordingKernel:
+        return RecordingKernel(self._module.get_function(name), name, self.sources, self.options)
+
+    def __getattr__(self, attr):
+        return getattr(self._module, attr)
 
 
 def event_time_ms(stream, launch: Callable[[], None]) -> float:
