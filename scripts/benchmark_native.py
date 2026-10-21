@@ -143,7 +143,39 @@ def build_native(build_dir: Path) -> dict:
                            text=True, timeout=600)
     cxx = subprocess.run(["c++", "--version"], capture_output=True, text=True).stdout.splitlines()[:1]
     return {"seconds": round(time.perf_counter() - t0, 1), "ctest_ok": tests.returncode == 0,
-            "ctest_output": tests.stdout[-2000:], "compiler": cxx[0] if cxx else "", "flags": "-O3 (CMake Release), C++20"}
+            "ctest_output": tests.stdout[-2000:], "compiler": cxx[0] if cxx else "", "flags": "-O3 (CMake Release), C++20",
+            **native_tests(build_dir)}
+
+
+def native_tests(build_dir: Path) -> dict:
+    """Run the two native test binaries and keep the figures they print."""
+    import re
+
+    out: dict = {}
+    for name in ("test_order_book", "test_no_alloc"):
+        exe = build_dir / (name + (".exe" if os.name == "nt" else ""))
+        proc = subprocess.run([str(exe)], capture_output=True, text=True, timeout=600)
+        out[name] = {"ok": proc.returncode == 0, "output": (proc.stdout + proc.stderr).strip()[-600:]}
+        m = re.search(r"(\d+) checks passed", proc.stdout)
+        if m:
+            out[name]["checks"] = int(m.group(1))
+        m = re.search(r"(\d+) operations, (\d+) fills, .*?: (\d+) allocations, (\d+) deallocations", proc.stdout)
+        if m:
+            out[name].update({"operations": int(m.group(1)), "fills": int(m.group(2)), "allocations": int(m.group(3)),
+                              "deallocations": int(m.group(4))})
+    return out
+
+
+def fuzz(streams: int) -> dict:
+    """The differential fuzzer against the core: same streams and comparisons as scripts/fuzz_engine.py."""
+    sys.path.insert(0, str(REPO / "scripts"))
+    import fuzz_engine
+    from exchange_engine.native_book import NativeOrderBook
+
+    result = fuzz_engine.run_streams(streams, book_factory=NativeOrderBook, minimize=False)
+    return {"streams": result.streams, "operations": result.operations, "divergences": len(result.divergences),
+            "seconds": round(result.seconds, 1), "reference": "exchange_engine.reference_engine.ReferenceBook",
+            "first_divergence": result.divergences[0].report()[:2000] if result.divergences else None}
 
 
 def run_native(build_dir: Path, stream_file: Path, out_file: Path, passes: int) -> dict:
@@ -256,6 +288,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--passes", type=int, default=5)
     parser.add_argument("--build-dir", type=Path, default=REPO / "build" / "native")
     parser.add_argument("--no-build", action="store_true", help="use an existing build in --build-dir")
+    parser.add_argument("--fuzz-streams", type=int, default=10_000, help="differential fuzz streams (0 = skip)")
     args = parser.parse_args(argv)
     args.results_dir.mkdir(parents=True, exist_ok=True)
     build = {"skipped": True} if args.no_build else build_native(args.build_dir)
@@ -263,6 +296,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     section = measure(stream, args.results_dir, args.build_dir, args.passes)
     section.update({"build": build, "cpu_model": cpu_model(), "cpu_cores": os.cpu_count(), "python": platform.python_version(),
                     "platform": platform.platform()})
+    if args.fuzz_streams:
+        section["fuzz"] = fuzz(args.fuzz_streams)
+        print(f"fuzz: {section['fuzz']['streams']:,} streams, {section['fuzz']['operations']:,} operations, "
+              f"{section['fuzz']['divergences']} divergences", flush=True)
     metrics_path = args.results_dir / "metrics.json"
     metrics = json.loads(metrics_path.read_text(encoding="utf-8")) if metrics_path.exists() else {"source": "real", "sections": {}}
     metrics.setdefault("sections", {})["native_engine"] = section
@@ -272,7 +309,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         print(f"{name:16s} add p50 {a['p50_us']:8.3f} p99 {a['p99_us']:8.3f} p99.9 {a['p999_us']:8.3f} us | "
               f"cancel p50 {c['p50_us']:8.3f} p99 {c['p99_us']:8.3f} p99.9 {c['p999_us']:8.3f} us")
     print(f"consistent across all four: {section['consistent']} {section['counts']}")
-    return 0 if section["consistent"] else 1
+    return 0 if section["consistent"] and not (section.get("fuzz") or {}).get("divergences") else 1
 
 
 if __name__ == "__main__":

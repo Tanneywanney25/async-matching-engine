@@ -196,6 +196,8 @@ def format_value(x: float, kind: str) -> str:
         return f"{x:.1e}"
     if kind == "us":
         return f"{x:.2f}"
+    if kind == "us3":  # sub-microsecond latencies of the C++ core
+        return f"{x:.3f}" if abs(x) < 10 else f"{x:.1f}"
     if kind == "r2":
         return f"{x:.4f}"
     if kind == "billions":
@@ -338,6 +340,49 @@ def ladder_table(r: Renderer, with_raw: bool = True) -> str:
             line += f" {r.raw_link('ladder', (rung.get('kernel_ms') or {}).get('samples_file'))} |"
         rows.append(line)
     return "\n".join(rows)
+
+
+NATIVE_PATHS = (("native", "C++ core, native harness (no Python in the loop)"),
+                ("binding", "C++ core through the pybind11 binding, integer ticks and lots"),
+                ("binding_decimal", "C++ core through `NativeOrderBook`, Decimal orders"),
+                ("python_engine", "Python engine (the reference implementation)"))
+
+
+def native_engine_md(r: Renderer, key: str = "") -> List[str]:
+    """The C++ core's latency table; ``key`` selects a nested stream (``realistic.``) or the synthetic one."""
+    sec = "native_engine"
+    base = r.get(sec, key.rstrip(".")) if key else r.sections[sec][1]
+    if not base:
+        return []
+    out = []
+    if not key:
+        b = "build."
+        out += ["## C++20 order book core (CPU)", "",
+                f"`native/`, built with CMake in the same Kaggle job (`{r.get(sec, 'build.compiler')}`, {r.get(sec, 'build.flags')}) and run on its host "
+                f"CPU (`{r.get(sec, 'cpu_model')}`). Its native tests passed {r.fmt(sec, b + 'test_order_book.checks', 'int')} checks, among them a "
+                "randomized differential test against a `std::map` and `std::deque` reference book, and a counting allocator saw "
+                f"{r.fmt(sec, b + 'test_no_alloc.allocations', 'int')} heap allocations over {r.fmt(sec, b + 'test_no_alloc.operations', 'int')} "
+                "operations once the book was built. "
+                + (f"The differential fuzzer ran {r.fmt(sec, 'fuzz.streams', 'int')} seeded streams ({r.fmt(sec, 'fuzz.operations', 'int')} "
+                   f"operations) against the reference book with {r.fmt(sec, 'fuzz.divergences', 'int')} divergences, comparing fills, "
+                   "statuses, best prices and depth after every operation." if r.get(sec, "fuzz") else ""), ""]
+    out += [f"Stream: {base.get('stream', '')}. Every path below replays the same operations in one process; they agreed on fills, "
+            f"resting orders and cancels found: {'yes' if r.get(sec, key + 'consistent') else 'NO'}.", "",
+            "| Path | add p50 µs | add p99 µs | add p99.9 µs | cancel p50 µs | cancel p99 µs | cancel p99.9 µs |",
+            "|---|---:|---:|---:|---:|---:|---:|"]
+    for path, label in NATIVE_PATHS:
+        p = f"{key}{path}."
+        if r.get(sec, p + "add_order") is None:
+            continue
+        out.append(f"| {label} | " + " | ".join(r.fmt(sec, f"{p}{op}.{stat}", "us3") for op in ("add_order", "cancel_order")
+                                                 for stat in ("p50_us", "p99_us", "p999_us")) + " |")
+    out += ["", f"At p99 the native `add` is {r.fmt(sec, key + 'p99_add_python_engine_over_native', 'x')} times faster than the Python "
+            f"engine's, {r.fmt(sec, key + 'p99_add_python_engine_over_binding', 'x')} times through the binding and "
+            f"{r.fmt(sec, key + 'p99_add_python_engine_over_binding_decimal', 'x')} times with Decimal orders, where converting and "
+            "building Python objects costs more than the matching. The native harness reads `std::chrono::steady_clock` twice per "
+            f"operation; a pair of reads costs {r.fmt(sec, key + 'native.timer_overhead_us.p50', 'us3')} µs at the median, included above, "
+            f"not subtracted. Raw: {r.raw_link(sec, r.get(sec, key + 'raw_file'))}.", ""]
+    return out
 
 
 def int16_md(r: Renderer) -> List[str]:
@@ -603,6 +648,8 @@ def benchmarks_md(r: Renderer) -> str:
             out.append(f"| `{op}` | {r.fmt('engine', op + '.mean_us', 'us')} | {r.fmt('engine', op + '.p50_us', 'us')} | "
                        f"{r.fmt('engine', op + '.p95_us', 'us')} | {r.fmt('engine', op + '.p99_us', 'us')} |")
         out += ["", f"Raw latencies: {r.raw_link('engine', r.get('engine', 'raw_file'))}. The laptop's own figures are in the README's Benchmark table.", ""]
+    if r.has("native_engine"):
+        out += native_engine_md(r)
     if r.has("resources"):
         out += resources_md(r)
     out += ["## Clock throttling", "", *clock_section(r), ""]
