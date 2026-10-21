@@ -231,6 +231,7 @@ def pull(job_name: str, run_id: str) -> Path:
             shutil.copytree(src, dest, dirs_exist_ok=True)
     for log in tmp.glob("*.log"):
         shutil.copy(log, dest / "kernel.log")
+        (dest / "kernel.txt").write_text(log_to_text(log), encoding="utf-8")
     for extra in tmp.iterdir():
         if extra.is_file() and extra.suffix in (".json", ".csv", ".svg", ".txt") and not (dest / extra.name).exists():
             shutil.copy(extra, dest / extra.name)
@@ -245,6 +246,16 @@ def pull(job_name: str, run_id: str) -> Path:
     scrub_dir(dest)
     print(f"results in {dest}")
     return dest
+
+
+def log_to_text(path: Path) -> str:
+    """Kaggle stores the kernel log as a JSON array of stream chunks; flatten it."""
+    raw = path.read_text(encoding="utf-8", errors="replace")
+    try:
+        chunks = json.loads(raw)
+    except ValueError:
+        return sanitize(raw)
+    return sanitize("".join(c.get("data", "") for c in chunks if isinstance(c, dict)))
 
 
 def scrub_dir(path: Path) -> None:

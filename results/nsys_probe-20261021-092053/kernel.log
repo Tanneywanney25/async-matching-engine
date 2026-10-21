@@ -1,0 +1,128 @@
+[{"stream_name":"stdout","time":0.610325889,"data":"[    0.0s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":0.610376441,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":14.848022853,"data":"[   14.3s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"NVIDIA Nsight Systems version 2025.1.1.0\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":15.75380818,"data":"[   15.2s] repo at 2c6eb50a7d200cb655a1a48f8fcfc446abcea31b\n"}
+,{"stream_name":"stdout","time":15.754134464,"data":"[   15.2s] nsys probe start\n"}
+,{"stream_name":"stdout","time":15.765089824,"data":"$ [os] cat /etc/os-release | head -2; dpkg --print-architecture; id -u\n"}
+,{"stream_name":"stdout","time":15.76510822,"data":"PRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\n"}
+,{"stream_name":"stdout","time":15.765114083,"data":"NAME=\"Ubuntu\"\n"}
+,{"stream_name":"stdout","time":15.765118556000001,"data":"amd64\n"}
+,{"stream_name":"stdout","time":15.76512261,"data":"0\n"}
+,{"stream_name":"stdout","time":15.765126629,"data":"\n"}
+,{"stream_name":"stdout","time":15.765129906,"data":"\n"}
+,{"stream_name":"stdout","time":15.775953052,"data":"$ [apt-sources] ls /etc/apt/sources.list.d/ 2\u003e\u00261; grep -rh 'nvidia' /etc/apt/sources.list.d/ 2\u003e/dev/null | head -5\n"}
+,{"stream_name":"stdout","time":15.775972816,"data":"archive_uri-https_cloud_r-project_org_bin_linux_ubuntu-noble.list\n"}
+,{"stream_name":"stdout","time":15.775977766,"data":"archive_uri-https_r2u_stat_illinois_edu_ubuntu-noble.list\n"}
+,{"stream_name":"stdout","time":15.775981594,"data":"cuda.list\n"}
+,{"stream_name":"stdout","time":15.775985346,"data":"deadsnakes-ubuntu-ppa-noble.sources\n"}
+,{"stream_name":"stdout","time":15.775989127,"data":"github-cli.list\n"}
+,{"stream_name":"stdout","time":15.77599286,"data":"graphics-drivers-ubuntu-ppa-noble.sources\n"}
+,{"stream_name":"stdout","time":15.775996713,"data":"ubuntu.sources\n"}
+,{"stream_name":"stdout","time":15.776000581,"data":"deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64 /\n"}
+,{"stream_name":"stdout","time":15.776004211,"data":"\n"}
+,{"stream_name":"stdout","time":15.776007339,"data":"\n"}
+,{"stream_name":"stdout","time":21.211616464,"data":"$ [apt-update] DEBIAN_FRONTEND=noninteractive apt-get update 2\u003e\u00261 | tail -8; echo rc=${PIPESTATUS[0]}\n"}
+,{"stream_name":"stdout","time":21.211648828,"data":"Get:22 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64  Packages [1,938 kB]\n"}
+,{"stream_name":"stdout","time":21.21165713,"data":"Get:23 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu noble/main amd64 Packages [60.1 kB]\n"}
+,{"stream_name":"stdout","time":21.211660986,"data":"Get:24 https://r2u.stat.illinois.edu/ubuntu noble/main amd64 Packages [3,071 kB]\n"}
+,{"stream_name":"stdout","time":21.211664441,"data":"Get:25 https://r2u.stat.illinois.edu/ubuntu noble/main all Packages [10.4 MB]\n"}
+,{"stream_name":"stdout","time":21.21166798,"data":"Fetched 27.3 MB in 4s (7,118 kB/s)\n"}
+,{"stream_name":"stdout","time":21.211671303,"data":"Reading package lists...\n"}
+,{"stream_name":"stdout","time":21.211674595,"data":"W: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.\n"}
+,{"stream_name":"stdout","time":21.211679736,"data":"W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu noble InRelease' does not seem to provide it (sources.list entry misspelt?)\n"}
+,{"stream_name":"stdout","time":21.211695219,"data":"rc=0\n"}
+,{"stream_name":"stdout","time":21.211702665,"data":"\n"}
+,{"stream_name":"stdout","time":21.211705132,"data":"\n"}
+,{"stream_name":"stdout","time":24.595539162,"data":"$ [apt-search] apt-cache search nsight-systems 2\u003e\u00261 | head -10; apt-cache policy cuda-nsight-systems-12-8 2\u003e\u00261 | head -5\n"}
+,{"stream_name":"stdout","time":24.59557409,"data":"cuda-nsight-systems-12-5 - NVIDIA Nsight Systems\n"}
+,{"stream_name":"stdout","time":24.595579736,"data":"nsight-systems-2024.2.3 - Nsight Systems is a statistical sampling profiler with tracing features.\n"}
+,{"stream_name":"stdout","time":24.595584272,"data":"cuda-nsight-systems-12-6 - NVIDIA Nsight Systems\n"}
+,{"stream_name":"stdout","time":24.595588433,"data":"nsight-systems-2024.4.2 - Nsight Systems is a statistical sampling profiler with tracing features.\n"}
+,{"stream_name":"stdout","time":24.595592698,"data":"nsight-systems-2024.5.1 - Nsight Systems is a statistical sampling profiler with tracing features.\n"}
+,{"stream_name":"stdout","time":24.595596522,"data":"cuda-nsight-systems-12-8 - NVIDIA Nsight Systems\n"}
+,{"stream_name":"stdout","time":24.595601878,"data":"nsight-systems-2024.6.2 - Nsight Systems is a statistical sampling profiler with tracing features.\n"}
+,{"stream_name":"stdout","time":24.595610428,"data":"cuda-nsight-systems-12-9 - NVIDIA Nsight Systems\n"}
+,{"stream_name":"stdout","time":24.595613531,"data":"nsight-systems-2025.1.3 - Nsight Systems is a statistical sampling profiler with tracing features.\n"}
+,{"stream_name":"stdout","time":24.595616234,"data":"cuda-nsight-systems-13-0 - NVIDIA Nsight Systems\n"}
+,{"stream_name":"stdout","time":24.595618688,"data":"cuda-nsight-systems-12-8:\n"}
+,{"stream_name":"stdout","time":24.595621101,"data":"  Installed: (none)\n"}
+,{"stream_name":"stdout","time":24.595623404,"data":"  Candidate: 12.8.2-1\n"}
+,{"stream_name":"stdout","time":24.595625754,"data":"  Version table:\n"}
+,{"stream_name":"stdout","time":24.595628061,"data":"     12.8.2-1 500\n"}
+,{"stream_name":"stdout","time":24.595630335,"data":"\n"}
+,{"stream_name":"stdout","time":24.595632524,"data":"\n"}
+,{"stream_name":"stdout","time":44.183621807,"data":"$ [install-meta] DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends cuda-nsight-systems-12-8 2\u003e\u00261 | tail -6\n"}
+,{"stream_name":"stdout","time":44.18366365,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc_proxy.so.2 is not a symbolic link\n"}
+,{"stream_name":"stdout","time":44.183669236,"data":"\n"}
+,{"stream_name":"stdout","time":44.18367309,"data":"/sbin/ldconfig.real: /usr/local/lib/libtbbmalloc.so.2 is not a symbolic link\n"}
+,{"stream_name":"stdout","time":44.183677532,"data":"\n"}
+,{"stream_name":"stdout","time":44.183683088,"data":"/sbin/ldconfig.real: /usr/local/lib/libhwloc.so.15 is not a symbolic link\n"}
+,{"stream_name":"stdout","time":44.183688412,"data":"\n"}
+,{"stream_name":"stdout","time":44.183692738,"data":"\n"}
+,{"stream_name":"stdout","time":60.318741341,"data":"$ [find-nsys-1] ls -d /opt/nvidia/nsight-systems*/*/bin /usr/local/cuda*/bin 2\u003e/dev/null; find / -name nsys -type f 2\u003e/dev/null | head -5\n"}
+,{"stream_name":"stdout","time":60.318779256,"data":"/opt/nvidia/nsight-systems/2024.6.2/bin\n"}
+,{"stream_name":"stdout","time":60.318785909,"data":"/usr/local/cuda-12.8/bin\n"}
+,{"stream_name":"stdout","time":60.318791427,"data":"/usr/local/cuda-12/bin\n"}
+,{"stream_name":"stdout","time":60.318806894,"data":"/usr/local/cuda/bin\n"}
+,{"stream_name":"stdout","time":60.31881129,"data":"/var/lib/dpkg/alternatives/nsys\n"}
+,{"stream_name":"stdout","time":60.318815343,"data":"/opt/nvidia/nsight-systems/2024.6.2/target-linux-x64/nsys\n"}
+,{"stream_name":"stdout","time":60.318819475,"data":"/opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/nsys\n"}
+,{"stream_name":"stdout","time":60.318823746,"data":"/usr/local/cuda-12.8/bin/nsys\n"}
+,{"stream_name":"stdout","time":60.318827539,"data":"\n"}
+,{"stream_name":"stdout","time":60.318832191,"data":"\n"}
+,{"stream_name":"stdout","time":62.477586176,"data":"$ [version] nsys --version\n"}
+,{"stream_name":"stdout","time":62.477614438,"data":"NVIDIA Nsight Systems version 2025.1.1.0\n"}
+,{"stream_name":"stdout","time":62.477618905,"data":"\n"}
+,{"stream_name":"stdout","time":62.477622123,"data":"\n"}
+,{"stream_name":"stdout","time":69.049451777,"data":"$ [profile] cd /kaggle/working \u0026\u0026 nsys profile --trace=cuda,nvtx --stats=false -o /kaggle/working/results/nsys_probe-20261021-092053\n"}
+,{"stream_name":"stdout","time":69.049482628,"data":"Generating '/tmp/nsys-report-d00f.qdstrm'\n"}
+,{"stream_name":"stdout","time":69.049488142,"data":"\n"}
+,{"stream_name":"stdout","time":69.049492466,"data":"[1/1] [0%                          ] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049496384,"data":"[1/1] [0%                          ] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.04950068,"data":"[1/1] [6%                          ] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049504823,"data":"[1/1] [7%                          ] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049508861,"data":"[1/1] [8%                          ] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049512981,"data":"[1/1] [9%                          ] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049516547,"data":"[1/1] [======================90%   ] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049520798,"data":"[1/1] [======================91%   ] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049524636,"data":"[1/1] [========================100%] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049528903,"data":"[1/1] [========================100%] probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049532998,"data":"Generated:\n"}
+,{"stream_name":"stdout","time":69.049536886,"data":"    /kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.049540844,"data":"\n"}
+,{"stream_name":"stdout","time":69.04954503,"data":"\n"}
+,{"stream_name":"stdout","time":69.233671481,"data":"$ [stats] nsys stats --report cuda_gpu_kern_sum --format csv --output /kaggle/working/results/nsys_probe-20261021-092053/raw/probe\n"}
+,{"stream_name":"stdout","time":69.233698221,"data":"Generating SQLite file /kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.sqlite from /kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.233704048,"data":"Processing [/kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.sqlite] with [/opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/reports/cuda_gpu_kern_sum.py] to [/kaggle/working/results/nsys_probe-20261021-092053/raw/probe_kern_sum_cuda_gpu_kern_sum.csv]... PROCESSED\n"}
+,{"stream_name":"stdout","time":69.233709367,"data":"\n"}
+,{"stream_name":"stdout","time":69.233715,"data":"probe_kern_sum_cuda_gpu_kern_sum.csv\n"}
+,{"stream_name":"stdout","time":69.233729067,"data":"probe_nsys.nsys-rep\n"}
+,{"stream_name":"stdout","time":69.233734599,"data":"probe_nsys.sqlite\n"}
+,{"stream_name":"stdout","time":69.233740341,"data":"Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name\n"}
+,{"stream_name":"stdout","time":69.233745911,"data":"66.1,3330783,5,666156.6,665363.0,664307,670579,2516.1,cupy_multiply__float32_float_float32\n"}
+,{"stream_name":"stdout","time":69.23375472,"data":"25.9,1303239,5,260647.8,260539.0,260155,261339,465.7,\"void cub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceKernel\u003ccub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::detail::reduce::policy_hub\u003cfloat, unsigned int, cuda::std::__4::plus\u003cvoid\u003e\u003e::Policy1000, float *, unsigned int, cuda::std::__4::plus\u003cvoid\u003e, float, cuda::std::__4::identity\u003e(T2, T5 *, T3, cub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::GridEvenShare\u003cT3\u003e, T4, T6)\"\n"}
+,{"stream_name":"stdout","time":69.233762268,"data":"7.4,375033,1,375033.0,375033.0,375033,375033,0.0,cupy_arange__float_float_float32\n"}
+,{"stream_name":"stdout","time":69.233767703,"data":"0.5,26240,5,5248.0,5216.0,5184,5344,64.0,\"void cub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::detail::reduce::DeviceReduceSingleTileKernel\u003ccub::CUB_300102_SM_500_520_600_610_700_750_800_860_890_900_1000_1200::detail::reduce::policy_hub\u003cfloat, unsigned int, cuda::std::__4::plus\u003cvoid\u003e\u003e::Policy1000, float *, float *, int, cuda::std::__4::plus\u003cvoid\u003e, float, float, cuda::std::__4::identity\u003e(T2, T3, T4, T5, T6, T8)\"\n"}
+,{"stream_name":"stdout","time":69.233774984,"data":"\n"}
+,{"stream_name":"stdout","time":69.233780594,"data":"\n"}
+,{"stream_name":"stdout","time":69.331746877,"data":"$ [export] nsys export --type sqlite --output /kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.sqlite /kaggle/work\n"}
+,{"stream_name":"stdout","time":69.331791811,"data":"Exportation error: File already exists: '/kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.sqlite'.\n"}
+,{"stream_name":"stdout","time":69.331798957,"data":"Use `--force-overwrite true` to overwrite existing files.\n"}
+,{"stream_name":"stdout","time":69.331806345,"data":"['CUPTI_ACTIVITY_KIND_RUNTIME', 'CUPTI_ACTIVITY_KIND_KERNEL', 'CUPTI_ACTIVITY_KIND_SYNCHRONIZATION']\n"}
+,{"stream_name":"stdout","time":69.33180899,"data":"[(1681060411, 1681435444, 0, 1, 0, 7, 259, 281488331374592, 44, 44, 44, 1, 3, 18, 131072, 1, 1, 128, 1, 1, 0, 0, 0, 23592960, 1, 32768, None, 0)]\n"}
+,{"stream_name":"stdout","time":69.331812461,"data":"['start', 'end', 'deviceId', 'contextId', 'greenContextId', 'streamId', 'correlationId', 'globalPid', 'demangledName', 'shortName', 'mangledName', 'launchType', 'cacheConfig', 'registersPerThread', 'gridX', 'gridY', 'gridZ', 'blockX', 'blockY', 'blockZ', 'staticSharedMemory', 'dynamicSharedMemory', 'localMemoryPerThread', 'localMemoryTotal', 'gridId', 'sharedMemoryExecuted', 'graphNodeId', 'sharedMemoryLimitConfig']\n"}
+,{"stream_name":"stdout","time":69.331816518,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stdout","time":69.33181885,"data":"  File \"\u003cstring\u003e\", line 1, in \u003cmodule\u003e\n"}
+,{"stream_name":"stdout","time":69.331821906,"data":"    import sqlite3; c=sqlite3.connect('/kaggle/working/results/nsys_probe-20261021-092053/raw/probe_nsys.sqlite'); print([r[0] for r in c.execute('select name from sqlite_master where type=\"table\" and name like \"CUPTI%\"')]); print(list(c.execute('select * from CUPTI_ACTIVITY_KIND_KERNEL limit 1'))); print([d[0] for d in c.execute('select * from CUPTI_ACTIVITY_KIND_KERNEL limit 1').description]); print([d[0] for d in c.execute('select * from CUPTI_ACTIVITY_KIND_MEMCPY limit 1').description])\n"}
+,{"stream_name":"stdout","time":69.331833891,"data":"                                                                                                                                                                                                                                                                                                                                                                                                                                    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":69.331837934,"data":"sqlite3.OperationalError: no such table: CUPTI_ACTIVITY_KIND_MEMCPY\n"}
+,{"stream_name":"stdout","time":69.331840416,"data":"\n"}
+,{"stream_name":"stdout","time":69.410850813,"data":"[   68.8s] finished: complete 69s\n"}
+,{"stream_name":"stdout","time":69.43450456,"data":"RESULT_BUNDLE results_nsys_probe-20261021-092053.tar.gz\n"}
+,{"stream_name":"stderr","time":71.680836347,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":71.680877612,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":71.923988686,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":71.924013371,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":72.874082321,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":73.789548111,"data":"[NbConvertApp] Writing 329698 bytes to __results__.html\n"}
+]
