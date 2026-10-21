@@ -1,5 +1,5 @@
 {
- "generated_unix": 1792626112.6955643,
+ "generated_unix": 1792626290.3471198,
  "tokens": {
   "0": [
    {
@@ -783,6 +783,30 @@
     "value": 0
    },
    {
+    "doc": "DESIGN.md",
+    "path": "native_engine.build.test_no_alloc.allocations",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "scans.lookback_check.repeat_failures",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 0
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "pipeline.int16_encoding.overflow_fallbacks",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 0
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "native_engine.fuzz.divergences",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0
+   },
+   {
     "doc": "README.md (GPU section)",
     "path": "archive.gap_count",
     "run_id": "bench_rerun-20261021-233814",
@@ -1387,6 +1411,18 @@
     "path": "native_engine.native.add_order.p50_us",
     "run_id": "bench_rerun-20261021-233814",
     "value": 0.083
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "native_engine.native.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.083
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "native_engine.native.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.083
    }
   ],
   "0.0e+00": [
@@ -1535,6 +1571,20 @@
     "path": "native_engine.native.add_order.p99_us",
     "run_id": "bench_rerun-20261021-233814",
     "value": 0.417
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "native_engine.native.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.417
+   }
+  ],
+  "0.42": [
+   {
+    "doc": "BULLETS.md",
+    "path": "native_engine.native.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.417
    }
   ],
   "0.432": [
@@ -1588,6 +1638,12 @@
   "0.516": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.516
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
     "path": "native_engine.binding.add_order.p50_us",
     "run_id": "bench_rerun-20261021-233814",
     "value": 0.516
@@ -2383,6 +2439,18 @@
     "path": "native_engine.stream (the run's own description)",
     "run_id": "bench_rerun-20261021-233814",
     "value": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "native_engine.fuzz.streams",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 10000
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "native_engine.fuzz.streams",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 10000
    }
   ],
   "10,240": [
@@ -2861,6 +2929,42 @@
     "path": "pipeline.two_gpu.h2d_gbs_two_gpu_aggregate",
     "run_id": "bench_rerun-20261021-233009",
     "value": 12.354303915234716
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "pipeline.two_gpu.h2d_gbs_one_gpu",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 12.365555374391096
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "pipeline.two_gpu.h2d_gbs_two_gpu_aggregate",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 12.354303915234716
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "pipeline.two_gpu.h2d_gbs_one_gpu",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 12.365555374391096
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "pipeline.two_gpu.h2d_gbs_two_gpu_aggregate",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 12.354303915234716
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "pipeline.two_gpu.h2d_gbs_two_gpu_aggregate",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 12.354303915234716
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "pipeline.two_gpu.h2d_gbs_one_gpu",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 12.365555374391096
    }
   ],
   "12.71": [
@@ -3075,6 +3179,12 @@
     "path": "scans.large.implementations.2.gbs",
     "run_id": "bench_rerun-20261021-232245",
     "value": 150.04038615281624
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "scans.large.implementations.2.gbs",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 150.04038615281624
    }
   ],
   "155.1": [
@@ -3133,6 +3243,12 @@
     "path": "resources.kernels.6.occupancy.0.blocks_per_sm",
     "run_id": "bench_all-20261021-230301",
     "value": 16
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "question_index",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 16
    }
   ],
   "16,777,216": [
@@ -3156,6 +3272,18 @@
    },
    {
     "doc": "INTERVIEW_NOTES.md",
+    "path": "scans.large.n_elements",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 16777216
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "scans.lookback_check.repeat_n",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 16777216
+   },
+   {
+    "doc": "README.md (GPU section)",
     "path": "scans.large.n_elements",
     "run_id": "bench_rerun-20261021-232245",
     "value": 16777216
@@ -3199,6 +3327,12 @@
     "path": "resources.kernels.9.registers",
     "run_id": "bench_all-20261021-230301",
     "value": 17
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "question_index",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 17
    }
   ],
   "17.0": [
@@ -3223,6 +3357,14 @@
     "path": "layout.kernels.2.aos_ms",
     "run_id": "bench_all-20261021-230301",
     "value": 174.618382
+   }
+  ],
+  "18": [
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "question_index",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 18
    }
   ],
   "18,725": [
@@ -3253,6 +3395,14 @@
     "path": "ladder.rungs.1.effective_bw_gbs",
     "run_id": "bench_rerun-20261021-232245",
     "value": 184.90084444534696
+   }
+  ],
+  "19": [
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "question_index",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 19
    }
   ],
   "194": [
@@ -3451,6 +3601,24 @@
     "path": "scans.lookback_check.repeats",
     "run_id": "bench_rerun-20261021-232245",
     "value": 20
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "scans.lookback_check.repeats",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 20
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "question_index",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 20
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "bullet_index",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": "6"
    }
   ],
   "200": [
@@ -3485,6 +3653,12 @@
     "path": "native_engine.build.test_no_alloc.operations",
     "run_id": "bench_rerun-20261021-233814",
     "value": 200000
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "native_engine.build.test_no_alloc.operations",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 200000
    }
   ],
   "209.8": [
@@ -3499,6 +3673,14 @@
     "path": "ladder.rungs.2.effective_bw_gbs",
     "run_id": "bench_rerun-20261021-232245",
     "value": 209.7769055035043
+   }
+  ],
+  "21": [
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "question_index",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 21
    }
   ],
   "21.4": [
@@ -3673,6 +3855,12 @@
     "path": "pipeline.int16_encoding e2e change %",
     "run_id": "bench_rerun-20261021-233009",
     "value": -23.747249512417856
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "pipeline.int16_encoding e2e change %",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 23.747249512417856
    }
   ],
   "230.1": [
@@ -3756,6 +3944,30 @@
   "24.0": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "pipeline.int16_encoding.bytes_saved_pct",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 23.999335658528484
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "pipeline.int16_encoding.bytes_saved_pct",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 23.999335658528484
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "pipeline.int16_encoding.bytes_saved_pct",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 23.999335658528484
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "pipeline.int16_encoding.bytes_saved_pct",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 23.999335658528484
+   },
+   {
+    "doc": "README.md (GPU section)",
     "path": "pipeline.int16_encoding.bytes_saved_pct",
     "run_id": "bench_rerun-20261021-233009",
     "value": 23.999335658528484
@@ -4451,6 +4663,12 @@
     "path": "scans.large.lookback_vs_cub.pct_slower_than_cub",
     "run_id": "bench_rerun-20261021-232245",
     "value": 3.3504956833245947
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "scans.large.lookback_vs_cub.pct_slower_than_cub",
+    "run_id": "bench_rerun-20261021-232245",
+    "value": 3.3504956833245947
    }
   ],
   "3.5": [
@@ -4512,6 +4730,18 @@
   "3.663": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "native_engine.binding_decimal.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 3.663
+   },
+   {
+    "doc": "DESIGN.md",
+    "path": "native_engine.binding_decimal.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 3.663
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
     "path": "native_engine.binding_decimal.add_order.p50_us",
     "run_id": "bench_rerun-20261021-233814",
     "value": 3.663
@@ -5181,6 +5411,20 @@
     "value": 40
    }
   ],
+  "41": [
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "derived: kernels at full theoretical occupancy",
+    "run_id": "bench_all-20261021-230301",
+    "value": 41
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "derived: kernels at full theoretical occupancy",
+    "run_id": "bench_all-20261021-230301",
+    "value": 41
+   }
+  ],
   "41.1": [
    {
     "doc": "BENCHMARKS.md",
@@ -5223,11 +5467,29 @@
     "path": "derived: launched kernels",
     "run_id": "bench_all-20261021-230301",
     "value": 43
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "derived: launched kernels",
+    "run_id": "bench_all-20261021-230301",
+    "value": 43
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "derived: launched kernels",
+    "run_id": "bench_all-20261021-230301",
+    "value": 43
    }
   ],
   "43.0": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "pipeline.int16_encoding.e2e_ms.median_ms",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 43.001870499949746
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
     "path": "pipeline.int16_encoding.e2e_ms.median_ms",
     "run_id": "bench_rerun-20261021-233009",
     "value": 43.001870499949746
@@ -5499,6 +5761,12 @@
     "path": "native_engine.fuzz.operations",
     "run_id": "bench_rerun-20261021-233814",
     "value": 548317
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "native_engine.fuzz.operations",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 548317
    }
   ],
   "55.8": [
@@ -5583,6 +5851,12 @@
     "path": "pipeline.two_gpu.one_gpu_ms.median_ms",
     "run_id": "bench_rerun-20261021-233009",
     "value": 56.39942999999903
+   },
+   {
+    "doc": "INTERVIEW_NOTES.md",
+    "path": "pipeline.int16_encoding.int32_e2e_ms.median_ms",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 56.39386150005521
    }
   ],
   "57.2": [
@@ -5910,6 +6184,18 @@
   "69.9": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "native_engine.p99_add_python_engine_over_native",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 69.85851318944844
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "native_engine.p99_add_python_engine_over_native",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 69.85851318944844
+   },
+   {
+    "doc": "README.md (GPU section)",
     "path": "native_engine.p99_add_python_engine_over_native",
     "run_id": "bench_rerun-20261021-233814",
     "value": 69.85851318944844
@@ -6308,6 +6594,12 @@
     "doc": "BENCHMARKS.md",
     "path": "slippage.n_snapshots",
     "run_id": "bench_all-20261021-230301",
+    "value": 863153
+   },
+   {
+    "doc": "BULLETS.md",
+    "path": "archive.n_snapshots",
+    "run_id": "bench_rerun-20261021-233814",
     "value": 863153
    },
    {

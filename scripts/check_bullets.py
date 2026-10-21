@@ -4,8 +4,10 @@
 
 Each bullet follows a ``<!-- bullet:N -->`` marker and must be exactly two lines of 98 to 110
 characters (200 to 220 in total, so there is no short dangling last line), contain no em dash,
-spell out terms except the allowed product names, and, for the alternates (4 and 5), avoid a
-three-item list. Prints PASS or FAIL per bullet with the measured lengths; exits non-zero on FAIL.
+spell out terms except the allowed product names, and, for the alternates (every bullet after the
+three template bullets), avoid a three-item list. Bullets 1 to 5 must be present; later
+alternates are optional and checked by the same rules. Prints PASS or FAIL per bullet with the
+measured lengths; exits non-zero on FAIL.
 """
 
 from __future__ import annotations
@@ -20,7 +22,8 @@ REPO = Path(__file__).resolve().parent.parent
 MIN_LINE, MAX_LINE = 98, 110
 MIN_TOTAL, MAX_TOTAL = 200, 220
 ALLOWED_CAPS = {"CUDA", "NVIDIA", "T4"}  # Nsight, NumPy, Python, C++, FastAPI, Coinbase have no capital runs
-ALTERNATES = {"4", "5"}
+TEMPLATE = {"1", "2", "3"}
+REQUIRED = ("1", "2", "3", "4", "5")
 THREE_ITEM = re.compile(r"\b[\w'-]+(?: [\w'-]+){0,3}, [\w'-]+(?: [\w'-]+){0,3},? and ")
 
 
@@ -86,11 +89,12 @@ def main(argv=None) -> int:
         print(f"FAIL: {path} does not exist")
         return 1
     bullets = read_bullets(path.read_text(encoding="utf-8"))
-    ok = len(bullets) == 5
-    if not ok:
-        print(f"FAIL: expected 5 bullets, found {len(bullets)}")
+    missing = [k for k in REQUIRED if k not in bullets]
+    ok = not missing
+    if missing:
+        print(f"FAIL: bullets {', '.join(missing)} missing (found {len(bullets)})")
     for key, lines in bullets.items():
-        probs = problems(lines, alternate=key in ALTERNATES)
+        probs = problems(lines, alternate=key not in TEMPLATE)
         lengths = ", ".join(str(len(ln)) for ln in lines)
         total = len(" ".join(lines))
         print(f"bullet {key}: {'PASS' if not probs else 'FAIL'} (lines {lengths}; total {total})"

@@ -31,3 +31,15 @@ bandwidth, 95.8% of the measured memory ceiling, by moving book levels to struct
 <!-- bullet:5 -->
 Wrote a warp-cooperative CUDA kernel that prices orders of 64 sizes against every recorded book snapshot
 at 1.69 billion simulated orders per second, 4.4 times faster than a divergent thread-per-order walk.
+
+## Alternate: the C++20 order book core
+
+<!-- bullet:6 -->
+Wrote a C++20 limit order book core with pybind11 bindings and no heap allocation per order that matched the
+Python engine on 10,000 fuzzed order streams, at 0.42 microseconds 99th-percentile latency, 69.9 times faster.
+
+## Alternate: transfer engineering (int16 tick offsets)
+
+<!-- bullet:7 -->
+Cut host-to-device traffic for 863,153 recorded order book snapshots by 24.0% with int16 tick offsets
+decoded on an NVIDIA T4, making the transfer-bound pipeline 23.7% faster with bit-identical outputs.

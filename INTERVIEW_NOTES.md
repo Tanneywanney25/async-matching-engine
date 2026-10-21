@@ -60,12 +60,36 @@ Not the future mid at these horizons: out of sample the fit is no better than th
 
 Clarity and Decimal exactness. On the job's host CPU `add_order` p99 was 39.35 microseconds for the matching path alone; the GPU would add a PCIe round trip on top.
 
-### 15. Why integer ticks?
+### 15. Without hardware counters, how do you know what limits a kernel?
+
+From the compiler and the occupancy API: `nvcc -Xptxas -v` gives registers, spills and shared memory, and `cudaOccupancyMaxActiveBlocksPerMultiprocessor` gives resident blocks at the benchmarked block size. 41 of 43 launched kernels reach full theoretical occupancy, so for the slow ones the answer lies elsewhere: divergence and uncoalesced reads, which the slippage and layout sections measure. It is a theoretical figure, not achieved occupancy.
+
+### 16. How does the single-pass scan avoid deadlock, and how did you test it?
+
+Blocks take tile numbers from an atomic counter instead of trusting the launch order, so every tile a block waits on belongs to a block that is already running; statuses are published with release stores and read with acquire loads. Before timing, it ran in a child process with a timeout on integer inputs that must match `numpy.cumsum` bit for bit at any summation order, 20 times at 16,777,216 elements with 0 mismatches.
+
+### 17. Why did the second T4 not speed up the pipeline?
+
+Because the pipeline is transfer-bound and both cards share the path to host memory: the copy-only pass moved 12.4 GB/s on one card and 12.4 GB/s on two together, and `nvidia-smi topo -m` puts them behind one host bridge (`PHB`). A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps.
+
+### 18. What did narrowing prices to int16 buy?
+
+24.0% fewer bytes over PCIe and 43.0 ms instead of 56.4 ms end to end, with outputs identical bit for bit, because each level is sent as an offset from its side's best price and 0 chunks needed the int32 fallback.
+
+### 19. How do you know the C++ core matches the Python engine?
+
+The differential fuzzer drives both against the same reference book: 10,000 seeded streams, 548,317 operations, 0 divergences, comparing fills, statuses, best prices and depth after every operation, and the benchmark checks that all four replay paths agree on fills and resting orders.
+
+### 20. Where does the time go when the C++ core is called from Python?
+
+Natively an `add` costs 0.083 microseconds at the median; through the binding with integers 0.516, and with Decimal orders 3.663, so the Python call and the Decimal conversion cost more than the matching itself. Decimal is converted only at that boundary, so the core works in integer ticks.
+
+### 21. Why integer ticks?
 
 At the archive's highest price, $84,856.07, neighbouring float32 values are 0.78 cents apart, so a one-cent spread cannot be represented exactly; int32 ticks make every price comparison exact.
 
 ## Three things that went wrong
 
-- The first full real-data run put the best feature kernel at `105.8`% of the "measured ceiling", which was a copy kernel: a copy spends half its DRAM time writing, while the feature kernels read about seventeen bytes per byte written. Added a read-only `128`-bit streaming kernel to the bandwidth section and took the highest measured figure as the ceiling (rerun `bench_rerun-20261021-191923`); the best rung is now below it.
-- Float64 was not precise enough for rolling windows built from prefix sums: on the real archive the precision study's float64 window error (`1.8e-8`) exceeded a tenth of a tick, and one-second VWAP windows holding only dust trades disagreed with a NumPy reference by `9e-5`. Fixed with a double-double prefix scan (`cuda/ddscan.cu`), now the production design for the VWAP chain, and with an exact `math.fsum` check instead of a float64 reference that had the same flaw.
+- The first phase never sampled a clock: Kaggle's T4 sessions have two cards, so `nvidia-smi --query-gpu` prints two lines and `bench.common.gpu_state()` (which unpacked exactly five comma-separated values) raised on every call. Every raw file in `bench_all-20261021-190618` and `bench_rerun-20261021-191923` records `ValueError('too many values to unpack (expected 5)')` instead of clocks, so the published "no timed block lost more than a tenth of its SM clock" was vacuous, and the bootstrap's manifests carried values like `'5001\nTesla T4'` for the second field onwards. `gpu_state()` now queries by card index, blocks sample the cards they use (`devices=`), a drop on any of them flags the block, a block without samples records `clocks_missing`, and the renderer must say so rather than claim a clean run. The phase `1` directories stay as they are; the final phase `2` run replaces their numbers.
 - Three T4 smoke runs were spent on one class of bug: NVRTC rejects options given twice, and CuPy's `RawModule` already passes `-arch` and `-default-device`, so every kernel failed to compile until the harness stopped passing them. The fix was a one-line change; the lesson was to run a cheap quick job before every full one, which then caught the stale-export `nsys stats` failure the same way.
+- Float64 was not precise enough for rolling windows built from prefix sums: on the real archive the precision study's float64 window error (`1.8e-8`) exceeded a tenth of a tick, and one-second VWAP windows holding only dust trades disagreed with a NumPy reference by `9e-5`. Fixed with a double-double prefix scan (`cuda/ddscan.cu`), now the production design for the VWAP chain, and with an exact `math.fsum` check instead of a float64 reference that had the same flaw.
