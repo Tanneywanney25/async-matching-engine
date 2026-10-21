@@ -46,3 +46,7 @@ build/
 # Generated kernel bundles and dataset staging for the remote runner
 remote/.push/
 remote/.datasets/
+
+# C++ order book core: the pybind11 module CMake writes into the package
+src/exchange_engine/_native*.so
+src/exchange_engine/_native*.pyd
