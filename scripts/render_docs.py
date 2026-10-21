@@ -1,0 +1,871 @@
+"""Render every document that contains a measured number, from committed results only.
+
+    python scripts/render_docs.py [--out-dir DIR] [--allow-synthetic]
+
+Reads ``results/*/manifest.json`` and ``results/*/metrics.json``. Only runs whose metrics and
+manifest both say ``"source": "real"``, whose manifest GPU name contains ``T4`` and which were
+full (not ``--quick``) runs feed the GPU documents; sections are merged across such runs with the
+latest run winning per section. Synthetic input is refused: a synthetic run is never selected, and
+if no real T4 run exists the renderer exits non-zero instead of rendering.
+
+Every number goes through :meth:`Renderer.fmt`, which records ``{rendered token: [{run_id, path,
+value}]}`` in ``results/provenance.json``; ``scripts/check_numbers.py`` checks the documents
+against it. Writes ``BENCHMARKS.md``, the README GPU section (between the gpu-lab markers) and its
+local Benchmark table, ``DESIGN.md``, ``INTERVIEW_NOTES.md``, ``BULLETS.md``, the ``CHANGELOG.md``
+entry, ``public/data/gpu_lab.json`` and ``public/data/pipeline_timeline.svg``.
+"""
+
+from __future__ import annotations
+
+import argparse
+import itertools
+import json
+import math
+import re
+import shutil
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Tuple
+
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "scripts"))
+import check_bullets  # noqa: E402
+
+NUM_RE = re.compile(r"(?<![A-Za-z_\d.])\d[\d,]*(?:\.\d+)?(?:e[-+]?\d+)?")
+GITHUB = "https://github.com/Tanneywanney25/async-matching-engine/blob/gpu-analytics/"
+MARK_START, MARK_END = "<!-- gpu-lab:start -->", "<!-- gpu-lab:end -->"
+DATA_LIMIT_BYTES = 5 * 1024 * 1024
+LADDER_ORDER = ["v0_aos", "v1_soa", "v2_soa_fused", "v3_soa_fused_vec4", "v4_soa_fused_vec4_sweep"]
+
+
+class RefuseError(SystemExit):
+    pass
+
+
+# --------------------------------------------------------------------------- #
+# Runs
+# --------------------------------------------------------------------------- #
+
+
+class Run:
+    def __init__(self, path: Path) -> None:
+        self.path = path
+        self.id = path.name
+        self.manifest = json.loads((path / "manifest.json").read_text(encoding="utf-8"))
+        self.metrics = json.loads((path / "metrics.json").read_text(encoding="utf-8"))
+
+    @property
+    def source(self) -> str:
+        return str(self.metrics.get("source"))
+
+    @property
+    def real(self) -> bool:
+        return self.source == "real" and self.manifest.get("source") == "real"
+
+    @property
+    def t4(self) -> bool:
+        return "T4" in str(self.manifest.get("gpu_name") or "")
+
+    @property
+    def quick(self) -> bool:
+        return bool((self.metrics.get("run_all") or {}).get("quick"))
+
+    @property
+    def started(self) -> float:
+        return float(self.manifest.get("started_unix") or 0.0)
+
+
+def load_runs(results: Path) -> List[Run]:
+    runs = []
+    for d in sorted(results.iterdir()) if results.exists() else []:
+        if d.is_dir() and (d / "manifest.json").exists() and (d / "metrics.json").exists():
+            try:
+                runs.append(Run(d))
+            except ValueError:
+                continue
+    return runs
+
+
+# --------------------------------------------------------------------------- #
+# Renderer
+# --------------------------------------------------------------------------- #
+
+
+class Renderer:
+    def __init__(self, runs: Sequence[Run], allow_synthetic: bool = False) -> None:
+        self.runs = list(runs)
+        gpu = [r for r in self.runs if r.t4 and (allow_synthetic or not r.quick) and (r.real or allow_synthetic)]
+        self.refused = [r.id for r in self.runs if r.t4 and not r.real]
+        if not gpu:
+            raise RefuseError("no full real-data T4 run in results/: refusing to render (synthetic input is never rendered)")
+        self.sections: Dict[str, Tuple[Run, dict]] = {}
+        for run in sorted(gpu, key=lambda r: r.started):
+            for name, data in (run.metrics.get("sections") or {}).items():
+                self.sections[name] = (run, data)
+        for name, (run, _data) in self.sections.items():
+            if not run.real and not allow_synthetic:
+                raise RefuseError(f"section {name} would come from non-real run {run.id}")
+        self.latest = max(gpu, key=lambda r: r.started)
+        local = [r for r in self.runs if r.id.startswith("engine-local-") and r.real]
+        self.local_engine = max(local, key=lambda r: r.started) if local else None
+        self.prov: Dict[str, List[dict]] = {}
+
+    # -- access ---------------------------------------------------------------- #
+
+    def has(self, section: str) -> bool:
+        return section in self.sections
+
+    def get(self, section: str, path: str, default: Any = None) -> Any:
+        if section not in self.sections:
+            return default
+        cur: Any = self.sections[section][1]
+        for part in path.split("."):
+            if isinstance(cur, list):
+                try:
+                    cur = cur[int(part)]
+                except (ValueError, IndexError):
+                    return default
+            elif isinstance(cur, dict) and part in cur:
+                cur = cur[part]
+            else:
+                return default
+        return cur
+
+    def run_of(self, section: str) -> Run:
+        return self.sections[section][0]
+
+    def raw_link(self, section: str, rel: Optional[str], label: str = "raw") -> str:
+        if not rel or section not in self.sections:
+            return ""
+        return f"[{label}](results/{self.run_of(section).id}/{rel})"
+
+    # -- formatting ------------------------------------------------------------- #
+
+    def record(self, text: str, run_id: str, path: str, value: Any) -> str:
+        for tok in NUM_RE.findall(text):
+            self.prov.setdefault(tok, []).append({"run_id": run_id, "path": path, "value": value})
+        return text
+
+    def fmt(self, section: str, path: str, kind: str = "num", scale: float = 1.0, value: Any = None) -> str:
+        v = self.get(section, path) if value is None else value
+        if v is None or (isinstance(v, float) and not math.isfinite(v)):
+            return "n/a"
+        run = self.run_of(section) if section in self.sections else self.latest
+        x = float(v) * scale if kind not in ("str",) else v
+        text = format_value(x, kind)
+        return self.record(text, run.id, f"{section}.{path}" + (f"*{scale:g}" if scale != 1.0 else ""), v)
+
+    def fmt_archive(self, path: str, kind: str = "int", scale: float = 1.0) -> str:
+        v = (self.latest.metrics.get("archive") or {}).get(path)
+        if v is None:
+            return "n/a"
+        return self.record(format_value(float(v) * scale, kind), self.latest.id, f"archive.{path}", v)
+
+    def fmt_m(self, section: str, path: str, kind: str = "ms") -> str:
+        """``median (IQR x)`` of a measurement dict."""
+        med = self.fmt(section, f"{path}.median_ms", kind)
+        iqr = self.fmt(section, f"{path}.iqr_ms", kind)
+        return f"{med} (IQR {iqr})"
+
+
+def format_value(x: float, kind: str) -> str:
+    if kind == "int":
+        return f"{x:,.0f}"
+    if kind == "pct":
+        return f"{x:.1f}" if abs(x) < 1000 else f"{x:,.0f}"
+    if kind == "x":
+        return f"{x:.1f}" if x < 100 else f"{x:,.0f}"
+    if kind == "gbs":
+        return f"{x:.1f}"
+    if kind == "sci":
+        return f"{x:.1e}"
+    if kind == "us":
+        return f"{x:.2f}"
+    if kind == "r2":
+        return f"{x:.4f}"
+    if kind == "billions":
+        return f"{x / 1e9:.2f}"
+    if kind == "millions":
+        return f"{x / 1e6:.1f}"
+    if kind in ("ms", "num"):
+        if x == 0:
+            return "0"
+        digits = max(0, 2 - int(math.floor(math.log10(abs(x)))))
+        return f"{x:,.{min(digits, 6)}f}"
+    return str(x)
+
+
+# --------------------------------------------------------------------------- #
+# Documents
+# --------------------------------------------------------------------------- #
+
+
+def rung_label(name: str) -> str:
+    return {"v0_aos": "v0 array-of-structures, one kernel per metric", "v1_soa": "v1 structure-of-arrays, one kernel per metric",
+            "v2_soa_fused": "v2 structure-of-arrays, fused", "v3_soa_fused_vec4": "v3 fused, 128-bit loads",
+            "v4_soa_fused_vec4_sweep": "v4 v3 + grid-stride, best launch configuration"}.get(name, name)
+
+
+def hardware_block(r: Renderer) -> str:
+    man = r.latest.manifest
+    gpu = r.latest.metrics.get("gpu") or {}
+    a = r.latest.metrics.get("archive") or {}
+    start = datetime.fromtimestamp((a.get("capture_start_ns") or 0) / 1e9, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    end = datetime.fromtimestamp((a.get("capture_end_ns") or 0) / 1e9, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    sm = r.record(format_value(gpu.get("sm_count") or 0, "int"), r.latest.id, "gpu.sm_count", gpu.get("sm_count"))
+    mem = r.record(format_value(gpu.get("memory_gb") or 0, "num"), r.latest.id, "gpu.memory_gb", gpu.get("memory_gb"))
+    bw = r.record(format_value(gpu.get("theoretical_bw_gbs") or 0, "gbs"), r.latest.id, "gpu.theoretical_bw_gbs",
+                  gpu.get("theoretical_bw_gbs"))
+    hours = r.fmt_archive("capture_seconds", "num", 1 / 3600)
+    return "\n".join([
+        "| Item | Value |", "|---|---|",
+        f"| GPU | {man.get('gpu_name')}, {sm} streaming multiprocessors, {mem} GB, compute capability `{gpu.get('compute_capability')}` |",
+        f"| Theoretical memory bandwidth (from device properties) | {bw} GB/s |",
+        f"| Driver / CUDA runtime / nvcc | `{man.get('driver')}` / `{gpu.get('cuda_runtime')}` / `{str(man.get('nvcc', '')).splitlines()[0] if man.get('nvcc') else ''}` |",
+        f"| Nsight Systems | `{man.get('nsys')}` |",
+        f"| Host CPU | `{man.get('cpu_model')}`, {r.record(format_value(man.get('cpu_cores') or 0, 'int'), r.latest.id, 'manifest.cpu_cores', man.get('cpu_cores'))} logical cores |",
+        f"| Run | `{r.latest.id}` at git `{str(man.get('git_sha', ''))[:12]}`, NVRTC target `{gpu.get('nvrtc_arch')}` |",
+        f"| Archive | {r.fmt_archive('n_snapshots')} snapshots, {r.fmt_archive('n_trades')} trades, source `{a.get('source')}` |",
+        f"| Capture window | `{start}` to `{end}` ({hours} hours), sequence gaps: {r.fmt_archive('gap_count')} |",
+        f"| Archive content hash | `{a.get('content_hash')}` |",
+    ])
+
+
+def throttle_notes(r: Renderer) -> List[str]:
+    notes = []
+    for name, (run, data) in sorted(r.sections.items()):
+        for path, m in walk_measurements(data):
+            if m.get("throttle_flag"):
+                drop = r.record(format_value(m.get("clock_drop_pct") or 0, "pct"), run.id, f"{name}.{path}.clock_drop_pct",
+                                m.get("clock_drop_pct"))
+                notes.append(f"- `{name}.{path}`: SM clock dropped {drop}% during the block.")
+    return notes
+
+
+def walk_measurements(obj: Any, prefix: str = ""):
+    if isinstance(obj, dict):
+        if "median_ms" in obj and "n" in obj:
+            yield prefix, obj
+            return
+        for k, v in obj.items():
+            yield from walk_measurements(v, f"{prefix}.{k}" if prefix else str(k))
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            yield from walk_measurements(v, f"{prefix}.{i}")
+
+
+def ladder_rows(r: Renderer) -> List[Tuple[int, dict]]:
+    rungs = r.get("ladder", "rungs", []) or []
+    return sorted(enumerate(rungs), key=lambda t: LADDER_ORDER.index(t[1]["name"]) if t[1]["name"] in LADDER_ORDER else 99)
+
+
+def ladder_table(r: Renderer, with_raw: bool = True) -> str:
+    rows = ["| Rung | Per-kernel median ms (IQR) | End to end ms | Effective GB/s | % of measured ceiling | % of theoretical | Block | Verified |" + (" Raw |" if with_raw else ""),
+            "|---|---:|---:|---:|---:|---:|---:|:---:|" + ("---|" if with_raw else "")]
+    for i, rung in ladder_rows(r):
+        p = f"rungs.{i}"
+        line = (f"| {rung_label(rung['name'])} | {r.fmt_m('ladder', f'{p}.kernel_ms')} | {r.fmt('ladder', f'{p}.e2e_ms.median_ms', 'ms')} | "
+                f"{r.fmt('ladder', f'{p}.effective_bw_gbs', 'gbs')} | {r.fmt('ladder', f'{p}.pct_of_ceiling', 'pct')} | "
+                f"{r.fmt('ladder', f'{p}.pct_of_theoretical', 'pct')} | {r.fmt('ladder', f'{p}.block_size', 'int')} | "
+                f"{'yes' if rung.get('verified') else 'NO'} |")
+        if with_raw:
+            line += f" {r.raw_link('ladder', (rung.get('kernel_ms') or {}).get('samples_file'))} |"
+        rows.append(line)
+    return "\n".join(rows)
+
+
+def benchmarks_md(r: Renderer) -> str:
+    out = ["# Benchmarks", "",
+           "Every figure on this page is rendered by `scripts/render_docs.py` from `results/*/metrics.json` of real-data "
+           "runs on a Kaggle Tesla T4 and links to the raw samples it came from. Times are medians of interleaved timed "
+           "iterations after discarded warmup runs, with the interquartile range (IQR) beside them; the SM clock, memory "
+           "clock, temperature and power were sampled before and after every block.", "",
+           "## Hardware and data", "", hardware_block(r), ""]
+    if r.has("bandwidth"):
+        out += ["## Memory bandwidth ceiling", "",
+                "| Measurement | Median ms (IQR) | GB/s (read + write) | Raw |", "|---|---:|---:|---|",
+                f"| Device-to-device copy kernel, 128-bit loads | {r.fmt_m('bandwidth', 'copy_kernel')} | {r.fmt('bandwidth', 'copy_kernel_gbs', 'gbs')} | {r.raw_link('bandwidth', r.get('bandwidth', 'copy_kernel.samples_file'))} |",
+                f"| `cudaMemcpy` device to device | {r.fmt_m('bandwidth', 'cudamemcpy_d2d')} | {r.fmt('bandwidth', 'cudamemcpy_gbs', 'gbs')} | {r.raw_link('bandwidth', r.get('bandwidth', 'cudamemcpy_d2d.samples_file'))} |",
+                "", f"Buffer size {r.fmt('bandwidth', 'bytes', 'int')} bytes. Measured ceiling {r.fmt('bandwidth', 'ceiling_gbs', 'gbs')} GB/s, "
+                f"{r.fmt('bandwidth', 'ceiling_gbs', 'pct', 100.0 / (r.get('bandwidth', 'theoretical_gbs') or 1))}% of the "
+                f"{r.fmt('bandwidth', 'theoretical_gbs', 'gbs')} GB/s theoretical figure.", ""]
+    if r.has("ladder"):
+        out += ["## Feature kernels: the optimization ladder", "",
+                f"{r.fmt('ladder', 'n_snapshots', 'int')} snapshots x {r.fmt('ladder', 'levels', 'int')} levels. Effective bandwidth counts the "
+                f"minimum traffic, {r.fmt('ladder', 'bytes_min_io_per_snapshot', 'int')} bytes per snapshot (every level's sizes, the top-of-book "
+                "prices, the product id and six outputs). Per-kernel time is CUDA events around the launches only; end to end "
+                "includes the host-to-device copy of the inputs from pageable memory and the copy back of the outputs.", "",
+                ladder_table(r), ""]
+        sweep = r.get("ladder", "sweep.table", []) or []
+        if sweep:
+            out += ["### Launch configuration sweep (v4, grid-stride)", "", "| Block | Grid | Median ms | IQR ms | Effective GB/s |", "|---:|---:|---:|---:|---:|"]
+            for i, _row in enumerate(sweep):
+                p = f"sweep.table.{i}"
+                out.append(f"| {r.fmt('ladder', p + '.block_size', 'int')} | {r.fmt('ladder', p + '.grid', 'int')} | "
+                           f"{r.fmt('ladder', p + '.median_ms', 'ms')} | {r.fmt('ladder', p + '.iqr_ms', 'ms')} | "
+                           f"{r.fmt('ladder', p + '.effective_bw_gbs', 'gbs')} |")
+            out.append("")
+    if r.has("baselines"):
+        out += ["## Baselines (same machine, same job, same archive)", "",
+                "| Implementation | Median ms (IQR) | Verified | Raw |", "|---|---:|:---:|---|"]
+        for key, label, path in (("cpp_single", "C++ single thread, `g++ -O3 -march=native`", "cpp_single.ms"),
+                                 ("cpp_omp", "C++ with OpenMP on every core", "cpp_omp.ms"),
+                                 ("numpy", "Vectorized NumPy", "numpy.ms"),
+                                 ("cupy_k", "CuPy expression chain, per kernel", "cupy.kernel_ms"),
+                                 ("cupy_e", "CuPy expression chain, end to end", "cupy.e2e_ms")):
+            if r.get("baselines", path) is None:
+                continue
+            ver = r.get("baselines", path.split(".")[0] + ".verified")
+            out.append(f"| {label} | {r.fmt_m('baselines', path)} | {'yes' if ver else 'NO'} | {r.raw_link('baselines', r.get('baselines', path + '.samples_file'))} |")
+        sp = "speedups"
+        out += ["", f"Best rung: `{r.get('ladder', sp + '.best_rung')}`. Per kernel it is {r.fmt('ladder', sp + '.kernel_vs_cpp_single', 'x')} times faster "
+                f"than single-threaded C++, {r.fmt('ladder', sp + '.kernel_vs_cpp_omp', 'x')} times faster than C++ with OpenMP on every core and "
+                f"{r.fmt('ladder', sp + '.kernel_vs_cupy', 'x')} times faster than the CuPy chain. End to end, transfers included, it is "
+                f"{r.fmt('ladder', sp + '.e2e_vs_numpy', 'x')} times faster than NumPy and {r.fmt('ladder', sp + '.e2e_vs_cupy', 'x')} times "
+                "faster than the CuPy chain with its own transfers.", ""]
+    if r.has("scans"):
+        out += ["## Prefix scans", ""]
+        for key, title in (("", "Archive-length series"), ("large.", "Large series")):
+            n = r.fmt("scans", key + "n_elements", "int")
+            out += [f"### {title} ({n} float64 elements)", "", "| Implementation | Median ms (IQR) | Elements per second (billions) | GB/s | Verified | Raw |",
+                    "|---|---:|---:|---:|:---:|---|"]
+            for i, impl in enumerate(r.get("scans", key + "implementations", []) or []):
+                p = f"{key}implementations.{i}"
+                if not impl.get("ms"):
+                    out.append(f"| {impl['name']} | not run: {impl.get('error', '')[:80]} | | | | |")
+                    continue
+                out.append(f"| {impl['name']} | {r.fmt_m('scans', p + '.ms')} | {r.fmt('scans', p + '.elements_per_s', 'billions')} | "
+                           f"{r.fmt('scans', p + '.gbs', 'gbs')} | {'yes' if impl.get('verified') else 'NO'} | {r.raw_link('scans', impl['ms'].get('samples_file'))} |")
+            out += ["", f"Winner: `{r.get('scans', key + 'winner')}`.", ""]
+        out += ["### Rolling windows", "",
+                f"- Rolling volume-weighted average price over {r.fmt('scans', 'rolling_vwap.n_trades', 'int')} trades (100-trade window, and "
+                f"time windows sampled at {r.fmt('scans', 'rolling_vwap.n_snapshots', 'int')} snapshots): {r.fmt_m('scans', 'rolling_vwap.ms')} ms "
+                f"for the whole chain; maximum relative error against `metrics.rolling_vwap` in Decimal "
+                f"{r.fmt('scans', 'rolling_vwap.max_rel_err_100', 'sci')} over {r.fmt('scans', 'rolling_vwap.decimal_sample', 'int')} sampled trades.",
+                f"- Rolling one-second mean spread and imbalance over {r.fmt('scans', 'rolling_book.n_snapshots', 'int')} snapshots: "
+                f"{r.fmt_m('scans', 'rolling_book.ms')} ms, {r.fmt('scans', 'rolling_book.snapshots_per_s', 'millions')} million snapshots per second.", ""]
+    if r.has("precision"):
+        out += ["## Prefix-sum precision", "",
+                f"Window sums of {r.fmt('precision', 'window', 'int')} values over {r.fmt('precision', 'n', 'int')} float32 top-of-book notionals, "
+                "against an exact integer reference.", "",
+                "| Variant | Max relative error | Median relative error | Median ms (IQR) |", "|---|---:|---:|---:|"]
+        for i, v in enumerate(r.get("precision", "variants", []) or []):
+            p = f"variants.{i}"
+            star = " (production)" if v["name"] == r.get("precision", "production_choice") else ""
+            out.append(f"| {v['name']}{star} | {r.fmt('precision', p + '.max_rel_err', 'sci')} | {r.fmt('precision', p + '.median_rel_err', 'sci')} | {r.fmt_m('precision', p + '.ms')} |")
+        out += ["", f"Production choice `{r.get('precision', 'production_choice')}` costs {r.fmt('precision', 'cost_vs_float32_naive_pct', 'pct')}% "
+                "time against float32 naive.", ""]
+    if r.has("layout"):
+        out += ["## Layout under Nsight Systems", "",
+                f"Total GPU time of the four book-level kernels over {r.fmt('layout', 'iters', 'int')} iterations each, from `nsys stats "
+                "--report cuda_gpu_kern_sum`.", "",
+                "| Kernel | Array-of-structures ms | Structure-of-arrays ms | Reduction % |", "|---|---:|---:|---:|"]
+        for i, _k in enumerate(r.get("layout", "kernels", []) or []):
+            p = f"kernels.{i}"
+            out.append(f"| {r.get('layout', p + '.name')} | {r.fmt('layout', p + '.aos_ms', 'ms')} | {r.fmt('layout', p + '.soa_ms', 'ms')} | {r.fmt('layout', p + '.reduction_pct', 'pct')} |")
+        out += [f"| **Total** | {r.fmt('layout', 'aos_total_kernel_ms', 'ms')} | {r.fmt('layout', 'soa_total_kernel_ms', 'ms')} | **{r.fmt('layout', 'reduction_pct', 'pct')}** |", "",
+                f"Reports: {r.raw_link('layout', r.get('layout', 'reports.aos'), 'aos.nsys-rep')}, {r.raw_link('layout', r.get('layout', 'reports.soa'), 'soa.nsys-rep')}, "
+                f"{r.raw_link('layout', r.get('layout', 'reports.aos_csv'), 'aos CSV')}, {r.raw_link('layout', r.get('layout', 'reports.soa_csv'), 'soa CSV')}. "
+                f"Nsight Compute: {'ran' if r.get('layout', 'ncu.ok') else 'blocked'} (`{str(r.get('layout', 'ncu.message', ''))[:90]}`).", ""]
+    if r.has("slippage"):
+        out += ["## Execution-cost surface", "",
+                f"{r.fmt('slippage', 'orders', 'int')} simulated orders: {r.fmt('slippage', 'n_snapshots', 'int')} snapshots x both sides x "
+                f"{r.fmt('slippage', 'n_sizes', 'int')} order sizes.", "",
+                "| Kernel | Median ms (IQR) | Orders per second (billions) | Raw |", "|---|---:|---:|---|",
+                f"| Naive, one thread per order | {r.fmt_m('slippage', 'naive.ms')} | {r.fmt('slippage', 'naive.orders_per_s', 'billions')} | {r.raw_link('slippage', r.get('slippage', 'naive.ms.samples_file'))} |",
+                f"| Warp-cooperative | {r.fmt_m('slippage', 'warp.ms')} | {r.fmt('slippage', 'warp.orders_per_s', 'billions')} | {r.raw_link('slippage', r.get('slippage', 'warp.ms.samples_file'))} |",
+                "", f"Warp-cooperative speedup {r.fmt('slippage', 'speedup_warp_vs_naive', 'x')} times; divergence penalty of the naive walk "
+                f"{r.fmt('slippage', 'divergence_penalty_pct', 'pct')}%. Verified against the Decimal walker on {r.fmt('slippage', 'verification.sample', 'int')} "
+                f"snapshots: exact ticks `{r.get('slippage', 'verification.exact_ticks')}`, maximum average-price error "
+                f"{r.fmt('slippage', 'verification.max_avg_price_tick_err', 'sci')} ticks. Surface: {r.raw_link('slippage', r.get('slippage', 'surface_file'), 'per-minute medians')}.", ""]
+    if r.has("ofi"):
+        out += ["## Order flow imbalance", "",
+                f"{r.fmt('ofi', 'levels', 'int')}-level order flow imbalance (Cont, Kukanov and Stoikov), stencil kernel "
+                f"{r.fmt_m('ofi', 'kernel_ms')} ms. Out-of-sample fit on the last 30% of each product's time series:", "",
+                "| Product | Horizon | Out-of-sample R squared | In-sample R squared | Test points |", "|---|---|---:|---:|---:|"]
+        for prod, horizons in sorted((r.get("ofi", "per_product", {}) or {}).items()):
+            for key in sorted(horizons, key=lambda k: int(k[1:-1])):
+                p = f"per_product.{prod}.{key}"
+                out.append(f"| {prod} | {r.fmt('ofi', p + '.horizon_s', 'int')} s | {r.fmt('ofi', p + '.r2_oos', 'r2')} | "
+                           f"{r.fmt('ofi', p + '.r2_in', 'r2')} | {r.fmt('ofi', p + '.n_test', 'int')} |")
+        out += ["", "A statistical description of the recorded window only; no trading or profit claim is made.", ""]
+    if r.has("pipeline"):
+        out += ["## End-to-end pipeline and transfers", "",
+                f"{r.fmt('pipeline', 'chunks', 'int')} chunks, pinned host memory, three streams.", "",
+                "| Measurement | Value |", "|---|---:|",
+                f"| Overlapped pass (wall clock) | {r.fmt_m('pipeline', 'overlapped_ms')} ms |",
+                f"| Serial pass, one stream | {r.fmt_m('pipeline', 'serial_ms')} ms |",
+                f"| Saved by overlap | {r.fmt('pipeline', 'overlap_saved_pct', 'pct')}% |",
+                f"| Host to device | {r.fmt('pipeline', 'breakdown.h2d_ms', 'ms')} ms at {r.fmt('pipeline', 'h2d_gbs', 'gbs')} GB/s |",
+                f"| Kernels | {r.fmt('pipeline', 'breakdown.kernel_ms', 'ms')} ms |",
+                f"| Device to host | {r.fmt('pipeline', 'breakdown.d2h_ms', 'ms')} ms at {r.fmt('pipeline', 'd2h_gbs', 'gbs')} GB/s |",
+                f"| Transfer share of stage time | {r.fmt('pipeline', 'transfer_share_pct', 'pct')}% |",
+                "", f"Timeline: {r.raw_link('pipeline', r.get('pipeline', 'timeline_svg'), 'SVG from the Nsight Systems trace')}.", ""]
+    if r.has("engine"):
+        out += ["## Matching engine (CPU)", "",
+                f"`scripts/benchmark.py`, {r.fmt('engine', 'orders', 'int')} orders and {r.fmt('engine', 'cancels', 'int')} cancels, run on the T4 job's host "
+                f"CPU (`{r.get('engine', 'cpu_model')}`, Python `{r.get('engine', 'python')}`). Matching path only: an in-memory book, no feed, no network.", "",
+                "| Operation | Mean µs | p50 µs | p95 µs | p99 µs |", "|---|---:|---:|---:|---:|"]
+        for op in ("add_order", "cancel_order"):
+            out.append(f"| `{op}` | {r.fmt('engine', op + '.mean_us', 'us')} | {r.fmt('engine', op + '.p50_us', 'us')} | "
+                       f"{r.fmt('engine', op + '.p95_us', 'us')} | {r.fmt('engine', op + '.p99_us', 'us')} |")
+        out += ["", f"Raw latencies: {r.raw_link('engine', r.get('engine', 'raw_file'))}. The laptop's own figures are in the README's Benchmark table.", ""]
+    notes = throttle_notes(r)
+    out += ["## Clock throttling", "", *(notes or ["No timed block lost more than a tenth of its SM clock between the samples taken before and after it."]), ""]
+    runs = sorted({run.id for run, _ in r.sections.values()})
+    out += ["## Runs", "", *[f"- [`{rid}`](results/{rid}/manifest.json)" for rid in runs], ""]
+    return "\n".join(out)
+
+
+# -- README ------------------------------------------------------------------- #
+
+
+def readme_gpu_section(r: Renderer) -> str:
+    sp = "speedups"
+    lines = [MARK_START, "## GPU analytics layer", "",
+             "An offline layer that replays the recorded Coinbase book on an NVIDIA Tesla T4. Every number below is rendered "
+             "from committed raw results by `scripts/render_docs.py`; the full set with raw links is in [BENCHMARKS.md](BENCHMARKS.md), "
+             "the reasoning in [DESIGN.md](DESIGN.md).", "",
+             "```mermaid", "flowchart LR", "  A[Coinbase WebSocket] --> B[recorder.py<br/>zstd JSON lines]",
+             "  B --> C[build_archive.py<br/>tick-encoded level-major archive]", "  C --> D[(Kaggle private dataset)]",
+             "  D --> E[Kaggle T4 job<br/>bench.run_all]", "  E --> F[results/run/metrics.json]",
+             "  F --> G[render_docs.py]", "  G --> H[BENCHMARKS.md, README, BULLETS.md]", "  G --> I[public/data/gpu_lab.json<br/>GPU Lab dashboard]", "```", "",
+             f"Archive: {r.fmt_archive('n_snapshots')} book snapshots and {r.fmt_archive('n_trades')} trades of BTC-USD and ETH-USD, "
+             f"{r.fmt_archive('capture_seconds', 'num', 1 / 3600)} hours of capture, {r.fmt_archive('gap_count')} sequence gaps.", ""]
+    if r.has("ladder"):
+        lines += ["### The optimization ladder", "", ladder_table(r, with_raw=False), ""]
+    lines += ["### Key findings", ""]
+    if r.has("ladder"):
+        lines.append(f"- The fused, vectorized feature kernel reaches {r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_ceiling', 'pct')}% of the "
+                     f"measured copy ceiling and is {r.fmt('ladder', sp + '.kernel_vs_cpp_single', 'x')} times faster than single-threaded C++ per "
+                     f"kernel, but only {r.fmt('ladder', sp + '.e2e_vs_numpy', 'x')} times faster than NumPy once transfers are counted.")
+    if r.has("layout"):
+        lines.append(f"- Moving the book levels from array-of-structures to structure-of-arrays order cut total kernel time by "
+                     f"{r.fmt('layout', 'reduction_pct', 'pct')}% in the Nsight Systems profiles.")
+    if r.has("precision"):
+        lines.append(f"- Float32 prefix sums lose rolling windows to cancellation: maximum relative window error "
+                     f"{r.fmt('precision', 'variants.0.max_rel_err', 'sci')}; production uses `{r.get('precision', 'production_choice')}`.")
+    if r.has("slippage"):
+        lines.append(f"- The warp-cooperative execution-cost kernel prices {r.fmt('slippage', 'warp.orders_per_s', 'billions')} billion simulated "
+                     f"orders per second, {r.fmt('slippage', 'speedup_warp_vs_naive', 'x')} times the divergent thread-per-order walk.")
+    if r.has("pipeline"):
+        lines.append(f"- Transfers take {r.fmt('pipeline', 'transfer_share_pct', 'pct')}% of the pipeline's stage time even with three overlapping "
+                     "streams, so the archive should stay resident on the card and every analysis should run in one residency.")
+    lines += ["", "**The GPU is not in the live matching path.** A PCIe round trip alone takes longer than the engine's matching latency, so "
+              "the GPU only ever analyses recorded history.", "",
+              "### Limitations", "",
+              "- One Kaggle T4 and its four-vCPU host; numbers move with the card's clocks, which are recorded per block.",
+              "- Nsight Compute is blocked in Kaggle's container, so there are no per-kernel hardware counters, only Nsight Systems traces.",
+              "- The archive covers one recording window of two products; the order flow imbalance fit describes that window only.",
+              "- The compiled C++ order book core (a stretch item) was not built; the Python engine remains the reference implementation.", "", MARK_END]
+    return "\n".join(lines)
+
+
+def best_index(r: Renderer) -> int:
+    best = r.get("ladder", "speedups.best_rung")
+    for i, rung in enumerate(r.get("ladder", "rungs", []) or []):
+        if rung["name"] == best:
+            return i
+    return 0
+
+
+def readme_benchmark_table(r: Renderer) -> Optional[str]:
+    run = r.local_engine
+    if run is None:
+        return None
+    e = (run.metrics.get("sections") or {}).get("engine") or {}
+    man = run.manifest
+
+    def f(op, key):
+        return format_value(e[op][key], "us") + " µs"
+    return "\n".join([
+        f"Measured on this laptop (`{man.get('cpu_model')}`, Python `{e.get('python')}`, `{man.get('os', '')}`), single core, matching path "
+        f"only; raw latencies in [`results/{run.id}`](results/{run.id}):", "",
+        "| Operation | mean | p50 | p95 | p99 |", "|---|---:|---:|---:|---:|",
+        f"| `add_order` (insert + match) | {f('add_order', 'mean_us')} | {f('add_order', 'p50_us')} | {f('add_order', 'p95_us')} | {f('add_order', 'p99_us')} |",
+        f"| `cancel_order` | {f('cancel_order', 'mean_us')} | {f('cancel_order', 'p50_us')} | {f('cancel_order', 'p95_us')} | {f('cancel_order', 'p99_us')} |",
+    ])
+
+
+def update_readme(text: str, r: Renderer) -> str:
+    section = readme_gpu_section(r)
+    if MARK_START in text and MARK_END in text:
+        text = text[:text.index(MARK_START)] + section + text[text.index(MARK_END) + len(MARK_END):]
+    elif "## License" in text:
+        text = text.replace("## License", section + "\n\n## License", 1)
+    else:
+        text = text.rstrip() + "\n\n" + section + "\n"
+    table = readme_benchmark_table(r)
+    if table and "## Benchmark" in text:
+        start = text.index("## Benchmark")
+        nxt = text.find("\n## ", start + 5)
+        body = text[start:nxt if nxt != -1 else len(text)]
+        new_body = ("## Benchmark\n\n```bash\npython scripts/benchmark.py --orders 100000 --cancels 10000 --results-dir results/engine-local-<date>\n```\n\n"
+                    + table + "\n\nNumbers vary by machine; re-run the command to reproduce on yours. The GPU job runs the same "
+                    "benchmark on its own host CPU (see [BENCHMARKS.md](BENCHMARKS.md)).\n\n")
+        text = text.replace(body, new_body, 1)
+    return text
+
+
+# -- DESIGN ------------------------------------------------------------------- #
+
+
+def design_md(r: Renderer) -> str:
+    sp = "speedups"
+    return "\n".join([
+        "# Design decisions", "",
+        "Rendered by `scripts/render_docs.py`; every number comes from a committed real-data T4 run.", "",
+        "## Offline GPU, never the live path", "",
+        "The matching engine answers in microseconds on one CPU core. A PCIe round trip to any discrete GPU costs more than "
+        "that before a kernel even starts, so putting the card in the order path could only make it slower. The GPU instead "
+        "replays the recorded history, where the work is wide (every snapshot, every order size) and latency does not matter. "
+        + (f"The pipeline measurements make the same point from the other side: transfers are {r.fmt('pipeline', 'transfer_share_pct', 'pct')}% "
+           "of stage time, so analyses run in one residency on the card." if r.has("pipeline") else ""), "",
+        "## Integer ticks, not float32 prices", "",
+        "Near $100,000 a float32 has a spacing of 2^-7 dollars (about 0.78 cents), most of the one-cent tick, so a float32 "
+        "spread is mostly rounding error (`tests/test_archive.py` shows the failure on a real price). Prices are int32 tick "
+        "counts; spreads and level indices are exact integers on the device, sizes stay float32, and the microprice is kept as "
+        "an offset from the mid so float32 does not lose it.", "",
+        "## Scan precision", "",
+        (f"Rolling windows formed as the difference of two prefix sums cancel catastrophically in float32: over "
+         f"{r.fmt('precision', 'n', 'int')} values the maximum relative window error of the naive float32 scan was "
+         f"{r.fmt('precision', 'variants.0.max_rel_err', 'sci')}. {r.get('precision', 'rationale', '')}" if r.has("precision") else ""), "",
+        "## Structure-of-arrays book levels", "",
+        (f"Level-major storage lets a warp read 32 consecutive snapshots of one level in one transaction. In Nsight Systems the "
+         f"same four kernels took {r.fmt('layout', 'aos_total_kernel_ms', 'ms')} ms in array-of-structures order and "
+         f"{r.fmt('layout', 'soa_total_kernel_ms', 'ms')} ms in structure-of-arrays order, a cut of {r.fmt('layout', 'reduction_pct', 'pct')}%." if r.has("layout") else ""), "",
+        "## Warp-cooperative slippage", "",
+        (f"A thread per (snapshot, side, size) walking the book diverges: lanes of one warp stop at different depths and the warp "
+         f"runs as long as its deepest order. One warp per snapshot instead builds the cumulative quantity and notional of all "
+         f"levels with shuffles and lets each lane binary-search two sizes, so every lane does the same work. Measured: "
+         f"{r.fmt('slippage', 'speedup_warp_vs_naive', 'x')} times faster, {r.fmt('slippage', 'divergence_penalty_pct', 'pct')}% of the "
+         "naive kernel's time was divergence." if r.has("slippage") else ""), "",
+        "## Nsight Systems rather than Nsight Compute", "",
+        "Kaggle's container denies access to the GPU performance counters (`ERR_NVGPUCTRPERM`), so Nsight Compute cannot run "
+        "there (it was tried, see `DECISIONS.md`). Nsight Systems needs no counters and answers what this project asks: total "
+        "kernel time per layout, stream overlap and transfer share. An SSH backend for a rented T4 with counters enabled is "
+        "designed in `remote/README.md` for the day kernel-level metrics are needed.", "",
+        "## Honest baselines", "",
+        (f"The single-threaded C++ baseline is the one bullet 1 quotes, and it is compiled with `-O3 -march=native` and a "
+         f"cache-friendly level-outer loop. The same code with OpenMP on every core is reported too: the best kernel is "
+         f"{r.fmt('ladder', sp + '.kernel_vs_cpp_omp', 'x')} times faster than that, a smaller and fairer figure." if r.has("ladder") else ""), "",
+    ])
+
+
+# -- INTERVIEW NOTES -------------------------------------------------------- #
+
+
+def went_wrong(decisions: str) -> List[str]:
+    lines = [ln[2:].strip() for ln in decisions.splitlines() if ln.startswith("- ")]
+    tagged = [ln for ln in lines if "[went-wrong]" in ln]
+    if len(tagged) < 3:
+        tagged += [ln for ln in reversed(lines) if ln not in tagged and re.search(r"failed|fix|fallback", ln, re.I)]
+    out = []
+    for ln in tagged[:3]:
+        ln = re.sub(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2} ", "", ln).replace("[went-wrong] ", "")
+        out.append(NUM_RE.sub(lambda m: f"`{m.group(0)}`", ln))
+    return out
+
+
+def interview_md(r: Renderer, decisions: str) -> str:
+    sp = "speedups"
+    qa = []
+    if r.has("ladder"):
+        qa += [
+            ("Why is the end-to-end speedup so much smaller than the per-kernel one?",
+             f"The kernel is {r.fmt('ladder', sp + '.kernel_vs_cpp_single', 'x')} times faster than single-threaded C++, but end to end it is "
+             f"{r.fmt('ladder', sp + '.e2e_vs_numpy', 'x')} times faster than NumPy because the inputs cross PCIe first. The work is a few "
+             "adds per byte, so the copy dominates; that is why analyses run in one residency."),
+            ("How close to the hardware limit is the best feature kernel?",
+             f"{r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.effective_bw_gbs', 'gbs')} GB/s of minimum traffic, "
+             f"{r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_ceiling', 'pct')}% of the {r.fmt('bandwidth', 'ceiling_gbs', 'gbs')} GB/s a copy "
+             f"kernel achieves and {r.fmt('ladder', 'rungs.' + str(best_index(r)) + '.pct_of_theoretical', 'pct')}% of the theoretical figure."),
+            ("What did each rung of the ladder buy?",
+             "Array-of-structures to structure-of-arrays fixes coalescing, fusion removes repeated passes over the same sizes, "
+             "128-bit loads cut instruction count, and the sweep picks the launch shape; the table in BENCHMARKS.md has each rung's median."),
+            ("Is the arithmetic intensity high enough for the GPU to be compute bound?",
+             f"No: {r.fmt('ladder', 'flops_per_snapshot', 'int')} floating-point operations per {r.fmt('ladder', 'bytes_min_io_per_snapshot', 'int')} bytes, "
+             "far left of the roofline's ridge point, so memory bandwidth is the only ceiling that matters."),
+            ("Why compare against OpenMP when the bullet quotes single-threaded C++?",
+             f"Because an honest comparison beats a flattering one: with every core the CPU closes the gap to "
+             f"{r.fmt('ladder', sp + '.kernel_vs_cpp_omp', 'x')} times."),
+        ]
+    if r.has("layout"):
+        qa.append(("How did you measure the layout effect?",
+                   f"The same four kernels in both layouts under `nsys profile`, total kernel time from `cuda_gpu_kern_sum`: "
+                   f"{r.fmt('layout', 'aos_total_kernel_ms', 'ms')} ms versus {r.fmt('layout', 'soa_total_kernel_ms', 'ms')} ms, "
+                   f"{r.fmt('layout', 'reduction_pct', 'pct')}% less."))
+    if r.has("scans"):
+        qa += [("Which scan won?",
+                f"`{r.get('scans', 'large.winner')}` on {r.fmt('scans', 'large.n_elements', 'int')} elements. CUB's single-pass decoupled look-back "
+                "reads and writes each element once; the hand-written scans need a second pass for the block carries."),
+               ("How do you know the rolling price is right?",
+                f"Against `metrics.rolling_vwap` in Decimal on sampled trades: maximum relative error {r.fmt('scans', 'rolling_vwap.max_rel_err_100', 'sci')}.")]
+    if r.has("precision"):
+        qa.append(("Why not float32 for the prefix sums?",
+                   f"Window error reached {r.fmt('precision', 'variants.0.max_rel_err', 'sci')} relative in float32; the production choice "
+                   f"`{r.get('precision', 'production_choice')}` stays within a tenth of a tick at "
+                   f"{r.fmt('precision', 'cost_vs_float32_naive_pct', 'pct')}% extra time."))
+    if r.has("slippage"):
+        qa += [("What is divergence and how big was it here?",
+                f"Lanes of a warp taking different branch paths serialize. The thread-per-order walk lost "
+                f"{r.fmt('slippage', 'divergence_penalty_pct', 'pct')}% of its time to it; the warp-cooperative kernel runs "
+                f"{r.fmt('slippage', 'speedup_warp_vs_naive', 'x')} times faster."),
+               ("How was the execution-cost kernel verified?",
+                f"On {r.fmt('slippage', 'verification.sample', 'int')} random snapshots against a Decimal book walker, exact in ticks for the "
+                "levels consumed.")]
+    if r.has("pipeline"):
+        qa.append(("Did the three streams actually overlap?",
+                   f"Yes, the Nsight Systems timeline shows copy and compute lanes active together; overlap saved "
+                   f"{r.fmt('pipeline', 'overlap_saved_pct', 'pct')}% of the serial wall time, and transfers were still "
+                   f"{r.fmt('pipeline', 'transfer_share_pct', 'pct')}% of stage time."))
+    if r.has("ofi"):
+        qa.append(("Does order flow imbalance predict anything?",
+                   f"It explains part of short-horizon mid changes out of sample (R squared "
+                   f"{r.fmt('ofi', 'per_product.BTC-USD.h1s.r2_oos', 'r2')} for BTC-USD at one second), which is a description, not a strategy."))
+    if r.has("engine"):
+        qa.append(("Why is the matching engine in Python, and how fast is it?",
+                   f"Clarity and Decimal exactness. On the job's host CPU `add_order` p99 was {r.fmt('engine', 'add_order.p99_us', 'us')} "
+                   "microseconds for the matching path alone; the GPU would add a PCIe round trip on top."))
+    qa.append(("Why integer ticks?",
+               "A float32 price near $100,000 cannot represent a one-cent spread; int32 ticks make every price comparison exact."))
+    qa = qa[:15]
+    out = ["# Interview notes", "", "Rendered from the measured numbers by `scripts/render_docs.py`.", "", "## Questions", ""]
+    for i, (q, a) in enumerate(qa, 1):
+        out += [f"### {r.record(str(i), r.latest.id, 'question_index', i)}. {q}", "", a, ""]
+    out += ["## Three things that went wrong", "", *[f"- {w}" for w in went_wrong(decisions)], ""]
+    return "\n".join(out)
+
+
+# -- BULLETS ------------------------------------------------------------------ #
+
+
+def bullet_specs(r: Renderer) -> List[Tuple[str, List[List[str]]]]:
+    N = r.fmt_archive("n_snapshots")
+    A = r.fmt("ladder", "speedups.kernel_vs_cpp_single", "x")
+    B = r.fmt("ladder", "speedups.e2e_vs_numpy", "x")
+    C = r.fmt("layout", "reduction_pct", "pct")
+    D = r.fmt("engine", "add_order.p99_us", "us")
+    orders = r.fmt("engine", "orders", "int")
+    bi = str(best_index(r))
+    pct = r.fmt("ladder", f"rungs.{bi}.pct_of_ceiling", "pct")
+    gbs = r.fmt("ladder", f"rungs.{bi}.effective_bw_gbs", "gbs")
+    v0 = r.fmt("ladder", "rungs.0.effective_bw_gbs", "gbs")
+    rate = r.fmt("slippage", "warp.orders_per_s", "billions")
+    ws = r.fmt("slippage", "speedup_warp_vs_naive", "x")
+    sizes = r.fmt("slippage", "n_sizes", "int")
+    return [
+        ("1", [["", "Built ", "Wrote "], ["CUDA C++ kernels on an NVIDIA T4 for spread, depth and order imbalance over "],
+               [f"{N} recorded book snapshots, ", f"{N} recorded Coinbase book snapshots, ", f"{N} recorded order book snapshots, "],
+               [f"{A} times faster than single-threaded C++ per kernel and {B} times faster than NumPy end to end."]]),
+        ("2", [["", "Built a ", "Wrote a ", "Implemented a "],
+               ["shared-memory parallel prefix scan for rolling volume-weighted average price with book levels stored in ",
+                "shared-memory parallel prefix scan for a rolling volume-weighted average price with book levels stored in ",
+                "shared-memory parallel prefix scans for rolling volume-weighted average price with book levels stored in ",
+                "shared-memory parallel prefix scan for rolling volume-weighted average price, with book levels stored in "],
+               ["structure-of-arrays order for coalesced reads, ", "structure-of-arrays order for coalesced memory reads, "],
+               [f"cutting measured kernel time {C}% in Nsight Systems profiles.",
+                f"cutting measured kernel time by {C}% in Nsight Systems profiles.",
+                f"cutting total measured kernel time {C}% in Nsight Systems profiles."]]),
+        ("3", [["", "Built an ", "Wrote an "],
+               ["asynchronous Python matching engine with price-time priority, partial fills and cancellations on "],
+               ["Coinbase's live WebSocket order book feed, ", "Coinbase's live WebSocket feed, ",
+                "Coinbase's live WebSocket level 2 feed, "],
+               [f"benchmarked across {orders} orders at {D} microseconds 99th-percentile latency.",
+                f"benchmarked across {orders} orders at {D} microseconds of 99th-percentile latency.",
+                f"benchmarked over {orders} orders at {D} microseconds 99th-percentile latency."]]),
+        ("4", [["Tuned ", "Optimized ", "Took "], ["a fused CUDA feature kernel on an NVIDIA T4 ", "a fused CUDA book feature kernel on an NVIDIA T4 "],
+               [f"from {v0} to {gbs} gigabytes per second of effective bandwidth, ",
+                f"from {v0} to {gbs} gigabytes per second of effective memory bandwidth, "],
+               [f"{pct}% of the measured copy ceiling, ", f"or {pct}% of the measured copy ceiling, "],
+               ["with structure-of-arrays levels and 128-bit loads.", "using structure-of-arrays levels and 128-bit loads.",
+                "with structure-of-arrays book levels and 128-bit loads.", "by moving book levels to structure-of-arrays order.",
+                "with structure-of-arrays book levels and vectorized 128-bit loads."]]),
+        ("5", [["Wrote ", "Built "], ["a warp-cooperative CUDA kernel that prices ", "a warp-cooperative CUDA slippage kernel that prices "],
+               [f"orders of {sizes} sizes against every recorded book snapshot ", f"market orders of {sizes} sizes against every recorded book snapshot ",
+                f"orders of {sizes} notional sizes against every recorded snapshot "],
+               [f"at {rate} billion simulated orders per second, ", f"at {rate} billion orders per second, "],
+               [f"{ws} times faster than a thread-per-order walk.", f"{ws} times faster than a naive thread-per-order walk.",
+                f"{ws} times faster than a divergent thread-per-order walk."]]),
+    ]
+
+
+def fit_bullets(r: Renderer) -> List[Tuple[str, str]]:
+    out = []
+    for key, parts in bullet_specs(r):
+        chosen = None
+        for combo in itertools.product(*parts):
+            text = "".join(combo)
+            text = text[0].upper() + text[1:]
+            lines = check_bullets.split_two_lines(text)
+            if lines and not check_bullets.problems(lines, alternate=key in ("4", "5")):
+                chosen = lines
+                break
+        if chosen is None:
+            raise SystemExit(f"bullet {key}: no phrasing fits two lines of 98 to 110 characters")
+        out.append((key, "\n".join(chosen)))
+    return out
+
+
+def bullets_md(r: Renderer) -> str:
+    bullets = fit_bullets(r)
+    titles = {"1": "Template bullet 1 (feature kernels)", "2": "Template bullet 2 (prefix scan and layout)",
+              "3": "Template bullet 3 (matching engine)", "4": "Alternate: GPU performance (percentage of peak bandwidth)",
+              "5": "Alternate: execution cost (the slippage kernel)"}
+    out = ["# Resume bullets", "",
+           "Rendered by `scripts/render_docs.py` from real-data T4 results; `scripts/check_bullets.py` checks the two-line "
+           "length rule and the style rules. Sources: [BENCHMARKS.md](BENCHMARKS.md).", ""]
+    for key, text in bullets:
+        out += [f"## {titles[key]}", "", f"<!-- bullet:{key} -->", text, ""]
+    return "\n".join(out)
+
+
+# -- CHANGELOG ---------------------------------------------------------------- #
+
+
+def changelog(text: str) -> str:
+    if "## [0.2.0]" in text:
+        return text
+    entry = "\n".join([
+        "## [0.2.0] - 2026-10-21", "", "### Added",
+        "- Raw Coinbase recorder (`recorder.py`, `scripts/record.py`) and a deterministic tick-encoded level-major snapshot archive.",
+        "- Kaggle T4 runner (`remote/`), benchmark harness (`bench/`) and CUDA kernels (`cuda/`): feature ladder, scans, precision study,",
+        "  layout profiling, execution-cost surface, order flow imbalance and a three-stream pipeline.",
+        "- Hypothesis invariants and a differential fuzzer for the matching engine.",
+        "- GPU Lab dashboard section, `/analytics` routes, documentation rendered from committed results.", "", ""])
+    marker = "## [0.1.0]"
+    return text.replace(marker, entry + marker, 1) if marker in text else text + "\n" + entry
+
+
+# -- dashboard data -------------------------------------------------------------- #
+
+
+def gpu_lab_json(r: Renderer) -> dict:
+    g = r.get
+    out: dict = {"generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                 "statement": "The GPU is not in the live matching path: a PCIe round trip alone takes longer than the engine's matching latency.",
+                 "provenance": {"runs": [{"run_id": run.id, "git_sha": run.manifest.get("git_sha"), "gpu_name": run.manifest.get("gpu_name"),
+                                          "source": run.source, "date": datetime.fromtimestamp(run.started, tz=timezone.utc).strftime("%Y-%m-%d")}
+                                         for run in sorted({run for run, _ in r.sections.values()}, key=lambda x: x.id)]},
+                 "archive": {k: (r.latest.metrics.get("archive") or {}).get(k) for k in ("n_snapshots", "n_trades", "capture_seconds", "gap_count", "content_hash")}}
+    if r.has("ladder"):
+        rungs = [{"name": x["name"], "label": rung_label(x["name"]), "kernel_median_ms": x["kernel_ms"]["median_ms"],
+                  "kernel_iqr_ms": x["kernel_ms"]["iqr_ms"], "e2e_median_ms": x["e2e_ms"]["median_ms"],
+                  "effective_bw_gbs": x["effective_bw_gbs"], "pct_of_ceiling": x["pct_of_ceiling"],
+                  "pct_of_theoretical": x["pct_of_theoretical"], "block_size": x["block_size"]} for _i, x in ladder_rows(r)]
+        b = lambda p: (g("baselines", p) or {}).get("median_ms")  # noqa: E731
+        out["ladder"] = {"rungs": rungs, "ceiling_gbs": g("bandwidth", "ceiling_gbs"), "theoretical_gbs": g("bandwidth", "theoretical_gbs"),
+                         "baselines": {"cpp_single_ms": b("cpp_single.ms"), "cpp_omp_ms": b("cpp_omp.ms"), "numpy_ms": b("numpy.ms"),
+                                       "cupy_kernel_ms": b("cupy.kernel_ms"), "cupy_e2e_ms": b("cupy.e2e_ms")},
+                         "speedups": {k: g("ladder", f"speedups.{k}") for k in ("kernel_vs_cpp_single", "e2e_vs_numpy", "kernel_vs_cpp_omp", "kernel_vs_cupy")}}
+        flops_snap = g("ladder", "flops_per_snapshot") or 0
+        n = g("ladder", "n_snapshots") or 0
+        kernels = [{"name": x["name"], "intensity_flop_per_byte": x.get("arithmetic_intensity_flop_per_byte"),
+                    "gflops": flops_snap * n / (x["kernel_ms"]["median_ms"] * 1e-3) / 1e9} for _i, x in ladder_rows(r)]
+        out["roofline"] = {"peak_gflops": 8100, "peak_note": "T4 single-precision peak at boost clock (NVIDIA specification)",
+                           "bw_ceiling_gbs": g("bandwidth", "ceiling_gbs"), "bw_theoretical_gbs": g("bandwidth", "theoretical_gbs"), "kernels": kernels}
+    if r.has("pipeline"):
+        out["timeline_svg"] = "/data/pipeline_timeline.svg"
+        out["pipeline"] = {"h2d_ms": g("pipeline", "breakdown.h2d_ms"), "kernel_ms": g("pipeline", "breakdown.kernel_ms"),
+                           "d2h_ms": g("pipeline", "breakdown.d2h_ms"), "overlapped_ms": g("pipeline", "overlapped_ms.median_ms"),
+                           "serial_ms": g("pipeline", "serial_ms.median_ms"), "overlap_saved_pct": g("pipeline", "overlap_saved_pct"),
+                           "transfer_share_pct": g("pipeline", "transfer_share_pct"), "consequence": g("pipeline", "consequence")}
+    if r.has("precision"):
+        out["precision"] = {"variants": [{"name": v["name"], "max_rel_err": v["max_rel_err"], "median_rel_err": v["median_rel_err"],
+                                          "median_ms": v["ms"]["median_ms"]} for v in g("precision", "variants", [])],
+                            "production_choice": g("precision", "production_choice")}
+    if r.has("scans"):
+        out["scans"] = {"implementations": [{"name": i["name"], "median_ms": i["ms"]["median_ms"], "elements_per_s": i["elements_per_s"],
+                                             "gbs": i["gbs"]} for i in g("scans", "large.implementations", []) if i.get("ms")],
+                        "winner": g("scans", "large.winner"), "n_elements": g("scans", "large.n_elements")}
+    if r.has("slippage"):
+        run = r.run_of("slippage")
+        surf_path = run.path / (g("slippage", "surface_file") or "raw/slippage_surface.json")
+        surface = json.loads(surf_path.read_text(encoding="utf-8")) if surf_path.exists() else {}
+        out["slippage"] = {"sizes_usd": surface.get("sizes_usd") or g("slippage", "sizes_usd"), "products": surface.get("products", {}),
+                           "orders_per_s_warp": g("slippage", "warp.orders_per_s"), "orders_per_s_naive": g("slippage", "naive.orders_per_s"),
+                           "speedup": g("slippage", "speedup_warp_vs_naive")}
+    if r.has("ofi"):
+        run = r.run_of("ofi")
+        sc_path = run.path / (g("ofi", "scatter_file") or "raw/ofi_scatter.json")
+        scatter = json.loads(sc_path.read_text(encoding="utf-8")) if sc_path.exists() else {}
+        out["ofi"] = {"per_product": {p: {h: {k: f.get(k) for k in ("r2_oos", "r2_in", "beta", "alpha", "n_test")} for h, f in hs.items()}
+                                      for p, hs in (g("ofi", "per_product", {}) or {}).items()}, "scatter": scatter}
+    bench_rows = []
+    for name, (run, data) in sorted(r.sections.items()):
+        for path, m in walk_measurements(data):
+            bench_rows.append({"section": name, "name": path, "metric": "median", "value": m["median_ms"], "unit": "ms",
+                               "run_id": run.id, "raw": GITHUB + f"results/{run.id}/{m.get('samples_file', 'metrics.json')}"})
+    out["benchmarks"] = bench_rows
+    if r.has("engine"):
+        out["engine"] = {"p99_us": g("engine", "add_order.p99_us"), "p50_us": g("engine", "add_order.p50_us"),
+                         "orders": g("engine", "orders"), "cpu_model": g("engine", "cpu_model"), "run_id": r.run_of("engine").id}
+    return out
+
+
+def finite(obj: Any) -> Any:
+    """Replace NaN and infinities with None so the dashboard JSON is strict."""
+    if isinstance(obj, float):
+        return obj if math.isfinite(obj) else None
+    if isinstance(obj, dict):
+        return {k: finite(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [finite(v) for v in obj]
+    return obj
+
+
+# --------------------------------------------------------------------------- #
+# Main
+# --------------------------------------------------------------------------- #
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description="Render documents from committed results")
+    parser.add_argument("--results", default=str(REPO / "results"))
+    parser.add_argument("--out-dir", default=None, help="write here instead of the repository (dry runs, tests)")
+    parser.add_argument("--allow-synthetic", action="store_true", help="dry runs into --out-dir only")
+    args = parser.parse_args(argv)
+    if args.allow_synthetic and not args.out_dir:
+        print("--allow-synthetic requires --out-dir: synthetic numbers never reach the repository's documents", file=sys.stderr)
+        return 2
+    try:
+        r = Renderer(load_runs(Path(args.results)), allow_synthetic=args.allow_synthetic)
+    except RefuseError as exc:
+        print(f"render_docs: {exc}", file=sys.stderr)
+        return 2
+    out = Path(args.out_dir) if args.out_dir else REPO
+    out.mkdir(parents=True, exist_ok=True)
+    decisions = (REPO / "DECISIONS.md").read_text(encoding="utf-8") if (REPO / "DECISIONS.md").exists() else ""
+    docs = {"BENCHMARKS.md": benchmarks_md(r), "DESIGN.md": design_md(r), "INTERVIEW_NOTES.md": interview_md(r, decisions),
+            "BULLETS.md": bullets_md(r)}
+    for name, text in docs.items():
+        (out / name).write_text(text.rstrip() + "\n", encoding="utf-8")
+    readme_src = (out / "README.md") if (out / "README.md").exists() else REPO / "README.md"
+    (out / "README.md").write_text(update_readme(readme_src.read_text(encoding="utf-8"), r), encoding="utf-8")
+    cl_src = (out / "CHANGELOG.md") if (out / "CHANGELOG.md").exists() else REPO / "CHANGELOG.md"
+    (out / "CHANGELOG.md").write_text(changelog(cl_src.read_text(encoding="utf-8")), encoding="utf-8")
+    data_dir = out / "public" / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    (data_dir / "gpu_lab.json").write_text(json.dumps(finite(gpu_lab_json(r)), separators=(",", ":"), allow_nan=False,
+                                                      default=str), encoding="utf-8")
+    if r.has("pipeline") and r.get("pipeline", "timeline_svg"):
+        svg = r.run_of("pipeline").path / r.get("pipeline", "timeline_svg")
+        if svg.exists():
+            shutil.copy(svg, data_dir / "pipeline_timeline.svg")
+    prov_path = (out / "results" / "provenance.json") if args.out_dir else (REPO / "results" / "provenance.json")
+    prov_path.parent.mkdir(parents=True, exist_ok=True)
+    prov_path.write_text(json.dumps({"generated_unix": time.time(), "tokens": r.prov}, indent=1, sort_keys=True, default=str),
+                         encoding="utf-8")
+    size = sum(f.stat().st_size for f in data_dir.rglob("*") if f.is_file())
+    print(f"rendered {', '.join(docs)} + README.md, CHANGELOG.md; refused synthetic T4 runs: {len(r.refused)}; "
+          f"public/data {size / 1e6:.2f} MB")
+    if size > DATA_LIMIT_BYTES:
+        print("public/data exceeds 5 MB", file=sys.stderr)
+        return 3
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
