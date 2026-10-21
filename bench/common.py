@@ -263,10 +263,10 @@ def compiled_arch() -> str:
 
 def raw_module(source_names: Sequence[str], name_expressions: Optional[Sequence[str]] = None, extra_options: Sequence[str] = ()):
     """Compile ``cuda/*.cu`` with NVRTC through CuPy, which adds ``-arch`` for the current device
-    itself (a second ``-arch`` is an NVRTC error), so on a T4 this targets sm_75; see compiled_arch()."""
+    itself, as it does -default-device (a duplicate is an NVRTC error; NVRTC defaults to C++17), so on a T4 this targets sm_75; see compiled_arch()."""
     cp = cupy()
     code = "\n".join(read_cuda_source(n) for n in source_names)
-    options = ("--std=c++17", "-default-device", "-I" + str(REPO_ROOT / "cuda"), *extra_options)
+    options = ("-I" + str(REPO_ROOT / "cuda"), *extra_options)  # CuPy adds -arch and -default-device itself
     return cp.RawModule(code=code, options=options, name_expressions=name_expressions)
 
 

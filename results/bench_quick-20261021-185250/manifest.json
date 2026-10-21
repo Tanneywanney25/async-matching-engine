@@ -1,0 +1,75 @@
+{
+  "archive_hash": "805644066b5d802da56706841a2ac40c600e4f856a0c1e5147b8e555d1cbfae3",
+  "archive_snapshots": 300000,
+  "clocks_at_end": {
+    "max_mem_clock_mhz": 5001.0,
+    "max_sm_clock_mhz": 1590.0,
+    "mem_clock_mhz": 5000.0,
+    "power_w": 28.92,
+    "sm_clock_mhz": 720.0,
+    "t": 1792608822.1712592,
+    "temperature_c": 44.0,
+    "util_pct": "2\n300"
+  },
+  "clocks_at_start": {
+    "max_mem_clock_mhz": 5001.0,
+    "max_sm_clock_mhz": 1590.0,
+    "mem_clock_mhz": 405.0,
+    "power_w": 12.93,
+    "sm_clock_mhz": 300.0,
+    "t": 1792608800.9020245,
+    "temperature_c": 42.0,
+    "util_pct": "0\n300"
+  },
+  "cpu_cores": 4,
+  "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+  "cuda_runtime": 12090,
+  "driver": "580.178.04",
+  "errors": [
+    {
+      "error": "ernel.kernel.__get__\n  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n  File \"cupy/_core/raw.pyx\", line 549, in cupy._core.raw._get_raw_module\n  File \"cupy/_core/core.pyx\", line 2534, in cupy._core.core.compile_with_cache\n  File \"cupy/_core/core.pyx\", line 2552, in cupy._core.core.compile_with_cache\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 566, in _compile_module_with_cache\n    return _compile_with_cache_cuda(\n        source, options, arch, cache_dir, extra_source, backend,\n        enable_cooperative_groups, name_expressions, log_stream,\n        cache_in_memory, jitify, to_ltoir)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 660, in _compile_with_cache_cuda\n    ptx, mapping = _compile_using_nvrtc_no_warning(\n                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        source, options, arch, cu_name, name_expressions,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        log_stream, cache_in_memory, jitify, 'lto' if to_ltoir else None)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 391, in _compile_using_nvrtc_no_warning\n    return _compile(source, options, cu_path, name_expressions,\n                    log_stream, jitify, method)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 373, in _compile\n    compiled_obj, mapping = prog.compile(options, log_stream)\n                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n    raise CompileException(log, self.src, self.name, options,\n                           'nvrtc' if not runtime.is_hip else 'hiprtc')\ncupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n\n",
+      "section": "ladder"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 135, in run_section\n    module = importlib.import_module(f\"bench.bench_{name}\")\n  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1395, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1324, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'bench.bench_scans'\n",
+      "section": "scans"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 135, in run_section\n    module = importlib.import_module(f\"bench.bench_{name}\")\n  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1395, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1324, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'bench.bench_precision'\n",
+      "section": "precision"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/kaggle/working/repo/bench/run_all.py\", line 135, in run_section\n    module = importlib.import_module(f\"bench.bench_{name}\")\n  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1395, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1324, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'bench.bench_layout'\n",
+      "section": "layout"
+    },
+    {
+      "error": "ernel.kernel.__get__\n  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n  File \"cupy/_core/raw.pyx\", line 549, in cupy._core.raw._get_raw_module\n  File \"cupy/_core/core.pyx\", line 2534, in cupy._core.core.compile_with_cache\n  File \"cupy/_core/core.pyx\", line 2552, in cupy._core.core.compile_with_cache\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 566, in _compile_module_with_cache\n    return _compile_with_cache_cuda(\n        source, options, arch, cache_dir, extra_source, backend,\n        enable_cooperative_groups, name_expressions, log_stream,\n        cache_in_memory, jitify, to_ltoir)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 660, in _compile_with_cache_cuda\n    ptx, mapping = _compile_using_nvrtc_no_warning(\n                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        source, options, arch, cu_name, name_expressions,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        log_stream, cache_in_memory, jitify, 'lto' if to_ltoir else None)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 391, in _compile_using_nvrtc_no_warning\n    return _compile(source, options, cu_path, name_expressions,\n                    log_stream, jitify, method)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 373, in _compile\n    compiled_obj, mapping = prog.compile(options, log_stream)\n                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n    raise CompileException(log, self.src, self.name, options,\n                           'nvrtc' if not runtime.is_hip else 'hiprtc')\ncupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n\n",
+      "section": "slippage"
+    },
+    {
+      "error": "ernel.kernel.__get__\n  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n  File \"cupy/_core/raw.pyx\", line 549, in cupy._core.raw._get_raw_module\n  File \"cupy/_core/core.pyx\", line 2534, in cupy._core.core.compile_with_cache\n  File \"cupy/_core/core.pyx\", line 2552, in cupy._core.core.compile_with_cache\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 566, in _compile_module_with_cache\n    return _compile_with_cache_cuda(\n        source, options, arch, cache_dir, extra_source, backend,\n        enable_cooperative_groups, name_expressions, log_stream,\n        cache_in_memory, jitify, to_ltoir)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 660, in _compile_with_cache_cuda\n    ptx, mapping = _compile_using_nvrtc_no_warning(\n                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        source, options, arch, cu_name, name_expressions,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        log_stream, cache_in_memory, jitify, 'lto' if to_ltoir else None)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 391, in _compile_using_nvrtc_no_warning\n    return _compile(source, options, cu_path, name_expressions,\n                    log_stream, jitify, method)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 373, in _compile\n    compiled_obj, mapping = prog.compile(options, log_stream)\n                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n    raise CompileException(log, self.src, self.name, options,\n                           'nvrtc' if not runtime.is_hip else 'hiprtc')\ncupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n\n",
+      "section": "ofi"
+    },
+    {
+      "error": "ernel.kernel.__get__\n  File \"cupy/_core/raw.pyx\", line 125, in cupy._core.raw.RawKernel._kernel\n  File \"cupy/_util.pyx\", line 68, in cupy._util.memoize.decorator.ret\n  File \"cupy/_core/raw.pyx\", line 549, in cupy._core.raw._get_raw_module\n  File \"cupy/_core/core.pyx\", line 2534, in cupy._core.core.compile_with_cache\n  File \"cupy/_core/core.pyx\", line 2552, in cupy._core.core.compile_with_cache\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 566, in _compile_module_with_cache\n    return _compile_with_cache_cuda(\n        source, options, arch, cache_dir, extra_source, backend,\n        enable_cooperative_groups, name_expressions, log_stream,\n        cache_in_memory, jitify, to_ltoir)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 660, in _compile_with_cache_cuda\n    ptx, mapping = _compile_using_nvrtc_no_warning(\n                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^\n        source, options, arch, cu_name, name_expressions,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        log_stream, cache_in_memory, jitify, 'lto' if to_ltoir else None)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 391, in _compile_using_nvrtc_no_warning\n    return _compile(source, options, cu_path, name_expressions,\n                    log_stream, jitify, method)\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 373, in _compile\n    compiled_obj, mapping = prog.compile(options, log_stream)\n                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n    raise CompileException(log, self.src, self.name, options,\n                           'nvrtc' if not runtime.is_hip else 'hiprtc')\ncupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n\n",
+      "section": "pipeline"
+    }
+  ],
+  "finished_unix": 1792608822.104919,
+  "git_sha": "575bbf7c7f31568376b8b9c59a7c493130f580bd",
+  "gpu_name": "Tesla T4",
+  "job": "bench_quick",
+  "kaggle_kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+  "nsys": "NVIDIA Nsight Systems version 2025.1.1.0",
+  "nvcc": "Cuda compilation tools, release 12.8, V12.8.93\nBuild cuda_12.8.r12.8/compiler.35583870_0",
+  "pulled_at": "2026-10-21T18:56:33Z",
+  "run_all_exit": 0,
+  "run_id": "bench_quick-20261021-185250",
+  "sections": [
+    "engine"
+  ],
+  "source": "synthetic",
+  "started_unix": 1792608776.498626,
+  "status": "partial",
+  "wall_seconds": 45.60629391670227
+}

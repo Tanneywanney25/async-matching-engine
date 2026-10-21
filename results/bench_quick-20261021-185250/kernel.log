@@ -1,0 +1,117 @@
+[{"stream_name":"stdout","time":1.182153221,"data":"[    0.0s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":1.182214867,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":25.470676903,"data":"[   24.3s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"NVIDIA Nsight Systems version 2025.1.1.0\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":34.435738237,"data":"[   33.3s] repo at 575bbf7c7f31568376b8b9c59a7c493130f580bd\n"}
+,{"stream_name":"stdout","time":34.547133463,"data":"[   33.4s] archive: /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth\n"}
+,{"stream_name":"stdout","time":34.729933049,"data":"[   33.6s] archive source=synthetic snapshots=300000 trades=100000 hash=805644066b5d802d\n"}
+,{"stream_name":"stdout","time":34.739501172,"data":"[   33.6s] running: /usr/bin/python3 -u -m bench.run_all --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth --out /kaggle/working/results/bench_quick-20261021-185250 --source synthetic --quick --sections ladder,scans,precision,layout,slippage,ofi,pipeline --budget-minutes 36\n"}
+,{"stream_name":"stdout","time":42.275575135,"data":"[run_all] archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth (synthetic, 300,000 snapshots, 100,000 trades) -\u003e /kaggle/working/results/bench_quick-20261021-185250\n"}
+,{"stream_name":"stdout","time":42.275605959,"data":"[run_all] gpu Tesla T4; sections ladder, scans, precision, layout, slippage, ofi, pipeline; engine 100,000 orders / 10,000 cancels; iters 5; quick True\n"}
+,{"stream_name":"stdout","time":43.011876633,"data":"[run_all] ladder          0.7 s  FAILED  cupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n"}
+,{"stream_name":"stdout","time":43.015549073,"data":"[run_all] scans           0.0 s  FAILED  ModuleNotFoundError: No module named 'bench.bench_scans'\n"}
+,{"stream_name":"stdout","time":43.016653142,"data":"[run_all] precision       0.0 s  FAILED  ModuleNotFoundError: No module named 'bench.bench_precision'\n"}
+,{"stream_name":"stdout","time":43.017797825,"data":"[run_all] layout          0.0 s  FAILED  ModuleNotFoundError: No module named 'bench.bench_layout'\n"}
+,{"stream_name":"stdout","time":43.064115083,"data":"[run_all] slippage        0.0 s  FAILED  cupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n"}
+,{"stream_name":"stdout","time":43.086347591,"data":"[run_all] ofi             0.0 s  FAILED  cupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n"}
+,{"stream_name":"stdout","time":43.131656242,"data":"[bench_pipeline] n=131072 (archive 300000), levels=50, chunks=16, quick=True, int16=False\n"}
+,{"stream_name":"stdout","time":43.252580359,"data":"[run_all] pipeline        0.2 s  FAILED  cupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n"}
+,{"stream_name":"stdout","time":43.274742589,"data":"[run_all] $ python /kaggle/working/repo/scripts/benchmark.py --orders 100000 --cancels 10000 --results-dir /kaggle/working/results/bench_quick-20261021-185250/engine\n"}
+,{"stream_name":"stdout","time":45.13429836,"data":"    Benchmarking OrderBook with 100,000 orders (mid=64,000)...\n"}
+,{"stream_name":"stdout","time":45.134369797,"data":"\n"}
+,{"stream_name":"stdout","time":45.134377765,"data":"    add_order (insert + match) (100,000 ops)\n"}
+,{"stream_name":"stdout","time":45.13440348,"data":"      mean :    11.52 us\n"}
+,{"stream_name":"stdout","time":45.134408207,"data":"      p50  :     8.51 us\n"}
+,{"stream_name":"stdout","time":45.134412589,"data":"      p95  :    24.97 us\n"}
+,{"stream_name":"stdout","time":45.134416732,"data":"      p99  :    36.41 us\n"}
+,{"stream_name":"stdout","time":45.134420722,"data":"\n"}
+,{"stream_name":"stdout","time":45.134424748,"data":"    cancel_order (10,000 ops)\n"}
+,{"stream_name":"stdout","time":45.134429291000004,"data":"      mean :     2.23 us\n"}
+,{"stream_name":"stdout","time":45.1344337,"data":"      p50  :     0.47 us\n"}
+,{"stream_name":"stdout","time":45.134438138,"data":"      p95  :     6.12 us\n"}
+,{"stream_name":"stdout","time":45.134442649,"data":"      p99  :     8.20 us\n"}
+,{"stream_name":"stdout","time":45.134447175,"data":"\n"}
+,{"stream_name":"stdout","time":45.134451542,"data":"    Target: median add_order under 50 us.\n"}
+,{"stream_name":"stdout","time":45.134456103,"data":"\n"}
+,{"stream_name":"stdout","time":45.134460489,"data":"    Wrote /kaggle/working/results/bench_quick-20261021-185250/engine/metrics.json, /kaggle/working/results/bench_quick-20261021-185250/engine/manifest.json and /kaggle/working/results/bench_quick-20261021-185250/engine/raw/engine_latency_us.json\n"}
+,{"stream_name":"stdout","time":45.136299717,"data":"[run_all] engine          1.9 s  ok\n"}
+,{"stream_name":"stdout","time":45.13692561,"data":"[run_all] done in 10.1 s: 1 section(s) in /kaggle/working/results/bench_quick-20261021-185250/metrics.json, 7 error(s)\n"}
+,{"stream_name":"stdout","time":46.747492126,"data":"[   45.6s] run_all exit code 0\n"}
+,{"stream_name":"stdout","time":46.747924041,"data":"[   45.6s] section error: ladder g_stream, jitify, method)\n"}
+,{"stream_name":"stdout","time":46.74794036,"data":"  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 373, in _compile\n"}
+,{"stream_name":"stdout","time":46.747953474,"data":"    compiled_obj, mapping = prog.compile(options, log_stream)\n"}
+,{"stream_name":"stdout","time":46.747958782,"data":"                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":46.747964302,"data":"  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n"}
+,{"stream_name":"stdout","time":46.74796971,"data":"    raise CompileException(log, self.src, self.name, options,\n"}
+,{"stream_name":"stdout","time":46.747974912,"data":"                           'nvrtc' if not runtime.is_hip else 'hiprtc')\n"}
+,{"stream_name":"stdout","time":46.747980204,"data":"cupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n"}
+,{"stream_name":"stdout","time":46.74798467,"data":"\n"}
+,{"stream_name":"stdout","time":46.74798882,"data":"\n"}
+,{"stream_name":"stdout","time":46.7479929,"data":"[   45.6s] section error: scans kaggle/working/repo/bench/run_all.py\", line 135, in run_section\n"}
+,{"stream_name":"stdout","time":46.747997062,"data":"    module = importlib.import_module(f\"bench.bench_{name}\")\n"}
+,{"stream_name":"stdout","time":46.748006129,"data":"  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n"}
+,{"stream_name":"stdout","time":46.748009193,"data":"    return _bootstrap._gcd_import(name[level:], package, level)\n"}
+,{"stream_name":"stdout","time":46.748011914,"data":"           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":46.748014456,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 1395, in _gcd_import\n"}
+,{"stream_name":"stdout","time":46.748033737,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 1360, in _find_and_load\n"}
+,{"stream_name":"stdout","time":46.748036629,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 1324, in _find_and_load_unlocked\n"}
+,{"stream_name":"stdout","time":46.74803933,"data":"ModuleNotFoundError: No module named 'bench.bench_scans'\n"}
+,{"stream_name":"stdout","time":46.748041874,"data":"\n"}
+,{"stream_name":"stdout","time":46.748044324,"data":"[   45.6s] section error: precision le/working/repo/bench/run_all.py\", line 135, in run_section\n"}
+,{"stream_name":"stdout","time":46.748046999,"data":"    module = importlib.import_module(f\"bench.bench_{name}\")\n"}
+,{"stream_name":"stdout","time":46.748049642,"data":"  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n"}
+,{"stream_name":"stdout","time":46.748052303,"data":"    return _bootstrap._gcd_import(name[level:], package, level)\n"}
+,{"stream_name":"stdout","time":46.748054883,"data":"           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":46.748057424,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 1395, in _gcd_import\n"}
+,{"stream_name":"stdout","time":46.748060023,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 1360, in _find_and_load\n"}
+,{"stream_name":"stdout","time":46.748062612,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 1324, in _find_and_load_unlocked\n"}
+,{"stream_name":"stdout","time":46.748065323,"data":"ModuleNotFoundError: No module named 'bench.bench_precision'\n"}
+,{"stream_name":"stdout","time":46.748070907,"data":"\n"}
+,{"stream_name":"stdout","time":46.74807329,"data":"[   45.6s] section error: layout aggle/working/repo/bench/run_all.py\", line 135, in run_section\n"}
+,{"stream_name":"stdout","time":46.748077477,"data":"    module = importlib.import_module(f\"bench.bench_{name}\")\n"}
+,{"stream_name":"stdout","time":46.748080153,"data":"  File \"/usr/lib/python3.13/importlib/__init__.py\", line 88, in import_module\n"}
+,{"stream_name":"stdout","time":46.748082828,"data":"    return _bootstrap._gcd_import(name[level:], package, level)\n"}
+,{"stream_name":"stdout","time":46.748085479,"data":"           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":46.748087989,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 1395, in _gcd_import\n"}
+,{"stream_name":"stdout","time":46.748090619,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 1360, in _find_and_load\n"}
+,{"stream_name":"stdout","time":46.748093224,"data":"  File \"\u003cfrozen importlib._bootstrap\u003e\", line 1324, in _find_and_load_unlocked\n"}
+,{"stream_name":"stdout","time":46.74809594,"data":"ModuleNotFoundError: No module named 'bench.bench_layout'\n"}
+,{"stream_name":"stdout","time":46.748098472,"data":"\n"}
+,{"stream_name":"stdout","time":46.748100848,"data":"[   45.6s] section error: slippage g_stream, jitify, method)\n"}
+,{"stream_name":"stdout","time":46.748103374,"data":"  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 373, in _compile\n"}
+,{"stream_name":"stdout","time":46.74810601,"data":"    compiled_obj, mapping = prog.compile(options, log_stream)\n"}
+,{"stream_name":"stdout","time":46.748108551,"data":"                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":46.748111054,"data":"  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n"}
+,{"stream_name":"stdout","time":46.748113739,"data":"    raise CompileException(log, self.src, self.name, options,\n"}
+,{"stream_name":"stdout","time":46.748119069,"data":"                           'nvrtc' if not runtime.is_hip else 'hiprtc')\n"}
+,{"stream_name":"stdout","time":46.748121898,"data":"cupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n"}
+,{"stream_name":"stdout","time":46.748124567,"data":"\n"}
+,{"stream_name":"stdout","time":46.748126913,"data":"\n"}
+,{"stream_name":"stdout","time":46.748129243,"data":"[   45.6s] section error: ofi g_stream, jitify, method)\n"}
+,{"stream_name":"stdout","time":46.74813173,"data":"  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 373, in _compile\n"}
+,{"stream_name":"stdout","time":46.748134377,"data":"    compiled_obj, mapping = prog.compile(options, log_stream)\n"}
+,{"stream_name":"stdout","time":46.748136891,"data":"                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":46.748139354,"data":"  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n"}
+,{"stream_name":"stdout","time":46.748141962,"data":"    raise CompileException(log, self.src, self.name, options,\n"}
+,{"stream_name":"stdout","time":46.748144441,"data":"                           'nvrtc' if not runtime.is_hip else 'hiprtc')\n"}
+,{"stream_name":"stdout","time":46.748147051,"data":"cupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n"}
+,{"stream_name":"stdout","time":46.748149686,"data":"\n"}
+,{"stream_name":"stdout","time":46.748152024,"data":"\n"}
+,{"stream_name":"stdout","time":46.748154445,"data":"[   45.6s] section error: pipeline g_stream, jitify, method)\n"}
+,{"stream_name":"stdout","time":46.748156934,"data":"  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 373, in _compile\n"}
+,{"stream_name":"stdout","time":46.748159608,"data":"    compiled_obj, mapping = prog.compile(options, log_stream)\n"}
+,{"stream_name":"stdout","time":46.748162112,"data":"                            ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stdout","time":46.748165196,"data":"  File \"/usr/local/lib/python3.13/dist-packages/cupy/cuda/compiler.py\", line 805, in compile\n"}
+,{"stream_name":"stdout","time":46.748167914,"data":"    raise CompileException(log, self.src, self.name, options,\n"}
+,{"stream_name":"stdout","time":46.748170448,"data":"                           'nvrtc' if not runtime.is_hip else 'hiprtc')\n"}
+,{"stream_name":"stdout","time":46.748173041,"data":"cupy.cuda.compiler.CompileException: nvrtc: error: --device-as-default-execution-space (-default-device) defined more than once\n"}
+,{"stream_name":"stdout","time":46.748175769,"data":"\n"}
+,{"stream_name":"stdout","time":46.74817815,"data":"\n"}
+,{"stream_name":"stdout","time":46.815188055,"data":"[   45.7s] finished: partial 46s\n"}
+,{"stream_name":"stdout","time":47.587970916,"data":"RESULT_BUNDLE results_bench_quick-20261021-185250.tar.gz\n"}
+,{"stream_name":"stderr","time":50.026814693,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":50.026855842,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":50.325042352,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":50.325068869,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":51.432907605,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":52.527847316,"data":"[NbConvertApp] Writing 316312 bytes to __results__.html\n"}
+]
