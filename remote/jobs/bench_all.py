@@ -41,6 +41,8 @@ if os.environ.get("QUICK") == "1":
     cmd.append("--quick")
 if os.environ.get("SECTIONS"):
     cmd += ["--sections", os.environ["SECTIONS"]]
+if os.environ.get("SKIP_ENGINE") == "1":
+    cmd.append("--skip-engine")
 cmd += ["--budget-minutes", os.environ.get("BUDGET_MINUTES", "36")]
 log("running:", " ".join(cmd))
 env_vars = dict(os.environ)

@@ -204,3 +204,21 @@ def kernel_pairs(aos_rows: Sequence[dict], soa_rows: Sequence[dict]) -> List[dic
              "aos_calls": a[k]["instances"], "soa_calls": s[k]["instances"],
              "reduction_pct": reduction_pct(a[k]["total_ns"], s[k]["total_ns"])}
             for k in sorted(set(a) & set(s))]
+
+
+def vwap_time_exact(sample_idx, snap_ts, snap_prod, trade_ts_sorted, pv_sorted, sz_sorted, seg_start, seg_end,
+                    window_ns: int) -> np.ndarray:
+    """Time-window VWAP at sampled snapshots by direct, correctly rounded summation (``math.fsum``)."""
+    out = np.full(len(sample_idx), np.nan)
+    for k, i in enumerate(sample_idx):
+        p = int(snap_prod[i])
+        s, e = int(seg_start[p]), int(seg_end[p])
+        seg = trade_ts_sorted[s:e]
+        t = int(snap_ts[i])
+        hi = s + int(np.searchsorted(seg, t, side="right"))
+        lo = s + int(np.searchsorted(seg, t - window_ns, side="right"))
+        if hi > lo:
+            den = math.fsum(sz_sorted[lo:hi].tolist())
+            if den > 0:
+                out[k] = math.fsum(pv_sorted[lo:hi].tolist()) / den
+    return out

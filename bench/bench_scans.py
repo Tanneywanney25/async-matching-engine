@@ -29,6 +29,7 @@ import numpy as np
 
 from bench import ref_scans as ref
 from bench.common import REPO_ROOT, Bench, cupy, event_time_ms, load_archive, raw_module
+from bench.ddscan import DDScan
 
 SCAN_ELEMS = 1024
 LARGE_N = 1 << 24
@@ -174,6 +175,8 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     pv = t_px * t_sz
     d_pv, d_sz = cp.asarray(pv), cp.asarray(t_sz)
     d_P, d_S = cp.empty_like(d_pv), cp.empty_like(d_sz)
+    d_Pl, d_Sl = cp.empty_like(d_pv), cp.empty_like(d_sz)
+    dds = DDScan()
     d_tprod, d_tts = cp.asarray(t_prod_sorted), cp.asarray(t_ts)
     d_ts_start, d_ts_end = cp.asarray(t_s), cp.asarray(t_e)
     n_tr = int(pv.size)
@@ -183,17 +186,17 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     d_snap_ts, d_snap_prod = cp.asarray(snap_ts), cp.asarray(snap_prod)
     d_vwap_t = {w: cp.empty(n, dtype=cp.float64) for w in ref.TIME_WINDOWS_NS}
     roll = raw_module(["rolling.cu"])
-    k_tr, k_time = roll.get_function("vwap_trade_window"), roll.get_function("vwap_time_window")
+    k_tr, k_time = roll.get_function("vwap_trade_window_dd"), roll.get_function("vwap_time_window_dd")
     k_book, k_mean = roll.get_function("book_features_sorted"), roll.get_function("window_mean")
 
-    def vwap_chain() -> None:
-        sc.scan(scan_kind, d_pv, d_P)
-        sc.scan(scan_kind, d_sz, d_S)
-        k_tr((max(1, math.ceil(n_tr / BLOCK)),), (BLOCK,), (d_P, d_S, d_tprod, d_ts_start, np.int64(n_tr),
+    def vwap_chain() -> None:  # production design: double-double prefixes (see the precision study)
+        dds.scan(d_pv, d_P, d_Pl)
+        dds.scan(d_sz, d_S, d_Sl)
+        k_tr((max(1, math.ceil(n_tr / BLOCK)),), (BLOCK,), (d_P, d_Pl, d_S, d_Sl, d_tprod, d_ts_start, np.int64(n_tr),
                                                           np.int32(ref.VWAP_WINDOW_TRADES), d_vwap100))
         for w in ref.TIME_WINDOWS_NS:
-            k_time((max(1, math.ceil(n / BLOCK)),), (BLOCK,), (d_snap_ts, d_snap_prod, np.int64(n), d_tts, d_P, d_S,
-                                                               d_ts_start, d_ts_end, np.int64(w), d_vwap_t[w]))
+            k_time((max(1, math.ceil(n / BLOCK)),), (BLOCK,), (d_snap_ts, d_snap_prod, np.int64(n), d_tts, d_P, d_Pl,
+                                                               d_S, d_Sl, d_ts_start, d_ts_end, np.int64(w), d_vwap_t[w]))
 
     vwap_chain()
     sc.stream.synchronize()
@@ -216,24 +219,35 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
         got = Decimal(repr(float(vwap100[i]))) * tick[p]
         dec_err = max(dec_err, float(abs(got - want) / want))
     time_checks = {}
+    snap_sample = np.sort(rng.choice(n, size=min(2000, n), replace=False)) if n else np.zeros(0, int)
     for w in ref.TIME_WINDOWS_NS:
         got = cp.asnumpy(d_vwap_t[w])
         want = ref.vwap_time_numpy(snap_ts, snap_prod, t_ts, P_np, S_np, t_s, t_e, w)
         nan_ok = bool(np.array_equal(np.isnan(got), np.isnan(want)))
         fin = np.isfinite(want)
-        err = float(np.max(np.abs(got[fin] - want[fin]) / np.abs(want[fin]))) if fin.any() else 0.0
+        np_err = float(np.max(np.abs(got[fin] - want[fin]) / np.abs(want[fin]))) if fin.any() else 0.0
+        exact = ref.vwap_time_exact(snap_sample, snap_ts, snap_prod, t_ts, pv, t_sz, t_s, t_e, w)
+        g = got[snap_sample]
+        ok = np.isfinite(exact)
+        err = float(np.max(np.abs(g[ok] - exact[ok]) / np.abs(exact[ok]))) if ok.any() else 0.0
+        np_vs_exact = float(np.max(np.abs(want[snap_sample][ok] - exact[ok]) / np.abs(exact[ok]))) if ok.any() else 0.0
         time_checks[f"{w // 1_000_000_000}s"] = {"nan_pattern_equal": nan_ok, "max_rel_err": err,
+                                                 "reference": "math.fsum over each sampled window",
+                                                 "sample": int(snap_sample.size),
+                                                 "float64_cumsum_max_rel_err": np_vs_exact,
+                                                 "gpu_vs_numpy_cumsum_max_rel_err": np_err,
                                                  "coverage_pct": float(fin.mean() * 100.0)}
     vwap_ms = bench.block("rolling_vwap", {"vwap_chain": lambda: event_time_ms(sc.stream, vwap_chain)})["vwap_chain"]
     rolling_vwap_section = {
         "n_trades": n_tr, "n_snapshots": n, "windows": ["100_trades", "1s", "10s"], "ms": vwap_ms,
-        "scan": scan_kind, "verified_vs_metrics_py": bool(dec_err <= 1e-9), "max_rel_err_100": dec_err,
+        "scan": "double_double", "verified_vs_metrics_py": bool(dec_err <= 1e-9), "max_rel_err_100": dec_err,
         "decimal_sample": int(sample.size),
         "numpy_100_max_rel_err": float(np.nanmax(np.abs(vwap100 - want100) / np.abs(want100))) if n_tr else 0.0,
         "time_windows": time_checks,
         "verified": bool(dec_err <= 1e-9 and all(c["nan_pattern_equal"] and c["max_rel_err"] <= 1e-9
                                                  for c in time_checks.values())),
-        "definition": "two inclusive scans (ticks x size, size) over product-contiguous trades, windowed difference",
+        "definition": "two inclusive double-double scans (ticks x size, size) over product-contiguous trades, "
+                      "windowed difference; time windows checked against math.fsum on sampled snapshots",
     }
     log(f"rolling vwap: {vwap_ms['median_ms']:.3f} ms, decimal max rel err {dec_err:.2e}, {time_checks}")
 

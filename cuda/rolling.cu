@@ -98,3 +98,55 @@ extern "C" __global__ void window_mean(const long long* __restrict__ ts_sorted,
     const double sum = P[k] - (lo > 0 ? P[lo - 1] : 0.0);
     out[k] = sum / (double)(k - lo + 1);
 }
+
+// ---------------------------------------------------------------------------------------------
+// Double-double variants (production): P and S are compensated prefixes (hi + lo, cuda/ddscan.cu),
+// so the window difference keeps its precision when the window is tiny next to the prefix.
+// sum(lo..hi) = (Phi[hi] - Phi[lo-1]) + (Plo[hi] - Plo[lo-1]).
+// ---------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ double dd_window(const double* __restrict__ h, const double* __restrict__ l,
+                                            long long hi_idx, long long lo_excl) {
+    if (lo_excl < 0) return h[hi_idx] + l[hi_idx];
+    return (h[hi_idx] - h[lo_excl]) + (l[hi_idx] - l[lo_excl]);
+}
+
+extern "C" __global__ void vwap_trade_window_dd(const double* __restrict__ Ph, const double* __restrict__ Pl,
+                                                const double* __restrict__ Sh, const double* __restrict__ Sl,
+                                                const unsigned char* __restrict__ prod_sorted,
+                                                const long long* __restrict__ seg_start, long long n, int window,
+                                                double* __restrict__ vwap) {
+    const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n) return;
+    const long long s = seg_start[prod_sorted[i]];
+    long long lo = i - window;
+    if (lo < s - 1) lo = s - 1;
+    const double num = dd_window(Ph, Pl, i, lo);
+    const double den = dd_window(Sh, Sl, i, lo);
+    vwap[i] = den > 0.0 ? num / den : rolling_nan();
+}
+
+extern "C" __global__ void vwap_time_window_dd(const long long* __restrict__ snap_ts,
+                                               const unsigned char* __restrict__ snap_prod, long long n_snap,
+                                               const long long* __restrict__ trade_ts_sorted,
+                                               const double* __restrict__ Ph, const double* __restrict__ Pl,
+                                               const double* __restrict__ Sh, const double* __restrict__ Sl,
+                                               const long long* __restrict__ seg_start,
+                                               const long long* __restrict__ seg_end, long long window_ns,
+                                               double* __restrict__ out) {
+    const long long i = (long long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= n_snap) return;
+    const int p = snap_prod[i];
+    const long long t = snap_ts[i];
+    const long long s = seg_start[p];
+    const long long e = seg_end[p];
+    const long long hi = upper_bound_ll(trade_ts_sorted, s, e, t) - 1;
+    const long long lo = upper_bound_ll(trade_ts_sorted, s, e, t - window_ns);
+    if (hi < lo) {
+        out[i] = rolling_nan();
+        return;
+    }
+    const double num = dd_window(Ph, Pl, hi, lo - 1);
+    const double den = dd_window(Sh, Sl, hi, lo - 1);
+    out[i] = den > 0.0 ? num / den : rolling_nan();
+}

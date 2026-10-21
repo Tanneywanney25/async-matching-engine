@@ -23,6 +23,7 @@ import numpy as np
 
 from bench import ref_scans as ref
 from bench.bench_scans import Scans
+from bench.ddscan import DDScan
 from bench.common import Bench, cupy, event_time_ms, load_archive, raw_module
 
 KAHAN_CHUNK = 64
@@ -63,7 +64,8 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     d_x64 = cp.asarray(x.astype(np.float64))
     grid = (max(1, math.ceil(n / BLOCK)),)
     n64, w32 = np.int64(n), np.int32(w)
-    W = {name: cp.empty(n, cp.float64) for name in ("float32_naive", "float64", "kahan_float32", "block_rebased_float32")}
+    W = {name: cp.empty(n, cp.float64) for name in ("float32_naive", "float64", "kahan_float32", "block_rebased_float32",
+                                                     "double_double")}
     P = {name: cp.empty(n, cp.float64) for name in W}
     L32 = cp.empty(n, cp.float32)
     C32 = cp.empty(n, cp.float32)
@@ -75,6 +77,8 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     n_blocks = math.ceil(n / REBASE_BLOCK)
     block_tot = cp.empty(n_blocks, cp.float64)
     L_kahan = cp.empty(n, cp.float32)
+    dds = DDScan()
+    D_hi, D_lo = cp.empty(n, cp.float64), cp.empty(n, cp.float64)
 
     def naive() -> None:
         sc.scan("warpscan", d_x, L32)
@@ -99,11 +103,17 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
         k["window_diff_local"](grid, (BLOCK,), (L_reb, C32, off, n64, np.int64(REBASE_BLOCK), w32, np.int32(0),
                                                 W["block_rebased_float32"], P["block_rebased_float32"]))
 
-    fns = {"float32_naive": naive, "float64": f64, "kahan_float32": kahan, "block_rebased_float32": rebased}
+    def double_double() -> None:
+        dds.scan(d_x64, D_hi, D_lo)
+        dds.window(D_hi, D_lo, w, W["double_double"])
+
+    fns = {"float32_naive": naive, "float64": f64, "kahan_float32": kahan, "block_rebased_float32": rebased,
+           "double_double": double_double}
     for fn in fns.values():
         fn()
     stream.synchronize()
     P["float64"] = P64
+    P["double_double"] = D_hi + D_lo
     errors = {}
     for name in fns:
         errors[name] = {"window": ref.rel_errors(cp.asnumpy(W[name]), W_exact),
