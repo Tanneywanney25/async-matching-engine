@@ -3,8 +3,9 @@
 
 import {
   DASH, RAW_BASE, benchmarkRows, engineTiles, fmtBps, fmtInt, fmtMs, fmtPct, fmtX, heatmapLayout, heatmapSummary,
-  ladderLayout, ofiRows, ofiSelections, pipelineSegments, precisionRows, provenanceRows, resourceRows, resourceSummary,
-  rooflineLayout, scanRows, scatterLayout, sectionStatus, slippageNote, slippageProducts, speedupTiles, get,
+  ladderLayout, nativeRows, nativeSummary, ofiRows, ofiSelections, pipelineSegments, precisionRows, provenanceRows, resourceRows,
+  resourceSummary, rooflineLayout, scanRows, scatterLayout, sectionStatus, slippageNote, slippageProducts, speedupTiles,
+  transferBars, transferNotes, get,
 } from "./gpu-core.mjs";
 
 const DATA_URL = "/data/gpu_lab.json";
@@ -93,7 +94,8 @@ function renderTables(data) {
     precisionRows(get(data, "precision")), { rowClass: (r) => (r.production ? "chosen" : "") });
   $("gpu-scans").innerHTML = table(
     [{ key: "name", label: "Scan" }, { key: "medianMs", label: "Median", num: true },
-     { key: "elementsPerS", label: "Elements/s", num: true }, { key: "gbs", label: "Bandwidth", num: true }],
+     { key: "elementsPerS", label: "Elements/s", num: true }, { key: "gbs", label: "Bandwidth", num: true },
+     { key: "pctCeiling", label: "Read ceiling", num: true }],
     scanRows(get(data, "scans")), { rowClass: (r) => (r.winner ? "chosen" : "") });
   const bench = benchmarkRows(get(data, "benchmarks"), get(data, "raw_base", RAW_BASE));
   $("gpu-bench-count").textContent = fmtInt(bench.length);
@@ -118,6 +120,36 @@ function renderResources(data) {
      { key: "registers", label: "Registers", num: true }, { key: "smem", label: "Shared B", num: true },
      { key: "block", label: "Block", num: true }, { key: "spills", label: "Spill B", num: true }],
     resourceRows(res), { rowClass: (r) => (r.full ? "" : "chosen") });
+}
+
+function renderTransfer(data) {
+  const t = get(data, "transfer");
+  let group = "";
+  let html = "";
+  for (const b of transferBars(t)) {
+    if (b.group !== group) {
+      html += `<p class="hbar-group">${esc(b.group)}</p>`;
+      group = b.group;
+    }
+    html += `<div class="hbar"><span class="hbar-label">${esc(b.label)}</span>` +
+      `<span class="hbar-track"><span style="width:${(b.frac * 100).toFixed(1)}%"></span></span><b>${esc(b.value)}</b></div>`;
+  }
+  $("gpu-transfer-bars").innerHTML = html;
+  $("gpu-transfer-notes").innerHTML = transferNotes(t).map((n) => `<li>${esc(n)}</li>`).join("");
+}
+
+function renderNative(data) {
+  const n = get(data, "native_engine");
+  $("gpu-native-summary").textContent = nativeSummary(n);
+  const bar = (r) => `<span class="occ-bar log" aria-hidden="true"><span style="width:${(r.p99Frac * 100).toFixed(1)}%"></span></span>${esc(r.addP99)}`;
+  $("gpu-native-table").innerHTML = table(
+    [{ key: "short", label: "Path", html: (r) => `<span title="${esc(r.label)}">${esc(r.short)}</span>` },
+     { key: "addP99", label: "add p99", num: true, html: bar },
+     { key: "addP50", label: "add p50", num: true }, { key: "addP999", label: "add p99.9", num: true },
+     { key: "cancelP99", label: "cancel p99", num: true }],
+    nativeRows(n), { rowClass: (r) => (r.native ? "chosen" : "") });
+  $("gpu-native-note").textContent = `${fmtInt(get(n, "orders"))} orders and ${fmtInt(get(n, "cancels"))} cancels on ` +
+    `${get(n, "cpu_model", "the job's host CPU")}; bars on a log scale from 0.03 to 100 µs.`;
 }
 
 function renderSlippage(data) {
@@ -189,6 +221,7 @@ export async function initGpuLab() {
   const steps = [
     ["ladder", renderLadder, "gpu-ladder"], ["roofline", renderRoofline, "gpu-roofline"], ["pipeline", renderTimeline, "gpu-timeline"],
     ["slippage", renderSlippage, "gpu-slippage"], ["ofi", renderOfi, "gpu-ofi"], ["resources", renderResources, "gpu-resources"],
+    ["transfer", renderTransfer, "gpu-transfer"], ["native", renderNative, "gpu-native"],
   ];
   for (const [key, fn, id] of steps) {
     if (!show[key]) { $(id).hidden = true; continue; }
