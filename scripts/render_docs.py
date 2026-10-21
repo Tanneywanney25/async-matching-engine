@@ -340,6 +340,70 @@ def ladder_table(r: Renderer, with_raw: bool = True) -> str:
     return "\n".join(rows)
 
 
+def int16_md(r: Renderer) -> List[str]:
+    e = r.get("pipeline", "int16_encoding") or {}
+    if not e.get("attempted") or "e2e_ms" not in e:
+        return []
+    q = "int16_encoding"
+    change = (e["e2e_ms"]["median_ms"] / e["int32_e2e_ms"]["median_ms"] - 1) * 100.0
+    run_id = r.run_of("pipeline").id
+    change_txt = r.record(format_value(abs(change), "pct"), run_id, "pipeline.int16_encoding e2e change %", change)
+    same = (e.get("identical_to_int32") or {}).get("identical")
+    return ["### Narrower prices on the wire: int16 tick offsets", "",
+            "Each side's best price travels as int32 per snapshot and every level as an int16 offset from it, decoded "
+            "inside the kernel; a chunk holding any offset beyond 32,767 ticks is sent as int32 instead.", "",
+            "| Measurement | int32 | int16 offsets |", "|---|---:|---:|",
+            f"| Bytes host to device per pass | {r.fmt('pipeline', q + '.bytes_h2d_int32', 'int')} | {r.fmt('pipeline', q + '.bytes_h2d_int16', 'int')} |",
+            f"| End to end, overlapped (median ms, IQR) | {r.fmt_m('pipeline', q + '.int32_e2e_ms')} | {r.fmt_m('pipeline', q + '.e2e_ms')} |",
+            f"| Host to device, summed over chunks (ms) | {r.fmt('pipeline', 'breakdown.h2d_ms', 'ms')} | {r.fmt('pipeline', q + '.breakdown.h2d_ms', 'ms')} |",
+            "",
+            f"The encoding moves {r.fmt('pipeline', q + '.bytes_saved_pct', 'pct')}% fewer bytes; "
+            f"{r.fmt('pipeline', q + '.overflow_fallbacks', 'int')} of {r.fmt('pipeline', q + '.chunks', 'int')} chunks "
+            f"({r.fmt('pipeline', q + '.snapshots_in_fallback_chunks', 'int')} snapshots) fell back to int32 because a level sat more than "
+            f"32,767 ticks from the best price. End to end the pass is {change_txt}% {'faster' if change < 0 else 'slower'}, and its "
+            f"outputs are {'bit-for-bit identical to' if same else 'NOT identical to'} the int32 pass's "
+            f"({'verified' if e.get('ok') else 'check failed'} against the NumPy reference too).", ""]
+
+
+def two_gpu_md(r: Renderer) -> List[str]:
+    t = r.get("pipeline", "two_gpu") or {}
+    if not t.get("attempted"):
+        return []
+    if "two_gpu_ms" not in t:
+        return ["### One card against two", "", f"Not measured in this run: `{str(t.get('reason') or t.get('error'))[:160]}`.", ""]
+    q = "two_gpu"
+    link = (t.get("topology") or {}).get("links", {}).get("GPU0-GPU1", "unknown")
+    meaning = {"SYS": "through the CPU interconnect between NUMA nodes", "NODE": "through PCIe host bridges within one NUMA node",
+               "PHB": "through a PCIe host bridge, that is the CPU", "PXB": "through more than one PCIe switch",
+               "PIX": "through a single PCIe switch"}.get(link, "by a path `nvidia-smi` does not name")
+    ratio = t.get("h2d_aggregate_vs_one_gpu") or 0.0
+    if ratio >= 1.7:
+        verdict = ("the two cards' copies run side by side at close to each card's own rate, so each T4 has its own path "
+                   "to host memory and the transfer-bound pipeline scales with the second card")
+    elif ratio <= 1.25:
+        verdict = ("two cards together copy barely faster than one, so the limit sits upstream of the cards, on a path both "
+                   "share: the second card adds compute this pipeline does not need")
+    else:
+        verdict = ("the second card adds copy bandwidth but not a full card's worth, so part of the path to host memory is "
+                   "shared between them")
+    return ["### One card against two", "",
+            f"`nvidia-smi topo -m` reports the two cards as `{link}`, connected {meaning}; each has its own PCIe link "
+            f"({', '.join(f'`{x}`' for x in t.get('pcie') or [])}). The archive is split in two contiguous halves of "
+            f"{r.fmt('pipeline', q + '.chunks_per_device', 'int')} chunks, each card with its own pinned host buffer, module, "
+            "streams and device buffers, and the two cards' chunks are issued alternately.", "",
+            "| Measurement | One card | Two cards |", "|---|---:|---:|",
+            f"| Whole pipeline, overlapped (median ms, IQR) | {r.fmt_m('pipeline', q + '.one_gpu_ms')} | {r.fmt_m('pipeline', q + '.two_gpu_ms')} |",
+            f"| Copy-only pass, host to device (median ms, IQR) | {r.fmt_m('pipeline', q + '.h2d_only_one_gpu_ms')} | {r.fmt_m('pipeline', q + '.h2d_only_two_gpu_ms')} |",
+            f"| Host-to-device bandwidth (GB/s, aggregate for two) | {r.fmt('pipeline', q + '.h2d_gbs_one_gpu', 'gbs')} | {r.fmt('pipeline', q + '.h2d_gbs_two_gpu_aggregate', 'gbs')} |",
+            "",
+            f"Two cards finish the pipeline {r.fmt('pipeline', q + '.speedup', 'x')} times faster than one "
+            f"({r.fmt('pipeline', q + '.scaling_efficiency_pct', 'pct')}% of perfect scaling), and copy "
+            f"{r.fmt('pipeline', q + '.h2d_aggregate_vs_one_gpu', 'x')} times as many bytes per second: {verdict}. A single-threaded "
+            f"host memcpy on this machine runs at {r.fmt('pipeline', q + '.host_memcpy_gbs', 'gbs')} GB/s for comparison. The "
+            f"two-card outputs are {'bit-for-bit identical to' if (t.get('identical_to_one_gpu') or {}).get('identical') else 'NOT identical to'} "
+            f"the one-card outputs and {'match' if (t.get('verification') or {}).get('verified') else 'do NOT match'} the NumPy reference.", ""]
+
+
 def lookback_check_lines(r: Renderer) -> List[str]:
     """What the decoupled look-back scan passed (in a child process with a timeout) before it was timed."""
     chk = r.get("scans", "lookback_check")
@@ -519,6 +583,7 @@ def benchmarks_md(r: Renderer) -> str:
                 f"| Device to host | {r.fmt('pipeline', 'breakdown.d2h_ms', 'ms')} ms at {r.fmt('pipeline', 'd2h_gbs', 'gbs')} GB/s |",
                 f"| Transfer share of stage time | {r.fmt('pipeline', 'transfer_share_pct', 'pct')}% |",
                 "", f"Timeline: {r.raw_link('pipeline', r.get('pipeline', 'timeline_svg'), 'SVG from the Nsight Systems trace')}.", ""]
+        out += int16_md(r) + two_gpu_md(r)
     if r.has("engine"):
         out += ["## Matching engine (CPU)", "",
                 f"`scripts/benchmark.py`, {r.fmt('engine', 'orders', 'int')} orders and {r.fmt('engine', 'cancels', 'int')} cancels, run on the T4 job's host "

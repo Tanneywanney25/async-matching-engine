@@ -475,43 +475,63 @@ class DevicePipeline:
 
     # -- passes --------------------------------------------------------------- #
 
-    def pass_overlapped(self, encoding: str = "int32", instrument: bool = False) -> None:
-        """H2D(i+1) on s_in, kernel(i) on s_comp, D2H(i-1) on s_out; triple buffers."""
+    def issue_overlapped(self, c: int, encoding: str = "int32", instrument: bool = False) -> None:
+        """Enqueue chunk ``c`` of an overlapped pass: H2D on s_in, kernel on s_comp, D2H on s_out.
+
+        Nothing here blocks the host, so several pipelines (one per card) can be issued chunk by chunk.
+        """
         st, ev = self.st, self.ev
         s_in, s_comp, s_out = self.s_in, self.s_comp, self.s_out
-        for c in range(st.K):
-            b = c % BUFFERS
-            src, lay, kernel = self._plan(c, encoding)
-            if self.nvtx is not None:
-                self.nvtx.RangePush(f"chunk {c:02d}")
-            # copy in: the buffer was last read by the kernel of chunk c-3
-            if c >= BUFFERS:
-                s_in.wait_event(ev["k_end"][c - BUFFERS])
-            if instrument:
-                ev["h_start"][c].record(s_in)
-            self.rt.memcpyAsync(self.dev_in[b].ptr, src, lay["block_bytes"], self.H2D, s_in.ptr)
-            ev["h_end"][c].record(s_in)
-            # compute: needs its input, and the output buffer drained by D2H of chunk c-3
-            s_comp.wait_event(ev["h_end"][c])
-            if c >= BUFFERS:
-                s_comp.wait_event(ev["d_end"][c - BUFFERS])
-            if instrument:
-                ev["k_start"][c].record(s_comp)
-            self._launch(c, lay, kernel, self.dev_in[b], self.dev_out[b], s_comp)
-            ev["k_end"][c].record(s_comp)
-            # copy out
-            s_out.wait_event(ev["k_end"][c])
-            if instrument:
-                ev["d_start"][c].record(s_out)
-            olay = st.layouts_out[c]
-            self.rt.memcpyAsync(self.host_out_ptr + st.out_offsets[c], self.dev_out[b].ptr,
-                                olay["block_bytes"], self.D2H, s_out.ptr)
-            ev["d_end"][c].record(s_out)
-            if self.nvtx is not None:
-                self.nvtx.RangePop()
-        s_in.synchronize()
-        s_comp.synchronize()
-        s_out.synchronize()
+        b = c % BUFFERS
+        src, lay, kernel = self._plan(c, encoding)
+        if self.nvtx is not None:
+            self.nvtx.RangePush(f"chunk {c:02d}")
+        # copy in: the buffer was last read by the kernel of chunk c-3
+        if c >= BUFFERS:
+            s_in.wait_event(ev["k_end"][c - BUFFERS])
+        if instrument:
+            ev["h_start"][c].record(s_in)
+        self.rt.memcpyAsync(self.dev_in[b].ptr, src, lay["block_bytes"], self.H2D, s_in.ptr)
+        ev["h_end"][c].record(s_in)
+        # compute: needs its input, and the output buffer drained by D2H of chunk c-3
+        s_comp.wait_event(ev["h_end"][c])
+        if c >= BUFFERS:
+            s_comp.wait_event(ev["d_end"][c - BUFFERS])
+        if instrument:
+            ev["k_start"][c].record(s_comp)
+        self._launch(c, lay, kernel, self.dev_in[b], self.dev_out[b], s_comp)
+        ev["k_end"][c].record(s_comp)
+        # copy out
+        s_out.wait_event(ev["k_end"][c])
+        if instrument:
+            ev["d_start"][c].record(s_out)
+        olay = st.layouts_out[c]
+        self.rt.memcpyAsync(self.host_out_ptr + st.out_offsets[c], self.dev_out[b].ptr,
+                            olay["block_bytes"], self.D2H, s_out.ptr)
+        ev["d_end"][c].record(s_out)
+        if self.nvtx is not None:
+            self.nvtx.RangePop()
+
+    def issue_h2d(self, c: int) -> None:
+        """Enqueue only chunk ``c``'s host-to-device copy (bandwidth measurement)."""
+        src, lay, _kernel = self._plan(c, "int32")
+        self.rt.memcpyAsync(self.dev_in[c % BUFFERS].ptr, src, lay["block_bytes"], self.H2D, self.s_in.ptr)
+
+    def sync(self) -> None:
+        self.s_in.synchronize()
+        self.s_comp.synchronize()
+        self.s_out.synchronize()
+
+    def pass_overlapped(self, encoding: str = "int32", instrument: bool = False) -> None:
+        """H2D(i+1) on s_in, kernel(i) on s_comp, D2H(i-1) on s_out; triple buffers."""
+        for c in range(self.st.K):
+            self.issue_overlapped(c, encoding, instrument)
+        self.sync()
+
+    def pass_h2d(self) -> None:
+        for c in range(self.st.K):
+            self.issue_h2d(c)
+        self.s_in.synchronize()
 
     def pass_serial(self, encoding: str = "int32", instrument: bool = False) -> None:
         """Same chunks, one stream, one buffer: copy in, compute, copy out, in order."""
@@ -560,6 +580,189 @@ class DevicePipeline:
     def reset_bad_books(self) -> None:
         self.bad_books.fill(0)
         self.cp.cuda.Device().synchronize()
+
+
+# --------------------------------------------------------------------------- #
+# Two cards
+# --------------------------------------------------------------------------- #
+
+
+def parse_topology(text: str) -> dict:
+    """The link between each pair of cards and each card's CPU and NUMA affinity, from ``nvidia-smi topo -m``.
+
+    The header row has no cell for the row labels, so column ``i`` of the header is cell ``i`` of
+    a row once its label is removed.
+    """
+    import re
+
+    lines = [ln.rstrip() for ln in text.splitlines() if ln.strip()]
+    if not lines:
+        return {}
+    header = lines[0].split()
+    gpus = [h for h in header if re.fullmatch(r"GPU\d+", h)]
+    out: dict = {"gpus": gpus, "links": {}, "cpu_affinity": {}, "numa_affinity": {}}
+    cpu_col = header.index("CPU") if "CPU" in header else None
+    for ln in lines[1:]:
+        parts = ln.split()
+        if not parts or parts[0] not in gpus:
+            continue
+        name, cells = parts[0], parts[1:]
+        for i, g in enumerate(gpus):
+            if i < len(cells) and g != name:
+                out["links"][f"{name}-{g}"] = cells[i]
+        if cpu_col is not None and cpu_col < len(cells):
+            out["cpu_affinity"][name] = cells[cpu_col]
+            if cpu_col + 1 < len(cells):
+                out["numa_affinity"][name] = cells[cpu_col + 1]
+    return out
+
+
+TOPOLOGY_MEANING = {
+    "X": "the same card", "SYS": "through the CPU interconnect between NUMA nodes",
+    "NODE": "through PCIe host bridges within one NUMA node", "PHB": "through one PCIe host bridge (the CPU)",
+    "PXB": "through more than one PCIe switch", "PIX": "through a single PCIe switch",
+}
+
+
+def wall_all_ms(fn, devices: Sequence[int]) -> float:
+    """Wall clock of ``fn()`` with every listed card idle before and synchronised after."""
+    cp = _cupy()
+    for d in devices:
+        with cp.cuda.Device(d):
+            cp.cuda.Device(d).synchronize()
+    t0 = time.perf_counter()
+    fn()
+    for d in devices:
+        with cp.cuda.Device(d):
+            cp.cuda.Device(d).synchronize()
+    return (time.perf_counter() - t0) * 1e3
+
+
+class MultiGpuPipeline:
+    """The archive split in contiguous halves, one :class:`DevicePipeline` per card.
+
+    Each card gets its own pinned host staging (allocated with that card current), its own
+    module, streams, events and triple-buffered device blocks; the two cards' chunks are issued
+    alternately so both run at once, and the host only waits at the end of the pass.
+    """
+
+    def __init__(self, arch: dict, chunks_per_device: int, devices: Sequence[int]) -> None:
+        cp = self.cp = _cupy()
+        self.devices = list(devices)
+        n = int(arch["bid_px"].shape[1])
+        self.parts = []
+        for d, (s, e) in zip(self.devices, chunk_bounds(n, len(self.devices))):
+            part = {name: arch[name][:, s:e] for name in LEVEL_ARRAYS}
+            with cp.cuda.Device(d):
+                staging = HostStaging(part, chunks_per_device, int16=False, pinned=True)
+                pipe = DevicePipeline(staging)
+            self.parts.append({"device": d, "start": s, "end": e, "staging": staging, "pipe": pipe})
+        self.bytes_h2d = sum(p["staging"].bytes_h2d for p in self.parts)
+
+    def _issue(self, method: str) -> None:
+        k_max = max(p["staging"].K for p in self.parts)
+        for c in range(k_max):
+            for part in self.parts:
+                if c < part["staging"].K:
+                    with self.cp.cuda.Device(part["device"]):
+                        getattr(part["pipe"], method)(c)
+
+    def pass_overlapped(self) -> None:
+        self._issue("issue_overlapped")
+        for part in self.parts:
+            with self.cp.cuda.Device(part["device"]):
+                part["pipe"].sync()
+
+    def pass_h2d(self) -> None:
+        self._issue("issue_h2d")
+        for part in self.parts:
+            with self.cp.cuda.Device(part["device"]):
+                part["pipe"].s_in.synchronize()
+
+    def outputs(self) -> Dict[str, np.ndarray]:
+        outs = [p["staging"].outputs() for p in self.parts]
+        return {name: np.concatenate([o[name] for o in outs]) for name, _dtype in OUTPUT_FIELDS}
+
+
+def identical_outputs(a: Dict[str, np.ndarray], b: Dict[str, np.ndarray]) -> dict:
+    """Bit-for-bit comparison of two output sets (NaN equal to NaN)."""
+    per = {}
+    for name, _dtype in OUTPUT_FIELDS:
+        x, y = np.asarray(a[name]), np.asarray(b[name])
+        same = x.shape == y.shape and bool(np.array_equal(x.view(np.uint32) if x.dtype.itemsize == 4 else x,
+                                                          y.view(np.uint32) if y.dtype.itemsize == 4 else y))
+        per[name] = same
+    return {"identical": all(per.values()), "per_output": per}
+
+
+def host_memcpy_gbs(nbytes: int, repeats: int = 5) -> float:
+    """Single-threaded host memcpy bandwidth (read + write counted once, as a copy's payload)."""
+    src = np.ones(max(int(nbytes), 1 << 20), dtype=np.uint8)
+    dst = np.empty_like(src)
+    np.copyto(dst, src)
+    best = float("inf")
+    for _ in range(repeats):
+        t0 = time.perf_counter()
+        np.copyto(dst, src)
+        best = min(best, time.perf_counter() - t0)
+    return src.nbytes / best / 1e9
+
+
+def run_two_gpu(bench: Bench, pipe: DevicePipeline, staging: HostStaging, sub: dict, ref: Dict[str, np.ndarray],
+                n_iters: Optional[int]) -> dict:
+    """One card against two on the same chunks: end to end, copy-only bandwidth, equal outputs."""
+    cp = _cupy()
+    n_dev = cp.cuda.runtime.getDeviceCount()
+    topo_text = subprocess.run(["nvidia-smi", "topo", "-m"], capture_output=True, text=True, timeout=30).stdout
+    links = subprocess.run(["nvidia-smi", "--query-gpu=index,pci.bus_id,pcie.link.gen.max,pcie.link.width.max",
+                            "--format=csv,noheader"], capture_output=True, text=True, timeout=30).stdout.strip()
+    out: dict = {"attempted": True, "device_count": n_dev, "topology_text": topo_text, "topology": parse_topology(topo_text),
+                 "pcie": [ln.strip() for ln in links.splitlines()]}
+    if n_dev < 2:
+        out.update({"ok": False, "reason": f"{n_dev} CUDA device(s) visible"})
+        return out
+    devices = (0, 1)
+    if staging.K % 2:
+        out.update({"ok": False, "reason": f"{staging.K} chunks do not split evenly across two cards"})
+        return out
+    multi = MultiGpuPipeline(sub, staging.K // 2, devices)
+    out.update({"devices": list(devices), "chunks_per_device": staging.K // 2,
+                "bytes_h2d_per_device": [p["staging"].bytes_h2d for p in multi.parts], "bytes_h2d_total": multi.bytes_h2d,
+                "split": [[p["start"], p["end"]] for p in multi.parts]})
+    # correctness: both cards' outputs against the reference and bit for bit against one card's
+    pipe.pass_overlapped()
+    cp.cuda.Device(0).synchronize()
+    one = staging.outputs()
+    multi.pass_overlapped()
+    two = multi.outputs()
+    out["verification"] = compare_features(two, ref)
+    out["identical_to_one_gpu"] = identical_outputs(one, two)
+    block = bench.block("pipeline_two_gpu", {
+        "one_gpu": lambda: wall_all_ms(pipe.pass_overlapped, devices),
+        "two_gpu": lambda: wall_all_ms(multi.pass_overlapped, devices),
+    }, n_iters=n_iters, devices=devices)
+    h2d = bench.block("pipeline_h2d_only", {
+        "one_gpu": lambda: wall_all_ms(pipe.pass_h2d, devices),
+        "two_gpu": lambda: wall_all_ms(multi.pass_h2d, devices),
+    }, n_iters=n_iters, devices=devices)
+    one_ms, two_ms = block["one_gpu"]["median_ms"], block["two_gpu"]["median_ms"]
+    out.update({
+        "one_gpu_ms": block["one_gpu"], "two_gpu_ms": block["two_gpu"],
+        "speedup": one_ms / two_ms if two_ms > 0 else 0.0,
+        "scaling_efficiency_pct": (one_ms / two_ms) / 2 * 100.0 if two_ms > 0 else 0.0,
+        "h2d_only_one_gpu_ms": h2d["one_gpu"], "h2d_only_two_gpu_ms": h2d["two_gpu"],
+        "h2d_gbs_one_gpu": gbs(staging.bytes_h2d, h2d["one_gpu"]["median_ms"]),
+        "h2d_gbs_two_gpu_aggregate": gbs(multi.bytes_h2d, h2d["two_gpu"]["median_ms"]),
+        "host_memcpy_gbs": host_memcpy_gbs(staging.bytes_h2d // 4),
+    })
+    out["h2d_aggregate_vs_one_gpu"] = (out["h2d_gbs_two_gpu_aggregate"] / out["h2d_gbs_one_gpu"]
+                                       if out["h2d_gbs_one_gpu"] else 0.0)
+    out["ok"] = bool(out["verification"]["verified"] and out["identical_to_one_gpu"]["identical"])
+    log(f"two cards: {one_ms:.2f} ms on one, {two_ms:.2f} ms on two ({out['speedup']:.2f}x); copy-only "
+        f"{out['h2d_gbs_one_gpu']:.1f} GB/s on one, {out['h2d_gbs_two_gpu_aggregate']:.1f} GB/s on two; "
+        f"identical outputs {out['identical_to_one_gpu']['identical']}")
+    del multi
+    return out
 
 
 def verify_pass(pipe: DevicePipeline, ref: Dict[str, np.ndarray], kind: str, encoding: str = "int32") -> dict:
@@ -704,8 +907,19 @@ def run_nsys(out_dir: Path, archive_dir: Optional[Path], chunks: int, subset: Op
 # --------------------------------------------------------------------------- #
 
 
-def _env_flag(name: str) -> bool:
-    return os.environ.get(name, "").strip().lower() not in ("", "0", "false", "no", "off")
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return default
+    return raw.strip().lower() not in ("0", "false", "no", "off")
+
+
+def single_device() -> bool:
+    """True when fewer than two CUDA devices are visible (the two-card step is then recorded as skipped)."""
+    try:
+        return _cupy().cuda.runtime.getDeviceCount() < 2
+    except Exception:  # noqa: BLE001
+        return True
 
 
 def run(bench: Bench, arch: dict, quick: bool = False, int16: Optional[bool] = None,
@@ -719,7 +933,8 @@ def run(bench: Bench, arch: dict, quick: bool = False, int16: Optional[bool] = N
     cp = _cupy()
     K = int(chunks or os.environ.get("PIPELINE_CHUNKS") or DEFAULT_CHUNKS)
     if int16 is None:
-        int16 = _env_flag("PIPELINE_INT16")
+        int16 = _env_flag("PIPELINE_INT16", default=True)
+    two_gpu = _env_flag("PIPELINE_TWO_GPU", default=True)
     n_total = int(arch["bid_px"].shape[1])
     if subset is None and quick:
         subset = min(n_total, QUICK_SUBSET)
@@ -831,7 +1046,16 @@ def run(bench: Bench, arch: dict, quick: bool = False, int16: Optional[bool] = N
         section["nsys_error"] = "nsys step disabled (--no-nsys)"
     bench.section("pipeline", section)
 
-    # 6. stretch: int16 transfer encoding, isolated
+    # 6. the same chunks split across both cards, each with its own streams and pinned buffers
+    if two_gpu and not single_device():
+        try:
+            section["two_gpu"] = run_two_gpu(bench, pipe, staging, sub, ref, n_iters)
+        except Exception as exc:  # noqa: BLE001 - recorded; the one-card results stand on their own
+            log("two-card run failed:", repr(exc))
+            section["two_gpu"] = {"attempted": True, "ok": False, "error": repr(exc)}
+        bench.section("pipeline", section)
+
+    # 7. int16 transfer encoding, isolated
     if int16:
         try:
             section["int16_encoding"] = run_int16(bench, pipe, staging, sub, ref, n_iters)
@@ -856,16 +1080,22 @@ def run_int16(bench: Bench, pipe: DevicePipeline, staging: HostStaging, sub: dic
     pipe.ensure_input_capacity(info["max_block_bytes"])
     log(f"int16 encode: {info['encode_ms']:.0f} ms on the host, {info['overflow_fallbacks']} of {staging.K} chunks "
         f"fell back to int32, bytes {staging.bytes_h2d} -> {info['bytes_h2d']}")
+    pipe.pass_overlapped("int32")
+    pipe.cp.cuda.Device().synchronize()
+    out32 = staging.outputs()
     ver = verify_pass(pipe, ref, "overlapped", encoding="int16")
+    same = identical_outputs(out32, staging.outputs())
     block = bench.block("pipeline_int16", {
         "int32": lambda: wall_time_ms(lambda: pipe.pass_overlapped("int32")),
         "int16": lambda: wall_time_ms(lambda: pipe.pass_overlapped("int16")),
     }, n_iters=n_iters)
     br16 = measure_breakdown(pipe, "overlapped", QUICK_ITERS if n_iters else max(10, bench.n_iters // 3), "int16")
     bytes_saved_pct = (staging.bytes_h2d - info["bytes_h2d"]) / staging.bytes_h2d * 100.0 if staging.bytes_h2d else 0.0
-    ok = bool(ver["verified"] and ver["bad_books_device"] == 0)
+    ok = bool(ver["verified"] and ver["bad_books_device"] == 0 and same["identical"])
     return {
         "attempted": True, "ok": ok, "e2e_ms": block["int16"], "int32_e2e_ms": block["int32"],
+        "identical_to_int32": same, "snapshots_in_fallback_chunks": int(sum(
+            e - s for (s, e), fb in zip(staging.bounds, info["fallback"]) if fb)),
         "speedup_vs_int32": (block["int32"]["median_ms"] / block["int16"]["median_ms"]
                              if block["int16"]["median_ms"] > 0 else 0.0),
         "bytes_saved_pct": bytes_saved_pct, "overflow_fallbacks": info["overflow_fallbacks"],
