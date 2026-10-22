@@ -381,41 +381,70 @@ NATIVE_PATHS = (("native", "C++ core, native harness (no Python in the loop)"),
                 ("python_engine", "Python engine (the reference implementation)"))
 
 
-def native_engine_md(r: Renderer, key: str = "") -> List[str]:
-    """The C++ core's latency table; ``key`` selects a nested stream (``realistic.``) or the synthetic one."""
+def native_engine_md(r: Renderer) -> List[str]:
+    """The C++ core's build checks and its latency table on the synthetic stream."""
     sec = "native_engine"
-    base = r.get(sec, key.rstrip(".")) if key else r.sections[sec][1]
-    if not base:
-        return []
-    out = []
-    if not key:
-        b = "build."
-        out += ["## C++20 order book core (CPU)", "",
-                f"`native/`, built with CMake in the same Kaggle job (`{r.get(sec, 'build.compiler')}`, {r.get(sec, 'build.flags')}) and run on its host "
-                f"CPU (`{r.get(sec, 'cpu_model')}`). Its native tests passed {r.fmt(sec, b + 'test_order_book.checks', 'int')} checks, among them a "
-                "randomized differential test against a `std::map` and `std::deque` reference book, and a counting allocator saw "
-                f"{r.fmt(sec, b + 'test_no_alloc.allocations', 'int')} heap allocations over {r.fmt(sec, b + 'test_no_alloc.operations', 'int')} "
-                "operations once the book was built. "
-                + (f"The differential fuzzer ran {r.fmt(sec, 'fuzz.streams', 'int')} seeded streams ({r.fmt(sec, 'fuzz.operations', 'int')} "
-                   f"operations) against the reference book with {r.fmt(sec, 'fuzz.divergences', 'int')} divergences, comparing fills, "
-                   "statuses, best prices and depth after every operation." if r.get(sec, "fuzz") else ""), ""]
-    stream = r.record(str(base.get("stream", "")), r.run_of(sec).id, f"{sec}.{key}stream (the run's own description)", base.get("stream"))
+    base = r.sections[sec][1]
+    b = "build."
+    out = ["## C++20 order book core (CPU)", "",
+           f"`native/`, built with CMake in the same Kaggle job (`{r.get(sec, 'build.compiler')}`, {r.get(sec, 'build.flags')}) and run on its host "
+           f"CPU (`{r.get(sec, 'cpu_model')}`). Its native tests passed {r.fmt(sec, b + 'test_order_book.checks', 'int')} checks, among them a "
+           "randomized differential test against a `std::map` and `std::deque` reference book, and a counting allocator saw "
+           f"{r.fmt(sec, b + 'test_no_alloc.allocations', 'int')} heap allocations over {r.fmt(sec, b + 'test_no_alloc.operations', 'int')} "
+           "operations once the book was built. "
+           + (f"The differential fuzzer ran {r.fmt(sec, 'fuzz.streams', 'int')} seeded streams ({r.fmt(sec, 'fuzz.operations', 'int')} "
+              f"operations) against the reference book with {r.fmt(sec, 'fuzz.divergences', 'int')} divergences, comparing fills, "
+              "statuses, best prices and depth after every operation." if r.get(sec, "fuzz") else ""), ""]
+    stream = r.record(str(base.get("stream", "")), r.run_of(sec).id, f"{sec}.stream (the run's own description)", base.get("stream"))
     out += [f"Stream: {stream}. Every path below replays the same operations in one process; they agreed on fills, "
-            f"resting orders and cancels found: {'yes' if r.get(sec, key + 'consistent') else 'NO'}.", "",
+            f"resting orders and cancels found: {'yes' if r.get(sec, 'consistent') else 'NO'}.", "",
             "| Path | add p50 µs | add p99 µs | add p99.9 µs | cancel p50 µs | cancel p99 µs | cancel p99.9 µs |",
             "|---|---:|---:|---:|---:|---:|---:|"]
     for path, label in NATIVE_PATHS:
-        p = f"{key}{path}."
+        p = f"{path}."
         if r.get(sec, p + "add_order") is None:
             continue
         out.append(f"| {label} | " + " | ".join(r.fmt(sec, f"{p}{op}.{stat}", "us3") for op in ("add_order", "cancel_order")
                                                  for stat in ("p50_us", "p99_us", "p999_us")) + " |")
-    out += ["", f"At p99 the native `add` is {r.fmt(sec, key + 'p99_add_python_engine_over_native', 'x')} times faster than the Python "
-            f"engine's, {r.fmt(sec, key + 'p99_add_python_engine_over_binding', 'x')} times through the binding and "
-            f"{r.fmt(sec, key + 'p99_add_python_engine_over_binding_decimal', 'x')} times with Decimal orders, where converting and "
+    out += ["", f"At p99 the native `add` is {r.fmt(sec, 'p99_add_python_engine_over_native', 'x')} times faster than the Python "
+            f"engine's, {r.fmt(sec, 'p99_add_python_engine_over_binding', 'x')} times through the binding and "
+            f"{r.fmt(sec, 'p99_add_python_engine_over_binding_decimal', 'x')} times with Decimal orders, where converting and "
             "building Python objects costs more than the matching. The native harness reads `std::chrono::steady_clock` twice per "
-            f"operation; a pair of reads costs {r.fmt(sec, key + 'native.timer_overhead_us.p50', 'us3')} µs at the median, included above, "
-            f"not subtracted. Raw: {r.raw_link(sec, r.get(sec, key + 'raw_file'))}.", ""]
+            f"operation; a pair of reads costs {r.fmt(sec, 'native.timer_overhead_us.p50', 'us3')} µs at the median, included above, "
+            f"not subtracted. Raw: {r.raw_link(sec, r.get(sec, 'raw_file'))}.", ""]
+    return out
+
+
+REALISTIC_KINDS = (("limit", "limit"), ("market", "market"), ("cancel", "cancel"))
+
+
+def realistic_engine_md(r: Renderer) -> List[str]:
+    """The same four paths on the operation stream derived from the recorded book (``native_engine.realistic``)."""
+    sec, q = "native_engine", "realistic."
+    real = r.get(sec, "realistic")
+    if not real:
+        return []
+    stream = r.record(str(real.get("stream", "")), r.run_of(sec).id, f"{sec}.realistic.stream (the run's own description)",
+                      real.get("stream"))
+    out = ["### The same paths on a stream derived from the recorded book", "",
+           f"Stream: {stream} ({r.fmt(sec, q + 'ops', 'int')} operations: {r.fmt(sec, q + 'op_counts.limit', 'int')} limit orders, "
+           f"{r.fmt(sec, q + 'op_counts.market', 'int')} market orders, {r.fmt(sec, q + 'op_counts.cancel', 'int')} cancels). "
+           "Removals come before additions within each snapshot and the recorded book never crosses, so the limit orders "
+           "rest without matching and every fill comes from a market order. The paths agreed on fills, resting orders and "
+           f"cancels found: {'yes' if r.get(sec, q + 'consistent') else 'NO'}.", "",
+           "| Path | limit p50 µs | limit p99 µs | market p50 µs | market p99 µs | cancel p50 µs | cancel p99 µs |",
+           "|---|---:|---:|---:|---:|---:|---:|"]
+    for path, label in NATIVE_PATHS:
+        p = f"{q}{path}."
+        if r.get(sec, p + "limit") is None:
+            continue
+        out.append(f"| {label} | " + " | ".join(r.fmt(sec, f"{p}{kind}.{stat}", "us3") for kind, _ in REALISTIC_KINDS
+                                                 for stat in ("p50_us", "p99_us")) + " |")
+    out += ["", f"At p99 the native core is {r.fmt(sec, q + 'p99_limit_python_engine_over_native', 'x')} times faster than the "
+            f"Python engine on limit orders and {r.fmt(sec, q + 'p99_market_python_engine_over_native', 'x')} times on market "
+            f"orders; cancels gain {r.fmt(sec, q + 'p99_cancel_python_engine_over_native', 'x')} times. On the synthetic stream "
+            f"above the `add` ratio is {r.fmt(sec, 'p99_add_python_engine_over_native', 'x')} times. "
+            f"Raw: {r.raw_link(sec, r.get(sec, q + 'raw_file'))}.", ""]
     return out
 
 
@@ -684,7 +713,7 @@ def benchmarks_md(r: Renderer) -> str:
                        f"{r.fmt('engine', op + '.p95_us', 'us')} | {r.fmt('engine', op + '.p99_us', 'us')} |")
         out += ["", f"Raw latencies: {r.raw_link('engine', r.get('engine', 'raw_file'))}. The laptop's own figures are in the README's Benchmark table.", ""]
     if r.has("native_engine"):
-        out += native_engine_md(r)
+        out += native_engine_md(r) + realistic_engine_md(r)
     if r.has("resources"):
         out += resources_md(r)
     out += ["## Clock throttling", "", *clock_section(r), ""]
@@ -1558,7 +1587,18 @@ def native_lab(r: Renderer) -> dict:
             "fuzz": {k: fuzz.get(k) for k in ("streams", "operations", "divergences")},
             "allocations": alloc.get("allocations"), "alloc_operations": alloc.get("operations"),
             "cpu_model": sec.get("cpu_model"), "run_id": r.run_of("native_engine").id,
-            "speedup_p99_vs_python": sec.get("p99_add_python_engine_over_native")}
+            "speedup_p99_vs_python": sec.get("p99_add_python_engine_over_native"),
+            "realistic": realistic_lab(sec.get("realistic"))}
+
+
+def realistic_lab(real: Optional[dict]) -> Optional[dict]:
+    if not real:
+        return None
+    paths = [{"key": key, "label": label.replace("`", ""),
+              **{kind: {k: real[key][kind][k] for k in ("p50_us", "p99_us")} for kind, _ in REALISTIC_KINDS}}
+             for key, label in NATIVE_PATHS if key in real]
+    return {"paths": paths, "ops": real.get("ops"), "op_counts": real.get("op_counts"), "consistent": real.get("consistent"),
+            "stream": real.get("stream")}
 
 
 def finite(obj: Any) -> Any:

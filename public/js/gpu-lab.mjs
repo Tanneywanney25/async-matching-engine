@@ -3,8 +3,8 @@
 
 import {
   DASH, RAW_BASE, benchmarkRows, engineTiles, fmtBps, fmtInt, fmtMs, fmtPct, fmtX, heatmapLayout, heatmapSummary,
-  ladderLayout, nativeRows, nativeSummary, ofiRows, ofiSelections, pipelineSegments, precisionRows, provenanceRows, resourceRows,
-  resourceSummary, rooflineLayout, scanRows, scatterLayout, sectionStatus, slippageNote, slippageProducts, speedupTiles,
+  ladderLayout, nativeRows, nativeSummary, ofiRows, ofiSelections, pipelineSegments, precisionRows, provenanceRows,
+  realisticNote, realisticRows, resourceRows, resourceSummary, rooflineLayout, scanRows, scatterLayout, sectionStatus, slippageNote, slippageProducts, speedupTiles,
   transferBars, transferNotes, get,
 } from "./gpu-core.mjs";
 
@@ -150,6 +150,13 @@ function renderNative(data) {
     nativeRows(n), { rowClass: (r) => (r.native ? "chosen" : "") });
   $("gpu-native-note").textContent = `${fmtInt(get(n, "orders"))} orders and ${fmtInt(get(n, "cancels"))} cancels on ` +
     `${get(n, "cpu_model", "the job's host CPU")}; bars on a log scale from 0.03 to 100 µs.`;
+  const real = realisticRows(n);
+  $("gpu-native-real-table").innerHTML = real.length ? table(
+    [{ key: "short", label: "Path", html: (r) => `<span title="${esc(r.label)}">${esc(r.short)}</span>` },
+     { key: "limitP99", label: "limit p99", num: true }, { key: "marketP99", label: "market p99", num: true },
+     { key: "cancelP99", label: "cancel p99", num: true }],
+    real, { rowClass: (r) => (r.native ? "chosen" : "") }) : "";
+  $("gpu-native-real-note").textContent = realisticNote(n);
 }
 
 function renderSlippage(data) {

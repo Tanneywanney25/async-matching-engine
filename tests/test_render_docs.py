@@ -95,6 +95,38 @@ def test_bullet_rules() -> None:
     assert check_bullets.split_two_lines("too short") is None
 
 
+def _stats(p50: float, p99: float) -> dict:
+    return {"p50_us": p50, "p99_us": p99, "p999_us": p99 * 2, "mean_us": p50, "n": 10}
+
+
+def test_recorded_book_stream_renders_beside_the_synthetic_one(tree: Path, monkeypatch) -> None:
+    """A hand-made native_engine section (fixture values, not measurements) renders both tables."""
+    monkeypatch.setattr(render_docs, "REPO", tree)
+    met_path = tree / "results" / "fixture-run" / "metrics.json"
+    met = json.loads(met_path.read_text(encoding="utf-8"))
+    paths = ("native", "binding", "binding_decimal", "python_engine")
+    synthetic = {p: {"add_order": _stats(0.1 * (i + 1), 0.4 * (i + 1)), "cancel_order": _stats(0.1, 0.3)} for i, p in enumerate(paths)}
+    realistic = {p: {k: _stats(0.07 * (i + 1), 0.31 * (i + 1)) for k in ("limit", "market", "cancel")} for i, p in enumerate(paths)}
+    realistic.update({"stream": "derived from the first 9.5 minutes of a fixture book", "ops": 1234, "consistent": True,
+                      "op_counts": {"limit": 600, "market": 34, "cancel": 600}, "raw_file": "raw/realistic.json",
+                      **{f"p99_{k}_python_engine_over_native": 4.0 for k in ("limit", "market", "cancel")}})
+    met["sections"]["native_engine"] = {**synthetic, "stream": "a fixture stream", "consistent": True,
+                                        "p99_add_python_engine_over_native": 4.0, "raw_file": "raw/synthetic.json",
+                                        "realistic": realistic}
+    met_path.write_text(json.dumps(met), encoding="utf-8")
+    assert _render(tree) == 0
+    bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
+    synth_at = bench.index("## C++20 order book core (CPU)")
+    real_at = bench.index("### The same paths on a stream derived from the recorded book")
+    assert synth_at < real_at
+    assert "1,234 operations: 600 limit orders, 34 market orders, 600 cancels" in bench
+    assert "| Python engine (the reference implementation) | 0.280 | 1.240 |" in bench
+    assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
+    lab = json.loads((tree / "public" / "data" / "gpu_lab.json").read_text(encoding="utf-8"))
+    real_lab = lab["native_engine"]["realistic"]
+    assert [p["key"] for p in real_lab["paths"]] == list(paths) and real_lab["ops"] == 1234
+
+
 def test_triton_rung_is_reported_beside_the_cuda_rungs_but_never_best(tree: Path, monkeypatch) -> None:
     """A Triton rung made from the fixture's own v2 rung (scaled, not measured) renders with its ratios."""
     monkeypatch.setattr(render_docs, "REPO", tree)

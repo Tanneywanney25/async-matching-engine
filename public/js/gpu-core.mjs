@@ -1091,6 +1091,28 @@ export function nativeRows(native) {
   }));
 }
 
+// The same paths on the stream derived from the recorded book: p99 per operation kind.
+export function realisticRows(native) {
+  return list(get(native, "realistic.paths")).filter((p) => p && p.limit).map((p) => ({
+    key: String(p.key ?? ""),
+    label: String(p.label ?? ""),
+    short: NATIVE_SHORT[p.key] ?? String(p.label ?? ""),
+    limitP99: fmtUsFine(get(p, "limit.p99_us")),
+    marketP99: fmtUsFine(get(p, "market.p99_us")),
+    cancelP99: fmtUsFine(get(p, "cancel.p99_us")),
+    native: p.key === "native",
+  }));
+}
+
+export function realisticNote(native) {
+  const r = get(native, "realistic");
+  if (!r) return "";
+  const c = get(r, "op_counts", {}) || {};
+  return `Recorded-book stream: ${fmtInt(r.ops)} operations (${fmtInt(c.limit)} limit, ${fmtInt(c.market)} market, ` +
+    `${fmtInt(c.cancel)} cancel) replayed through every path; ` +
+    `${r.consistent ? "all paths agreed on fills and resting orders" : "paths DISAGREED on fills or resting orders"}.`;
+}
+
 export function nativeSummary(native) {
   if (!native) return "";
   const f = get(native, "fuzz", {}) || {};

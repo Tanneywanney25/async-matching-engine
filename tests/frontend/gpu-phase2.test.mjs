@@ -4,8 +4,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
-  DASH, RAW_BASE, benchmarkRows, fmtUsFine, limitLabel, logFrac, nativeRows, nativeSummary, rawLink, resourceRows,
-  resourceSummary, scanRows, sectionStatus, transferBars, transferNotes,
+  DASH, RAW_BASE, benchmarkRows, fmtUsFine, limitLabel, logFrac, nativeRows, nativeSummary, rawLink, realisticNote,
+  realisticRows, resourceRows, resourceSummary, scanRows, sectionStatus, transferBars, transferNotes,
 } from "../../public/js/gpu-core.mjs";
 
 const resources = {
@@ -107,6 +107,27 @@ test("native summary and section status", () => {
   assert.equal(sectionStatus({ native_engine: native, transfer }).native, true);
   assert.equal(sectionStatus({ native_engine: native, transfer }).transfer, true);
   assert.equal(sectionStatus({}).native, false);
+});
+
+test("recorded-book stream rows keep p99 per operation kind and the note says whether paths agreed", () => {
+  const withReal = { ...native, realistic: {
+    ops: 1000, op_counts: { limit: 500, market: 20, cancel: 480 }, consistent: true,
+    paths: [
+      { key: "native", label: "C++ core", limit: { p50_us: 0.07, p99_us: 0.31 }, market: { p50_us: 0.05, p99_us: 0.21 }, cancel: { p50_us: 0.05, p99_us: 0.13 } },
+      { key: "python_engine", label: "Python engine", limit: { p50_us: 3.7, p99_us: 15.5 }, market: { p50_us: 4.3, p99_us: 25.4 }, cancel: { p50_us: 1.6, p99_us: 4.9 } },
+      { key: "broken" },
+    ] } };
+  const rows = realisticRows(withReal);
+  assert.equal(rows.length, 2);
+  assert.deepEqual([rows[0].limitP99, rows[0].marketP99, rows[0].cancelP99], ["0.310 µs", "0.210 µs", "0.130 µs"]);
+  assert.equal(rows[1].short, "Python engine");
+  assert.ok(rows[0].native && !rows[1].native);
+  assert.equal(realisticNote(withReal),
+    "Recorded-book stream: 1,000 operations (500 limit, 20 market, 480 cancel) replayed through every path; " +
+    "all paths agreed on fills and resting orders.");
+  assert.match(realisticNote({ realistic: { ...withReal.realistic, consistent: false } }), /DISAGREED/);
+  assert.deepEqual(realisticRows(native), []);
+  assert.equal(realisticNote(native), "");
 });
 
 test("scan rows carry the share of the read ceiling", () => {
