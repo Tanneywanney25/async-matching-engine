@@ -335,24 +335,38 @@ def triton_rung(bench: Bench, lad: "Ladder", reference: dict, n: int, quick: boo
         lad.v2()
         v2_out = lad.outputs_host()
         configs = tf.QUICK_CONFIGS if quick else tf.CONFIGS
-        for cfg in configs:  # compile every configuration before anything is timed
-            tr.launch(cfg)
-        lad.stream.synchronize()
-        sweep = bench.block("ladder_triton_sweep", {f"b{b}_w{w}": (lambda b=b, w=w: event_time_ms(lad.stream, tr.launcher((b, w))))
-                                                    for b, w in configs})
+
+        def identical(got: dict) -> dict:
+            return {name: bool(np.array_equal(got[name][:n].view(np.uint32) if got[name].dtype.itemsize == 4 else got[name][:n],
+                                              v2_out[name][:n].view(np.uint32) if v2_out[name].dtype.itemsize == 4 else v2_out[name][:n]))
+                    for name in ref.OUTPUTS}
+
+        # every configuration is compiled and verified before anything is timed; only verified ones are timed
+        by_config = {}
+        for b, w in configs:
+            lad.poison()
+            tr.launch((b, w))
+            got = lad.outputs_host()
+            by_config[f"b{b}_w{w}"] = {"verification": ref.compare(got, reference, n), "identical_to_v2": identical(got)}
+        info["verification_by_config"] = by_config
+        good = [(b, w) for b, w in configs if by_config[f"b{b}_w{w}"]["verification"]["verified"]]
+        if not good:
+            info.update({"ok": False, "reason": "no launch configuration passed verification against the NumPy reference"})
+            log("Triton rung not timed: every configuration failed verification")
+            return None, info
+        cycles = spin_cycles()
+        sweep = bench.block("ladder_triton_sweep", {f"b{b}_w{w}": (lambda b=b, w=w: queued_time_ms(lad.stream, tr.launcher((b, w)), cycles))
+                                                    for b, w in good})
         table = [{"block_size": b, "num_warps": w, "median_ms": sweep[f"b{b}_w{w}"]["median_ms"],
-                  "iqr_ms": sweep[f"b{b}_w{w}"]["iqr_ms"]} for b, w in configs]
+                  "iqr_ms": sweep[f"b{b}_w{w}"]["iqr_ms"]} for b, w in good]
         best = min(table, key=lambda t: t["median_ms"])
         tr.config = (best["block_size"], best["num_warps"])
-        lad.poison()
-        tr.launch()
-        got = lad.outputs_host()
-        ver = ref.compare(got, reference, n)
-        same = {name: bool(np.array_equal(got[name][:n].view(np.uint32) if got[name].dtype.itemsize == 4 else got[name][:n],
-                                          v2_out[name][:n].view(np.uint32) if v2_out[name].dtype.itemsize == 4 else v2_out[name][:n]))
-                for name in ref.OUTPUTS}
-        info.update({"ok": bool(ver["verified"]), "verification": ver, "identical_to_v2": same,
+        chosen = by_config[f"b{tr.config[0]}_w{tr.config[1]}"]
+        ver, same = chosen["verification"], chosen["identical_to_v2"]
+        info.update({"ok": True, "verification": ver, "identical_to_v2": same,
                      "identical_to_v2_all": all(same.values()), "interop": tr.interop, "sweep": table,
+                     "sweep_timing": "launches queued behind a busy-wait (bench.common.queued_time_ms), GPU time only",
+                     "configs_failing_verification": [f"b{b}_w{w}" for b, w in configs if (b, w) not in good],
                      "stream": {"triton": tr.stream_ptr, "ladder": tr.ladder_stream_ptr},
                      "best": best, "kernel_mirrors": "v2_fused (cuda/features.cu)"})
         log(f"Triton {version}: verified {ver['verified']}, identical to v2 {all(same.values())}, best {best}")
