@@ -43,6 +43,17 @@ def test_summarize_flags_a_drop_on_either_card() -> None:
     assert bad["throttle_flag"] and bad["clock_drop_pct_per_gpu"]["1"] == pytest.approx(24.53, abs=0.01)
 
 
+def test_summarize_keeps_temperature_power_and_memory_clock_with_the_sm_clocks() -> None:
+    before = {**_state(1590, 1590), "temperature_c": 41.0, "power_w": 30.5}
+    after = {**_state(1500, 1545), "temperature_c": 55.0, "power_w": 69.0}
+    m = common.summarize([1.0] * 30, before, after)
+    assert (m["temperature_before_c"], m["temperature_after_c"]) == (41.0, 55.0)
+    assert (m["power_before_w"], m["power_after_w"]) == (30.5, 69.0)
+    assert m["mem_clock_before_mhz"] == 5000.0 and "clocks_missing" not in m
+    only_after = common.summarize([1.0] * 30, None, after)  # one missing state must not raise
+    assert only_after["clocks_missing"] and only_after["temperature_after_c"] == 55.0
+
+
 def test_summarize_says_when_clocks_were_not_sampled() -> None:
     err = {"error": "ValueError('too many values to unpack (expected 5)')", "t": 0.0}
     m = common.summarize([1.0] * 30, err, err)

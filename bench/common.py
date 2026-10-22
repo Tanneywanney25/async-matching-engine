@@ -188,12 +188,14 @@ def summarize(samples_ms: Sequence[float], before: Optional[dict] = None, after:
             out["throttle_flag"] = bool(out["clock_drop_pct"] > 10.0)
     elif before is not None or after is not None:
         out["clocks_missing"] = (before or {}).get("error") or (after or {}).get("error") or "no SM clock sample"
-        out["temperature_before_c"] = before.get("temperature_c")
-        out["temperature_after_c"] = after.get("temperature_c")
-        out["power_before_w"] = before.get("power_w")
-        out["power_after_w"] = after.get("power_w")
-        out["mem_clock_before_mhz"] = before.get("mem_clock_mhz")
-        out["mem_clock_after_mhz"] = after.get("mem_clock_mhz")
+    if before or after:
+        b, a = before or {}, after or {}
+        out["temperature_before_c"] = b.get("temperature_c")
+        out["temperature_after_c"] = a.get("temperature_c")
+        out["power_before_w"] = b.get("power_w")
+        out["power_after_w"] = a.get("power_w")
+        out["mem_clock_before_mhz"] = b.get("mem_clock_mhz")
+        out["mem_clock_after_mhz"] = a.get("mem_clock_mhz")
     return out
 
 
