@@ -487,7 +487,12 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     kernel_variants["cupy_chain"] = lambda: event_time_ms(lad.stream, cupy_kernel)
     if tr is not None:
         kernel_variants["triton_fused"] = lambda: event_time_ms(lad.stream, tr.launch)
-    kres = bench.block("ladder_kernel", kernel_variants)
+    kres = bench.block("ladder_kernel", kernel_variants, monitor=True)
+    # v0 on its own, monitored: every full run so far saw v0's interleaved samples switch from one
+    # level to a much slower one partway through the block; alone it shows whether that depends on
+    # the other variants or on the card's state
+    v0_alone = bench.block("ladder_v0_alone", {"v0_aos": lambda: event_time_ms(lad.stream, lad.launcher("v0_aos"))},
+                           monitor=True)["v0_aos"]
 
     # 4b. the same launches queued behind a busy-wait, so host dispatch is outside the events
     cycles = spin_cycles()
@@ -585,6 +590,7 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
         "sweep": {"rung": "v4_soa_fused_vec4_sweep", "table": table,
                   "best": {"block_size": best["block_size"], "grid": best["grid"], "median_ms": best["median_ms"]}},
         "speedups": speedups, "outputs": list(ref.OUTPUTS), "triton": triton_info, "queued": queued,
+        "v0_alone_ms": v0_alone,
         "ceiling_gbs": ceiling, "theoretical_gbs": theoretical,
         "timing": {"kernel": "CUDA events around the launch(es) of one full pass, no transfers",
                    "e2e": "wall clock: host-to-device copy of exactly the inputs the kernels read from pinned host "

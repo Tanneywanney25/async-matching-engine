@@ -200,21 +200,121 @@ def summarize(samples_ms: Sequence[float], before: Optional[dict] = None, after:
 
 
 def run_interleaved(variants: Dict[str, Callable[[], float]], n_iters: int = MIN_ITERS,
-                    warmup: int = DEFAULT_WARMUP) -> Dict[str, List[float]]:
+                    warmup: int = DEFAULT_WARMUP, *, after_warmup: Optional[Callable[[], None]] = None,
+                    stamps: Optional[List[dict]] = None) -> Dict[str, List[float]]:
     """Call every variant ``n_iters`` times, rotating the order each iteration.
 
-    Each callable performs one measured run and returns milliseconds.
+    Each callable performs one measured run and returns milliseconds. ``after_warmup`` runs once
+    between the warmup and the timed iterations; ``stamps`` collects the wall-clock start and end
+    of every timed call, so samples can be lined up with a GPU monitor's log.
     """
     names = list(variants)
     for _ in range(warmup):
         for name in names:
             variants[name]()
+    if after_warmup is not None:
+        after_warmup()
     samples: Dict[str, List[float]] = {name: [] for name in names}
     for i in range(n_iters):
         order = names[i % len(names):] + names[: i % len(names)]
         for name in order:
+            t0 = time.time()
             samples[name].append(float(variants[name]()))
+            if stamps is not None:
+                stamps.append({"iteration": i, "variant": name, "t0": t0, "t1": time.time(), "ms": samples[name][-1]})
     return samples
+
+
+# Throttle-reason bits as nvidia-smi reports them (clocks_event_reasons / clocks_throttle_reasons).
+REASON_BITS = {0x1: "gpu_idle", 0x2: "applications_clocks", 0x4: "sw_power_cap", 0x8: "hw_slowdown", 0x10: "sync_boost",
+               0x20: "sw_thermal", 0x40: "hw_thermal", 0x80: "hw_power_brake", 0x100: "display_clocks"}
+MONITOR_FIELDS = "timestamp,index,clocks.sm,clocks.mem,power.draw,temperature.gpu,pstate"
+
+
+class GpuMonitor:
+    """``nvidia-smi -lms`` in the background for one block: clocks, power, P-state and active reasons."""
+
+    def __init__(self, path: Path, devices: Sequence[int], interval_ms: int = 100) -> None:
+        self.path, self.devices, self.interval_ms = path, list(devices), interval_ms
+        self.proc = None
+        self.reason_field = None
+        self.error: Optional[str] = None
+
+    def start(self) -> "GpuMonitor":
+        try:
+            for field in ("clocks_event_reasons.active", "clocks_throttle_reasons.active"):  # newer and older drivers
+                probe = subprocess.run(["nvidia-smi", f"--query-gpu={field}", "--format=csv,noheader"], capture_output=True,
+                                       text=True, timeout=10)
+                if probe.returncode == 0 and "not a valid field" not in (probe.stdout + probe.stderr).lower():
+                    self.reason_field = field
+                    break
+            fields = MONITOR_FIELDS + (f",{self.reason_field}" if self.reason_field else "")
+            self.fh = open(self.path, "w", encoding="utf-8")
+            self.fh.write(fields + "\n")
+            self.fh.flush()
+            self.proc = subprocess.Popen(["nvidia-smi", f"--query-gpu={fields}", "--format=csv,noheader,nounits",
+                                          "-i", ",".join(str(d) for d in self.devices), f"--loop-ms={self.interval_ms}"],
+                                         stdout=self.fh, stderr=subprocess.DEVNULL, text=True)
+        except Exception as exc:  # noqa: BLE001 - monitoring must never cost the measurement
+            self.error = repr(exc)
+        return self
+
+    def stop(self) -> dict:
+        if self.proc is not None:
+            self.proc.terminate()
+            try:
+                self.proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                self.proc.kill()
+            self.fh.close()
+        if self.error:
+            return {"error": self.error}
+        return summarize_monitor(self.path)
+
+
+def parse_monitor(text: str) -> List[dict]:
+    """Rows of a :class:`GpuMonitor` log; unparsable lines (warnings, a cut-off last line) are skipped."""
+    lines = text.splitlines()
+    if not lines:
+        return []
+    header = [h.strip() for h in lines[0].split(",")]
+    rows = []
+    for line in lines[1:]:
+        parts = [x.strip() for x in line.split(",")]
+        if len(parts) != len(header):
+            continue
+        row = dict(zip(header, parts))
+        try:
+            out = {"timestamp": row["timestamp"], "index": int(row["index"]), "sm_clock_mhz": float(row["clocks.sm"]),
+                   "mem_clock_mhz": float(row["clocks.mem"]), "power_w": float(row["power.draw"]),
+                   "temperature_c": float(row["temperature.gpu"]), "pstate": row["pstate"]}
+        except (KeyError, ValueError):
+            continue
+        reason = row.get("clocks_event_reasons.active", row.get("clocks_throttle_reasons.active"))
+        if reason is not None:
+            try:
+                bits = int(reason, 16)
+                out["reasons"] = [n for b, n in REASON_BITS.items() if bits & b]
+            except ValueError:
+                pass
+        rows.append(out)
+    return rows
+
+
+def summarize_monitor(path: Path) -> dict:
+    rows = parse_monitor(Path(path).read_text(encoding="utf-8")) if Path(path).exists() else []
+    if not rows:
+        return {"samples": 0, "file": Path(path).name}
+    busy = [r for r in rows if "gpu_idle" not in (r.get("reasons") or [])]
+    reasons: Dict[str, int] = {}
+    for r in rows:
+        for n in r.get("reasons") or []:
+            reasons[n] = reasons.get(n, 0) + 1
+    clocks = [r["sm_clock_mhz"] for r in busy] or [r["sm_clock_mhz"] for r in rows]
+    return {"samples": len(rows), "busy_samples": len(busy), "file": Path(path).name,
+            "sm_clock_min_mhz": min(clocks), "sm_clock_max_mhz": max(clocks),
+            "mem_clock_min_mhz": min(r["mem_clock_mhz"] for r in rows), "power_max_w": max(r["power_w"] for r in rows),
+            "pstates": sorted({r["pstate"] for r in rows}), "reason_counts": reasons}
 
 
 class Bench:
@@ -260,18 +360,36 @@ class Bench:
         return f"raw/{name}.json"
 
     def block(self, name: str, variants: Dict[str, Callable[[], float]], n_iters: Optional[int] = None,
-              devices: Sequence[int] = (0,)) -> Dict[str, dict]:
+              devices: Sequence[int] = (0,), monitor: bool = False) -> Dict[str, dict]:
         """Run an interleaved block and return ``{variant: summary}`` with raw samples saved.
 
-        ``devices`` lists the cards the block runs on; their clocks are sampled before and after.
+        ``devices`` lists the cards the block runs on. Their clocks are sampled once before the
+        warmup (kept as ``before_warmup``), then after the warmup, while the card is still under
+        load, and after the last timed iteration; the clock-drop flag compares the last two, so an
+        idle card at the start of a block cannot hide a drop. ``monitor`` also logs ``nvidia-smi``
+        in the background and every timed call's wall-clock span.
         """
-        before = gpu_state(devices)
-        samples = run_interleaved(variants, n_iters or self.n_iters, self.warmup)
-        after = gpu_state(devices)
+        before_warmup = gpu_state(devices)
+        state: Dict[str, dict] = {}
+        mon = GpuMonitor(self.raw_dir / f"{name}__gpu_monitor.csv", devices).start() if monitor else None
+        stamps: Optional[List[dict]] = [] if monitor else None
+        try:
+            samples = run_interleaved(variants, n_iters or self.n_iters, self.warmup,
+                                      after_warmup=lambda: state.update(before=gpu_state(devices)), stamps=stamps)
+            after = gpu_state(devices)
+        finally:
+            mon_summary = mon.stop() if mon is not None else None
+        before = state.get("before") or before_warmup
+        if mon_summary is not None:
+            mon_summary["iterations_file"] = Path(self.save_raw(f"{name}__iterations", {"calls": stamps})).name
         summaries: Dict[str, dict] = {}
         for variant, xs in samples.items():
-            raw = self.save_raw(f"{name}__{variant}", {"ms": xs, "before": before, "after": after})
+            raw = self.save_raw(f"{name}__{variant}", {"ms": xs, "before_warmup": before_warmup, "before": before, "after": after})
             summaries[variant] = summarize(xs, before, after, self.warmup, raw)
+            summaries[variant]["sm_clock_before_warmup_mhz"] = before_warmup.get("sm_clock_mhz")
+            summaries[variant]["sm_clock_max_mhz"] = before.get("max_sm_clock_mhz")
+            if mon_summary is not None:
+                summaries[variant]["monitor"] = mon_summary
         return summaries
 
 

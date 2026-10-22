@@ -92,3 +92,51 @@ def test_dump_without_a_directory_writes_nothing(monkeypatch) -> None:
     rec = common.LaunchRecorder()
     rec.note("k", (), (), 1, 32, 0)
     assert rec.dump() is None
+
+
+MONITOR_LOG = """timestamp,index,clocks.sm,clocks.mem,power.draw,temperature.gpu,pstate,clocks_event_reasons.active
+2026/10/22 00:40:00.100, 0, 585, 5000, 28.3, 48, P0, 0x0000000000000001
+2026/10/22 00:40:00.200, 0, 1590, 5000, 61.0, 49, P0, 0x0000000000000000
+2026/10/22 00:40:00.300, 0, 1440, 5000, 69.9, 50, P0, 0x0000000000000004
+2026/10/22 00:40:00.400, 0, 1395, 5000, 70.1, 51, P0, 0x0000000000000004
+WARNING: a stray line
+2026/10/22 00:40:00.5"""
+
+
+def test_monitor_log_counts_reasons_and_ignores_idle_and_broken_lines(tmp_path: Path) -> None:
+    path = tmp_path / "m.csv"
+    path.write_text(MONITOR_LOG, encoding="utf-8")
+    rows = common.parse_monitor(MONITOR_LOG)
+    assert len(rows) == 4 and rows[0]["reasons"] == ["gpu_idle"] and rows[2]["reasons"] == ["sw_power_cap"]
+    summary = common.summarize_monitor(path)
+    assert summary["samples"] == 4 and summary["busy_samples"] == 3
+    assert (summary["sm_clock_min_mhz"], summary["sm_clock_max_mhz"]) == (1395.0, 1590.0)  # the idle sample is excluded
+    assert summary["reason_counts"] == {"gpu_idle": 1, "sw_power_cap": 2} and summary["power_max_w"] == 70.1
+    assert common.summarize_monitor(tmp_path / "missing.csv")["samples"] == 0
+
+
+def test_interleaved_runs_the_hook_after_warmup_and_stamps_every_timed_call() -> None:
+    calls = []
+    stamps = []
+    variants = {"a": lambda: calls.append("a") or 1.0, "b": lambda: calls.append("b") or 2.0}
+    out = common.run_interleaved(variants, 3, 2, after_warmup=lambda: calls.append("hook"), stamps=stamps)
+    assert calls.index("hook") == 4 and calls.count("hook") == 1  # two warmup rounds of two variants first
+    assert out == {"a": [1.0] * 3, "b": [2.0] * 3}
+    assert len(stamps) == 6 and [s["variant"] for s in stamps[:4]] == ["a", "b", "b", "a"]
+    assert all(s["t1"] >= s["t0"] for s in stamps)
+
+
+def test_block_samples_clocks_after_warmup_and_survives_a_missing_gpu(tmp_path: Path, monkeypatch) -> None:
+    states = iter([{"sm_clock_mhz": 585.0, "max_sm_clock_mhz": 1590.0}, {"sm_clock_mhz": 1590.0, "max_sm_clock_mhz": 1590.0},
+                   {"sm_clock_mhz": 1395.0, "max_sm_clock_mhz": 1590.0}])
+    monkeypatch.setattr(common, "gpu_state", lambda devices=(0,): next(states))
+    bench = common.Bench(tmp_path, "synthetic", n_iters=3, warmup=1)
+    res = bench.block("blk", {"v": lambda: 1.0})["v"]
+    assert res["sm_clock_before_warmup_mhz"] == 585.0 and res["sm_clock_before_mhz"] == 1590.0
+    assert res["throttle_flag"] and res["clock_drop_pct"] == pytest.approx(12.26, abs=0.01)
+    raw = json.loads((tmp_path / "raw" / "blk__v.json").read_text(encoding="utf-8"))
+    assert raw["before_warmup"]["sm_clock_mhz"] == 585.0
+    monkeypatch.setattr(common, "gpu_state", lambda devices=(0,): {"error": "no nvidia-smi", "t": 0.0})
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: (_ for _ in ()).throw(FileNotFoundError("nvidia-smi")))
+    res = bench.block("cpu", {"v": lambda: 1.0}, monitor=True)["v"]
+    assert res["clocks_missing"] and "error" in res["monitor"]
