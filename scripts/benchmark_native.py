@@ -40,7 +40,7 @@ import sys
 import time
 from decimal import Decimal
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 REPO = Path(__file__).resolve().parent.parent
 SRC = REPO / "src"

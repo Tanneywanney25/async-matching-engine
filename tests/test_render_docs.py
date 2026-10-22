@@ -148,6 +148,22 @@ def test_triton_rung_is_reported_beside_the_cuda_rungs_but_never_best(tree: Path
     assert "| Triton, fused like v2 (extra rung, best of a small sweep) |" in bench
     assert "are bit-for-bit identical to v2's" in bench
     assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
+    # with the queued block present, the comparison uses GPU-only time and names the dispatch cost
+    names = [rung["name"] for rung in lad["rungs"]]
+    q_ms = {name: {"median_ms": 0.1, "iqr_ms": 0.001} for name in names}
+    q_ms["triton_fused"] = {"median_ms": 0.105, "iqr_ms": 0.001}
+    lad["queued"] = {"spin_us": 300.0, "kernel_ms": q_ms, "host_enqueue_max_us": 41.5, "dispatch_hidden": True,
+                     "host_enqueue_us": {name: {"median_us": 6.25, "max_us": 9.0} for name in names}}
+    lad["queued"]["host_enqueue_us"]["triton_fused"] = {"median_us": 33.75, "max_us": 41.5}
+    met_path.write_text(json.dumps(met), encoding="utf-8")
+    assert _render(tree) == 0
+    bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
+    assert "### GPU time with the launches queued ahead" in bench
+    assert "behind a 300 µs busy-wait kernel" in bench and "The slowest enqueue took 41.50 µs, well inside the wait." in bench
+    assert "with its launch queued ahead, the best one runs in 1.05 times the GPU time of the CUDA v2 kernel" in bench
+    assert "the ratios are 1.25 and" in bench and "a median 33.75 µs on the host, against 6.25 µs for v2" in bench
+    assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
+    lad.pop("queued")
     lad["triton"] = {"attempted": True, "ok": False, "reason": "triton is not installed"}
     lad["rungs"].pop()
     met_path.write_text(json.dumps(met), encoding="utf-8")

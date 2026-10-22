@@ -429,6 +429,46 @@ def event_time_ms(stream, launch: Callable[[], None]) -> float:
     return float(cp.cuda.get_elapsed_time(start, end))
 
 
+SPIN_US = 300.0  # busy-wait ahead of a queued timing: far longer than any host dispatch measured here
+SPIN_SOURCE = r"""
+extern "C" __global__ void spin_wait(long long cycles) {
+    const long long start = clock64();
+    while (clock64() - start < cycles) { }
+}"""
+_SPIN_KERNEL = None
+
+
+def spin_cycles(spin_us: float = SPIN_US) -> int:
+    """SM cycles for ``spin_us`` at the device's rated clock (the wait only lengthens if the clock is lower)."""
+    cp = cupy()
+    khz = int(cp.cuda.Device().attributes["ClockRate"])
+    return int(spin_us * khz / 1000.0)
+
+
+def queued_time_ms(stream, launch: Callable[[], None], cycles: int, host_us: Optional[List[float]] = None) -> float:
+    """GPU time of ``launch()`` with its work already queued when the start event fires.
+
+    :func:`event_time_ms` records its start event on an idle GPU, so the time the host takes to
+    dispatch the launch lands inside the measurement. Here a one-thread busy-wait kernel runs first;
+    the start event, the launch and the end event are enqueued while it spins, so the events bracket
+    only GPU execution. ``host_us`` collects the host-side enqueue time of each ``launch()``.
+    """
+    global _SPIN_KERNEL
+    cp = cupy()
+    if _SPIN_KERNEL is None:
+        _SPIN_KERNEL = cp.RawKernel(SPIN_SOURCE, "spin_wait")
+    start, end = cp.cuda.Event(), cp.cuda.Event()
+    _SPIN_KERNEL((1,), (1,), (np.int64(cycles),), stream=stream)
+    start.record(stream)
+    t0 = time.perf_counter()
+    launch()
+    if host_us is not None:
+        host_us.append((time.perf_counter() - t0) * 1e6)
+    end.record(stream)
+    end.synchronize()
+    return float(cp.cuda.get_elapsed_time(start, end))
+
+
 def wall_time_ms(fn: Callable[[], None]) -> float:
     """Wall-clock time of ``fn()`` including any transfers it performs."""
     cp = cupy()

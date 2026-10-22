@@ -30,8 +30,8 @@ from typing import Callable, Dict, List, Optional
 import numpy as np
 
 from bench import ref_features as ref
-from bench.common import (REPO_ROOT, T4_THEORETICAL_BW_GBS, Bench, cupy, effective_bandwidth, event_time_ms,
-                          load_archive, raw_module, to_aos, wall_time_ms)
+from bench.common import (REPO_ROOT, SPIN_US, T4_THEORETICAL_BW_GBS, Bench, cupy, effective_bandwidth, event_time_ms,
+                          load_archive, queued_time_ms, raw_module, spin_cycles, to_aos, wall_time_ms)
 
 BLOCK = 256
 SWEEP_BLOCKS = (64, 128, 256, 512, 1024)
@@ -475,6 +475,25 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
         kernel_variants["triton_fused"] = lambda: event_time_ms(lad.stream, tr.launch)
     kres = bench.block("ladder_kernel", kernel_variants)
 
+    # 4b. the same launches queued behind a busy-wait, so host dispatch is outside the events
+    cycles = spin_cycles()
+    host_us: Dict[str, List[float]] = {}
+    queued_variants = {name: (lambda name=name: queued_time_ms(lad.stream, lad.launcher(name), cycles,
+                                                               host_us.setdefault(name, [])))
+                       for name, _, _ in RUNGS}
+    if tr is not None:
+        queued_variants["triton_fused"] = lambda: queued_time_ms(lad.stream, tr.launch, cycles,
+                                                                 host_us.setdefault("triton_fused", []))
+    qres = bench.block("ladder_kernel_queued", queued_variants)
+    host_summary = {name: {"median_us": float(np.median(xs)), "max_us": float(np.max(xs))} for name, xs in host_us.items()}
+    queued = {"spin_us": SPIN_US, "spin_cycles": cycles, "kernel_ms": qres, "host_enqueue_us": host_summary,
+              "host_enqueue_max_us": max(v["max_us"] for v in host_summary.values()),
+              "method": "a one-thread clock64 busy-wait kernel is launched first; the start event, the rung's launches and "
+                        "the end event are enqueued while it spins, so the events bracket GPU execution only. Host enqueue "
+                        "time is perf_counter around the rung's launch call, warmup included.",
+              "dispatch_hidden": max(v["max_us"] for v in host_summary.values()) < 0.5 * SPIN_US}
+    log(f"queued timing: host enqueue max {queued['host_enqueue_max_us']:.1f} us against a {SPIN_US:.0f} us wait")
+
     # 5. end-to-end block: every rung with transfers, CuPy with transfers, NumPy and C++ (wall clock)
     e2e_variants = {f"{name}_e2e": (lambda name=name: wall_time_ms(lad.e2e(name, pinned=True))) for name, _, _ in RUNGS}
     e2e_variants.update({f"{name}_e2e_pageable": (lambda name=name: wall_time_ms(lad.e2e(name, pinned=False)))
@@ -508,7 +527,7 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
             "e2e_pageable_ms": eres[f"{name}_e2e_pageable"],
             "effective_bw_gbs": eff, "pct_of_ceiling": eff / ceiling * 100.0,
             "pct_of_theoretical": eff / theoretical * 100.0, "block_size": int(block_size), "grid": int(grid),
-            "launches_per_pass": launches, "verified": verification[name]["verified"],
+            "launches_per_pass": launches, "verified": verification[name]["verified"], "kernel_queued_ms": qres[name],
             "max_abs_err": verification[name]["max_abs_err"], "violations": verification[name]["violations"],
             "arithmetic_intensity_flop_per_byte": intensity,
             "gflops": flops / (km["median_ms"] * 1e-3) / 1e9,
@@ -524,6 +543,7 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
             "effective_bw_gbs": eff, "pct_of_ceiling": eff / ceiling * 100.0, "pct_of_theoretical": eff / theoretical * 100.0,
             "block_size": int(tr.config[0]), "num_warps": int(tr.config[1]), "grid": int(math.ceil(n / tr.config[0])),
             "launches_per_pass": 1, "verified": verification["triton_fused"]["verified"],
+            "kernel_queued_ms": qres["triton_fused"],
             "max_abs_err": verification["triton_fused"]["max_abs_err"], "violations": verification["triton_fused"]["violations"],
             "arithmetic_intensity_flop_per_byte": intensity, "gflops": flops / (km["median_ms"] * 1e-3) / 1e9,
             "e2e_bytes_h2d": int(lad.hp["bid_sz"].nbytes + lad.hp["ask_sz"].nbytes + 2 * 4 * lad.n_stride + lad.hp_prod.nbytes),
@@ -550,7 +570,7 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
         "rungs": rungs,
         "sweep": {"rung": "v4_soa_fused_vec4_sweep", "table": table,
                   "best": {"block_size": best["block_size"], "grid": best["grid"], "median_ms": best["median_ms"]}},
-        "speedups": speedups, "outputs": list(ref.OUTPUTS), "triton": triton_info,
+        "speedups": speedups, "outputs": list(ref.OUTPUTS), "triton": triton_info, "queued": queued,
         "ceiling_gbs": ceiling, "theoretical_gbs": theoretical,
         "timing": {"kernel": "CUDA events around the launch(es) of one full pass, no transfers",
                    "e2e": "wall clock: host-to-device copy of exactly the inputs the kernels read from pinned host "

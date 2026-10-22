@@ -30,3 +30,12 @@ def test_kernel_file_compiles_for_sm75(name: str) -> None:
     for kernel in br.kernel_files()[name]:
         assert kernel in stats, f"{kernel} missing from ptxas output"
         assert stats[kernel]["registers"] is not None and stats[kernel]["registers"] <= 255
+
+
+@pytest.mark.skipif(NVRTC is None, reason="no NVRTC library (pip install nvidia-cuda-nvrtc-cu12)")
+def test_queued_timing_busy_wait_compiles_for_sm75() -> None:
+    from bench.common import SPIN_SOURCE
+
+    ok, log, cubin = kr.nvrtc_compile(SPIN_SOURCE, OPTIONS, NVRTC, "spin_wait.cu")
+    assert ok, log
+    assert cubin > 0 and "spin_wait" in kr.parse_ptxas(log)

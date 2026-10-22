@@ -24,7 +24,7 @@ QUICK_CONFIGS = ((512, 4), (1024, 4))
 def load(install: bool = True) -> Tuple[Optional[object], str]:
     """Import Triton (installing it with pip once if missing); returns ``(module, version or reason)``."""
     try:
-        import triton  # noqa: F401
+        import triton  # noqa: F401 - only probing whether it is installed
     except ImportError:
         if not install:
             return None, "triton is not installed"
@@ -33,7 +33,7 @@ def load(install: bool = True) -> Tuple[Optional[object], str]:
         if proc.returncode != 0:
             return None, f"pip install triton failed: {(proc.stderr or proc.stdout)[-400:]}"
     try:
-        import triton
+        import triton  # noqa: F811 - imported again after a possible install
 
         return triton, str(triton.__version__)
     except Exception as exc:  # noqa: BLE001

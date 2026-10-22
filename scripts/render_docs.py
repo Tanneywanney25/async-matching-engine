@@ -223,6 +223,30 @@ def ceiling_words(r: "Renderer") -> str:
             "copy_kernel": "measured copy ceiling"}.get(kind, "measured bandwidth ceiling")
 
 
+def queued_md(r: Renderer) -> List[str]:
+    """Every rung's GPU-only time (launches queued behind a busy-wait) beside its event-timed figure."""
+    q = r.get("ladder", "queued") or {}
+    if not q.get("kernel_ms"):
+        return []
+    out = ["### GPU time with the launches queued ahead", "",
+           "The per-kernel times above record the start event on an idle GPU, so each includes the host's dispatch of the "
+           f"launch. This block, interleaved like the others, queues each pass behind a {r.fmt('ladder', 'queued.spin_us', 'int')} µs "
+           "busy-wait kernel, so the events bracket GPU execution only, and times how long the host took to enqueue the pass. "
+           + (f"The slowest enqueue took {r.fmt('ladder', 'queued.host_enqueue_max_us', 'us')} µs, well inside the wait."
+              if q.get("dispatch_hidden") else
+              f"The slowest enqueue took {r.fmt('ladder', 'queued.host_enqueue_max_us', 'us')} µs, more than half the wait, so some "
+              "dispatch may remain inside these figures."), "",
+           "| Rung | Events around the launch, median ms | Launches queued, median ms (IQR) | Host enqueue, median µs |",
+           "|---|---:|---:|---:|"]
+    for i, rung in ladder_rows(r):
+        name = rung["name"]
+        if name not in q["kernel_ms"]:
+            continue
+        out.append(f"| {rung_label(name)} | {r.fmt('ladder', f'rungs.{i}.kernel_ms.median_ms', 'ms')} | "
+                   f"{r.fmt_m('ladder', f'queued.kernel_ms.{name}')} | {r.fmt('ladder', f'queued.host_enqueue_us.{name}.median_us', 'us')} |")
+    return out + [""]
+
+
 def triton_md(r: Renderer) -> List[str]:
     """The extra Triton rung, compared with v2 (the CUDA kernel it mirrors) and the best CUDA rung."""
     t = r.get("ladder", "triton") or {}
@@ -234,25 +258,39 @@ def triton_md(r: Renderer) -> List[str]:
     idx = {rung["name"]: i for i, rung in enumerate(r.get("ladder", "rungs", []) or [])}
     if "triton_fused" not in idx or "v2_soa_fused" not in idx:
         return []
-    ti, vi, bi = idx["triton_fused"], idx["v2_soa_fused"], best_index(r)
-    t_ms = r.get("ladder", f"rungs.{ti}.kernel_ms.median_ms")
-    v_ms = r.get("ladder", f"rungs.{vi}.kernel_ms.median_ms")
-    b_ms = r.get("ladder", f"rungs.{bi}.kernel_ms.median_ms")
+    best_name = r.get("ladder", "speedups.best_rung")
     run_id = r.run_of("ladder").id
-    vs_v2 = r.record(f"{t_ms / v_ms:.2f}", run_id, "ladder Triton kernel median / v2 kernel median", t_ms / v_ms)
-    vs_best = r.record(f"{t_ms / b_ms:.2f}", run_id, "ladder Triton kernel median / best CUDA rung median", t_ms / b_ms)
+
+    def ratio(path_of, label: str) -> Optional[str]:
+        a, b, c = (r.get("ladder", path_of(n)) for n in ("triton_fused", "v2_soa_fused", best_name))
+        if None in (a, b, c):
+            return None
+        return (r.record(f"{a / b:.2f}", run_id, f"ladder Triton / v2, {label}", a / b),
+                r.record(f"{a / c:.2f}", run_id, f"ladder Triton / best CUDA rung, {label}", a / c))
+
+    ev = ratio(lambda n: f"rungs.{idx[n]}.kernel_ms.median_ms", "events around the launch")
+    qd = ratio(lambda n: f"queued.kernel_ms.{n}.median_ms", "launches queued")
     same = t.get("identical_to_v2_all")
     sweep = [f"{r.fmt('ladder', f'triton.sweep.{i}.block_size', 'int')} snapshots and {r.fmt('ladder', f'triton.sweep.{i}.num_warps', 'int')} "
              f"warps per program: {r.fmt('ladder', f'triton.sweep.{i}.median_ms', 'ms')} ms" for i, _ in enumerate(t.get("sweep") or [])]
+    best_label = rung_label(best_name)
+    if qd:
+        timing = (f"Measured with its launch queued ahead, the best one runs in {qd[0]} times the GPU time of the CUDA v2 kernel "
+                  f"it mirrors and {qd[1]} times that of the best CUDA rung ({best_label}). With the events around the launch, as "
+                  f"in the ladder table, the ratios are {ev[0]} and {ev[1]}: enqueuing one Triton launch took a median "
+                  f"{r.fmt('ladder', 'queued.host_enqueue_us.triton_fused.median_us', 'us')} µs on the host, against "
+                  f"{r.fmt('ladder', 'queued.host_enqueue_us.v2_soa_fused.median_us', 'us')} µs for v2 through CuPy.")
+    else:
+        timing = (f"The best one runs in {ev[0]} times the time of the CUDA v2 kernel it mirrors and {ev[1]} times that of the "
+                  f"best CUDA rung ({best_label}), events around the launch.")
     return ["### Extra rung: the fused kernel in Triton", "",
             f"Triton `{t.get('version')}` compiles the same fused computation as v2 (level sums in level order, IEEE division) and "
-            "reads the ladder's own device arrays, so it competes on identical data. Its launch configurations, timed in the same "
-            f"interleaved block: {'; '.join(sweep)}. The best one runs in {vs_v2} times the time of the CUDA v2 kernel it mirrors "
-            f"and {vs_best} times that of the best CUDA rung ({rung_label(r.get('ladder', 'speedups.best_rung'))}); it sits in the "
-            "table above (its Block column is snapshots per program) and is never counted as the best rung. Its outputs "
+            "reads the ladder's own device arrays, so it competes on identical data. Its launch configurations, timed in an "
+            f"interleaved block of their own: {'; '.join(sweep)}. {timing} It sits in the ladder table (its Block column is "
+            "snapshots per program) and is never counted as the best rung. Its outputs "
             + ("are bit-for-bit identical to v2's." if same else
                "differ from v2's in at least one output, though they pass the same tolerance check against the NumPy reference."
-               if r.get("ladder", f"rungs.{ti}.verified") else "FAIL the tolerance check against the NumPy reference."), ""]
+               if r.get("ladder", f"rungs.{idx['triton_fused']}.verified") else "FAIL the tolerance check against the NumPy reference."), ""]
 
 
 def rung_label(name: str) -> str:
@@ -594,7 +632,7 @@ def benchmarks_md(r: Renderer) -> str:
                            f"{r.fmt('ladder', p + '.median_ms', 'ms')} | {r.fmt('ladder', p + '.iqr_ms', 'ms')} | "
                            f"{r.fmt('ladder', p + '.effective_bw_gbs', 'gbs')} |")
             out.append("")
-        out += triton_md(r)
+        out += queued_md(r) + triton_md(r)
     if r.has("baselines"):
         out += ["## Baselines (same machine, same job, same archive)", "",
                 "| Implementation | Median ms (IQR) | Verified | Raw |", "|---|---:|:---:|---|"]
@@ -1493,7 +1531,8 @@ def gpu_lab_json(r: Renderer) -> dict:
         rungs = [{"name": x["name"], "label": rung_label(x["name"]), "kernel_median_ms": x["kernel_ms"]["median_ms"],
                   "kernel_iqr_ms": x["kernel_ms"]["iqr_ms"], "e2e_median_ms": x["e2e_ms"]["median_ms"],
                   "effective_bw_gbs": x["effective_bw_gbs"], "pct_of_ceiling": x["pct_of_ceiling"],
-                  "pct_of_theoretical": x["pct_of_theoretical"], "block_size": x["block_size"]} for _i, x in ladder_rows(r)]
+                  "pct_of_theoretical": x["pct_of_theoretical"], "block_size": x["block_size"], "extra": bool(x.get("extra")),
+                  "kernel_queued_median_ms": (x.get("kernel_queued_ms") or {}).get("median_ms")} for _i, x in ladder_rows(r)]
         b = lambda p: (g("baselines", p) or {}).get("median_ms")  # noqa: E731
         out["ladder"] = {"rungs": rungs, "ceiling_gbs": g("bandwidth", "ceiling_gbs"), "theoretical_gbs": g("bandwidth", "theoretical_gbs"),
                          "baselines": {"cpp_single_ms": b("cpp_single.ms"), "cpp_omp_ms": b("cpp_omp.ms"), "numpy_ms": b("numpy.ms"),
