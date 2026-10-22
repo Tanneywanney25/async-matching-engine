@@ -1013,23 +1013,45 @@ def readme_phase2_findings(r: Renderer) -> List[str]:
                       else "ahead of CUB."))
     e = r.get("pipeline", "int16_encoding") or {}
     if e.get("ok") and "e2e_ms" in e:
-        out.append(f"- Sending prices as int16 offsets from the best price moves {r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% fewer "
-                   "bytes and makes the transfer-bound pipeline faster with bit-identical outputs, while a second T4 adds no copy bandwidth: "
-                   f"{r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two cards against "
-                   f"{r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one." if r.get("pipeline", "two_gpu.h2d_gbs_one_gpu") else
-                   f"- Sending prices as int16 offsets from the best price moves {r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% fewer bytes "
-                   "with bit-identical outputs.")
+        change = (e["e2e_ms"]["median_ms"] / e["int32_e2e_ms"]["median_ms"] - 1) * 100.0
+        run_id = r.run_of("pipeline").id
+        change_txt = r.record(format_value(abs(change), "pct"), run_id, "pipeline.int16_encoding e2e change %", change)
+        same = (e.get("identical_to_int32") or {}).get("identical")
+        line = (f"- Sending prices as int16 offsets from the best price moves {r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% fewer "
+                f"bytes and makes the transfer-bound pipeline {change_txt}% {'faster' if change < 0 else 'slower'} end to end, "
+                f"{'with bit-identical outputs' if same else 'but its outputs are NOT identical to the int32 pass'}")
+        t = r.get("pipeline", "two_gpu") or {}
+        if t.get("h2d_gbs_one_gpu") and t.get("h2d_gbs_two_gpu_aggregate"):
+            ratio = t["h2d_gbs_two_gpu_aggregate"] / t["h2d_gbs_one_gpu"]
+            verdict = ("adds no copy bandwidth" if ratio < 1.1 else "raises the copy bandwidth")
+            line += (f"; a second T4 {verdict}: {r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two cards "
+                     f"against {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one.")
+        else:
+            line += "."
+        out.append(line)
+    t = r.get("ladder", "triton") or {}
+    q = r.get("ladder", "queued.kernel_ms") or {}
+    if t.get("ok") and "triton_fused" in q and "v2_soa_fused" in q:
+        ratio = q["triton_fused"]["median_ms"] / q["v2_soa_fused"]["median_ms"]
+        ratio_txt = r.record(f"{ratio:.2f}", r.run_of("ladder").id, "ladder Triton / v2, launches queued", ratio)
+        out.append(f"- Written in Triton, the fused feature kernel needs {ratio_txt} times the GPU time of the CUDA kernel it mirrors "
+                   + ("with bit-identical outputs." if t.get("identical_to_v2_all") else "and passes the same tolerance check."))
     if r.has("native_engine") and r.get("native_engine", "native.add_order"):
+        div = r.get("native_engine", "fuzz.divergences")
+        fuzz = ("" if div is None else ", and matches it on every fuzzed stream" if div == 0 else
+                f", but diverges from it on {r.fmt('native_engine', 'fuzz.divergences', 'int')} fuzzed streams")
         out.append(f"- The C++20 core adds an order in {r.fmt('native_engine', 'native.add_order.p99_us', 'us3')} microseconds at p99 natively, "
-                   f"{r.fmt('native_engine', 'p99_add_python_engine_over_native', 'x')} times faster than the Python engine on the same stream, "
-                   "and matches it on every fuzzed stream.")
+                   f"{r.fmt('native_engine', 'p99_add_python_engine_over_native', 'x')} times faster than the Python engine on the same stream{fuzz}."
+                   + (f" On a stream derived from the recorded book its p99 limit order is "
+                      f"{r.fmt('native_engine', 'realistic.p99_limit_python_engine_over_native', 'x')} times faster than the Python engine's."
+                      if r.get("native_engine", "realistic.p99_limit_python_engine_over_native") else ""))
     if r.has("resources"):
         rows = r.get("resources", "kernels", []) or []
         full = sum(1 for row in rows if (primary_occupancy(row)[1] or {}).get("occupancy", 0) >= 0.999)
         run_id = r.run_of("resources").id
         out.append(f"- {r.record(format_value(full, 'int'), run_id, 'derived: kernels at full theoretical occupancy', full)} of "
                    f"{r.record(format_value(len(rows), 'int'), run_id, 'derived: launched kernels', len(rows))} launched kernels reach full "
-                   "theoretical occupancy, so occupancy is not what holds the slow ones back.")
+                   "theoretical occupancy; the others are listed in BENCHMARKS.md with the resource that limits them.")
     return out
 
 
