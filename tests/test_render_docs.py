@@ -195,7 +195,7 @@ def test_triton_rung_is_reported_beside_the_cuda_rungs_but_never_best(tree: Path
     bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
     assert "### GPU time with the launches queued ahead" in bench
     assert "behind a 300 µs busy-wait kernel" in bench and "The slowest enqueue took 41.50 µs, well inside the wait." in bench
-    assert "with its launch queued ahead, the best one runs in 1.05 times the GPU time of the CUDA v2 kernel" in bench
+    assert "with its launch queued ahead, the best one takes 1.05 times the GPU time of the CUDA v2 kernel" in bench
     assert "the ratios are 1.25 and" in bench and "a median 33.75 µs on the host, against 6.25 µs for v2" in bench
     assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
     lad.pop("queued")
@@ -248,8 +248,17 @@ def test_an_earlier_run_with_a_different_second_card_verdict_is_named(tree: Path
     set_two_gpu(newer, 24.0, 2.0, 2000.0)
     assert _render(tree) == 0
     bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
-    assert "An earlier full run, `fixture-older`, on another Kaggle host" in bench
-    assert "found that two cards copied no faster than one" in bench
-    assert "showed no gain, so the answer depends on the machine" in (tree / "INTERVIEW_NOTES.md").read_text(encoding="utf-8")
+    # the fixtures carry no PCIe lines, so the topology is not claimed to match
+    assert "An earlier full run in another Kaggle session, `fixture-older`, found that two cards copied no faster" in bench
+    assert "these two runs do not show why" in bench
+    assert "showed no gain, so the result varies between sessions" in (tree / "INTERVIEW_NOTES.md").read_text(encoding="utf-8")
     assert "`fixture-older`" in (tree / "DESIGN.md").read_text(encoding="utf-8")
     assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
+
+
+def test_same_topology_needs_matching_links_and_pcie_lines() -> None:
+    a = {"topology": {"links": {"GPU0-GPU1": "PHB"}}, "pcie": ["0, 00000000:00:04.0, 3, 16"]}
+    assert render_docs.same_topology(a, json.loads(json.dumps(a)))
+    assert not render_docs.same_topology(a, {**a, "topology": {"links": {"GPU0-GPU1": "SYS"}}})
+    assert not render_docs.same_topology(a, {**a, "pcie": ["0, 00000000:00:05.0, 3, 16"]})
+    assert not render_docs.same_topology({"topology": a["topology"]}, {"topology": a["topology"]})  # nothing to compare

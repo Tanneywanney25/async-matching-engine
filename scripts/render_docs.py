@@ -462,8 +462,9 @@ def native_engine_md(r: Renderer) -> List[str]:
     out += ["", found_txt + "Every ratio here uses the Python engine row of this table, measured in the same process on the same "
             f"stream{engine_txt}. At p99 the native `add` is {faster_slower(r, sec, 'p99_add_python_engine_over_native')} than the "
             f"Python engine's, {faster_slower(r, sec, 'p99_add_python_engine_over_binding')} through the binding with integers and "
-            f"{faster_slower(r, sec, 'p99_add_python_engine_over_binding_decimal')} with Decimal orders. The binding rows differ from "
-            "the native one only by the call from Python, and from each other only by the Decimal conversion in `NativeOrderBook`. "
+            f"{faster_slower(r, sec, 'p99_add_python_engine_over_binding_decimal')} with Decimal orders. The integer binding row adds "
+            "the call from Python to the native work; the Decimal row adds, in `NativeOrderBook`, the conversion to ticks and lots "
+            "and the Python `Fill` objects built for every fill. "
             "The native harness reads `std::chrono::steady_clock` twice per operation; a pair of reads costs "
             f"{r.fmt(sec, 'native.timer_overhead_us.p50', 'us3')} µs at the median, included above, not subtracted. "
             f"Raw: {r.raw_link(sec, r.get(sec, 'raw_file'))}.", ""]
@@ -580,8 +581,14 @@ KIND_FOUND = {"none": "that two cards copied no faster than one", "barely": "tha
 KIND_SHORT = {"none": "showed no gain", "barely": "showed almost none", "partial": "showed less", "scales": "showed close to double"}
 
 
-def earlier_two_gpu(r: Renderer) -> Optional[Tuple[str, str]]:
-    """``(run id, kind)`` of the newest other full real T4 run whose second-card verdict differs from the rendered one."""
+def same_topology(a: dict, b: dict) -> bool:
+    """Whether two runs' ``nvidia-smi`` views of the cards match: topology links and each card's bus id and rated link."""
+    return bool(a.get("pcie")) and (a.get("topology") or {}).get("links") == (b.get("topology") or {}).get("links") \
+        and a.get("pcie") == b.get("pcie")
+
+
+def earlier_two_gpu(r: Renderer) -> Optional[Tuple[str, str, bool]]:
+    """``(run id, kind, same topology)`` of the newest other full real T4 run whose second-card verdict differs."""
     if not r.has("pipeline"):
         return None
     cur_run, cur = r.sections["pipeline"]
@@ -594,7 +601,7 @@ def earlier_two_gpu(r: Renderer) -> Optional[Tuple[str, str]]:
             continue
         other = ((run.metrics.get("sections") or {}).get("pipeline") or {}).get("two_gpu") or {}
         if "two_gpu_ms" in other and two_gpu_kind(other) != kind:
-            return run.id, two_gpu_kind(other)
+            return run.id, two_gpu_kind(other), same_topology(t, other)
     return None
 
 
@@ -602,8 +609,10 @@ def earlier_two_gpu_sentence(r: Renderer) -> str:
     e = earlier_two_gpu(r)
     if not e:
         return ""
-    return (f" An earlier full run, `{e[0]}`, on another Kaggle host that `nvidia-smi` described the same way, found "
-            f"{KIND_FOUND[e[1]]}; DECISIONS.md compares the two. This page reports the run above.")
+    return (f" An earlier full run in another Kaggle session, `{e[0]}`"
+            + (", whose `nvidia-smi` topology, bus ids and rated links read the same," if e[2] else ",")
+            + f" found {KIND_FOUND[e[1]]}; these two runs do not show why, and DECISIONS.md compares them. "
+            "This page reports the run above.")
 
 
 def transfer_bound(r: Renderer) -> bool:
@@ -1146,8 +1155,8 @@ def readme_phase2_findings(r: Renderer) -> List[str]:
             e2 = earlier_two_gpu(r)
             line += (f"; a second T4 {verdict}: {r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two cards "
                      f"against {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one"
-                     + (f" on this run's machine, while an earlier Kaggle machine reporting the same topology {KIND_SHORT[e2[1]]}."
-                        if e2 else "."))
+                     + (f" in this session, while an earlier Kaggle session{' reporting the same topology' if e2[2] else ''} "
+                        f"{KIND_SHORT[e2[1]]}." if e2 else "."))
         else:
             line += "."
         out.append(line)
@@ -1201,7 +1210,7 @@ def design_phase2(r: Renderer) -> List[str]:
         if e.get("ok") and e.get("bytes_saved_pct") is not None:
             same = (e.get("identical_to_int32") or {}).get("identical")
             lever = ((" The lever that works here is sending fewer bytes: the int16 encoding cuts " if kind in ("none", "barely") else
-                      " Sending fewer bytes helps on any of these machines: the int16 encoding cuts ")
+                      " Sending fewer bytes helps either way: the int16 encoding cuts ")
                      + f"{r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% of them"
                      + (" with identical outputs." if same else ", though its outputs differ from the int32 pass."))
         earlier = earlier_two_gpu_sentence(r).replace(" This page reports the run above.", "")
@@ -1424,15 +1433,17 @@ def phase2_questions(r: Renderer) -> List[Tuple[str, str]]:
                         "Because the copies hit a limit both cards share: ") + moved + "."
                        + (" A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps."
                           if transfer_bound(r) else "")
-                       + (f" An earlier run on another Kaggle machine that reported the same topology {KIND_SHORT[e2[1]]}, so the "
-                          "answer depends on the machine." if e2 else "")))
+                       + (f" An earlier run in another Kaggle session{' that reported the same topology' if e2[2] else ''} "
+                          f"{KIND_SHORT[e2[1]]}, so the result varies between sessions, and these two runs do not show why."
+                          if e2 else "")))
         else:
             e2 = earlier_two_gpu(r)
             qa.append(("What did the second T4 buy?",
                        f"Copy bandwidth: {moved}. The whole pipeline ran {r.fmt('pipeline', 'two_gpu.speedup', 'num')} times as fast "
                        "on two cards as on one."
-                       + (f" An earlier run on another Kaggle machine that reported the same topology {KIND_SHORT[e2[1]]}, so the "
-                          "answer depends on the machine, not on what `nvidia-smi topo -m` prints." if e2 else "")))
+                       + (f" An earlier run in another Kaggle session{' that reported the same topology' if e2[2] else ''} "
+                          f"{KIND_SHORT[e2[1]]}, so the result varies between sessions, and these two runs do not show why."
+                          if e2 else "")))
     e = r.get("pipeline", "int16_encoding") or {}
     if e.get("ok") and "e2e_ms" in e:
         qa.append(("What did narrowing prices to int16 buy?",
@@ -1454,8 +1465,12 @@ def phase2_questions(r: Renderer) -> List[Tuple[str, str]]:
                ("Where does the time go when the C++ core is called from Python?",
                 f"Natively an `add` costs {r.fmt('native_engine', 'native.add_order.p50_us', 'us3')} microseconds at the median; through the "
                 f"binding with integers {r.fmt('native_engine', 'binding.add_order.p50_us', 'us3')}, and with Decimal orders "
-                f"{r.fmt('native_engine', 'binding_decimal.add_order.p50_us', 'us3')}, so the Python call and the Decimal conversion "
-                "cost more than the matching itself. Decimal is converted only at that boundary, so the core works in integer ticks.")]
+                f"{r.fmt('native_engine', 'binding_decimal.add_order.p50_us', 'us3')}"
+                + (", so the Python call costs more than the matching itself, and the Decimal path adds the conversion and the Python "
+                   "fill objects on top."
+                   if (r.get("native_engine", "binding.add_order.p50_us") or 0) > 2 * (r.get("native_engine", "native.add_order.p50_us") or 0)
+                   else ".")
+                + " Decimal is converted only at that boundary, so the core works in integer ticks.")]
     return qa
 
 
