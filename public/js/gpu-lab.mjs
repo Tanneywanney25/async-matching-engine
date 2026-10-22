@@ -153,8 +153,8 @@ function renderNative(data) {
   const real = realisticRows(n);
   $("gpu-native-real-table").innerHTML = real.length ? table(
     [{ key: "short", label: "Path", html: (r) => `<span title="${esc(r.label)}">${esc(r.short)}</span>` },
-     { key: "limitP99", label: "limit p99", num: true }, { key: "marketP99", label: "market p99", num: true },
-     { key: "cancelP99", label: "cancel p99", num: true }],
+     { key: "limitP99", label: "limit", num: true }, { key: "marketP99", label: "market", num: true },
+     { key: "cancelP99", label: "cancel", num: true }],
     real, { rowClass: (r) => (r.native ? "chosen" : "") }) : "";
   $("gpu-native-real-note").textContent = realisticNote(n);
 }

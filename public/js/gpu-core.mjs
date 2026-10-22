@@ -1108,8 +1108,8 @@ export function realisticNote(native) {
   const r = get(native, "realistic");
   if (!r) return "";
   const c = get(r, "op_counts", {}) || {};
-  return `Recorded-book stream: ${fmtInt(r.ops)} operations (${fmtInt(c.limit)} limit, ${fmtInt(c.market)} market, ` +
-    `${fmtInt(c.cancel)} cancel) replayed through every path; ` +
+  return `p99 per operation on the recorded-book stream: ${fmtInt(r.ops)} operations (${fmtInt(c.limit)} limit, ` +
+    `${fmtInt(c.market)} market, ${fmtInt(c.cancel)} cancel) replayed through every path; ` +
     `${r.consistent ? "all paths agreed on fills and resting orders" : "paths DISAGREED on fills or resting orders"}.`;
 }
 

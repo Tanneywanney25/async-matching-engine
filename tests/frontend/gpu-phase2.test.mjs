@@ -123,7 +123,7 @@ test("recorded-book stream rows keep p99 per operation kind and the note says wh
   assert.equal(rows[1].short, "Python engine");
   assert.ok(rows[0].native && !rows[1].native);
   assert.equal(realisticNote(withReal),
-    "Recorded-book stream: 1,000 operations (500 limit, 20 market, 480 cancel) replayed through every path; " +
+    "p99 per operation on the recorded-book stream: 1,000 operations (500 limit, 20 market, 480 cancel) replayed through every path; " +
     "all paths agreed on fills and resting orders.");
   assert.match(realisticNote({ realistic: { ...withReal.realistic, consistent: false } }), /DISAGREED/);
   assert.deepEqual(realisticRows(native), []);
