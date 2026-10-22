@@ -26,15 +26,15 @@
       "uploaded_at": "2026-10-21T19:03:40Z"
     }
   ],
-  "gpu_hours_used_estimate": 0.999,
+  "gpu_hours_used_estimate": 1.068,
   "kaggle_reported": {
-    "checked_at": "2026-10-22T01:04:08Z",
+    "checked_at": "2026-10-22T01:10:11Z",
     "gpu": {
-      "remaining_hours": 29.12,
+      "remaining_hours": 29.06,
       "total_hours": 30.0,
-      "used_hours": 0.88
+      "used_hours": 0.94
     },
-    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.88h  29.12h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
+    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.94h  29.06h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
     "tpu": {
       "remaining_hours": 20.0,
       "total_hours": 20.0,
@@ -43,7 +43,7 @@
   },
   "phase2": {
     "budget_gpu_hours": 6.0,
-    "gpu_hours_used_estimate": 0.745,
+    "gpu_hours_used_estimate": 0.815,
     "kaggle_used_hours_at_start": 0.2,
     "started_at": "2026-10-21T22:25:01Z"
   },
@@ -528,6 +528,27 @@
       "status": "complete",
       "timeout_minutes": 25,
       "wall_seconds": 229.40440344810486
+    },
+    {
+      "branch": "gpu-phase2",
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive-synth"
+      ],
+      "env": {},
+      "finished_at": "2026-10-22T01:10:08Z",
+      "git_sha": "21159c36090cedfb5acbb4a151b7acca7366b597",
+      "gpu_minutes": 4.16,
+      "gpu_name": "Tesla T4",
+      "job": "bench_quick",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+      "pushed_at": "2026-10-22T01:05:52Z",
+      "result_status": "complete",
+      "run_id": "bench_quick-20261022-010549",
+      "running_at": "2026-10-22T01:05:58Z",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 25,
+      "wall_seconds": 203.66265082359314
     }
   ]
 }

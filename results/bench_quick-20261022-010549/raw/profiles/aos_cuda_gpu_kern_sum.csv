@@ -1,0 +1,5 @@
+Time (%),Total Time (ns),Instances,Avg (ns),Med (ns),Min (ns),Max (ns),StdDev (ns),Name
+90.3,81284896,8,10160612.0,10190012.0,9989949,10299259,114214.1,layout_cumdepth_aos
+7.1,6370068,8,796258.5,796282.0,780795,809819,11060.7,layout_depth_aos
+1.8,1626294,8,203286.8,203822.5,199103,206655,2908.5,layout_imbalance_aos
+0.8,725884,8,90735.5,91967.5,80896,92928,3995.7,layout_spread_aos
