@@ -1,0 +1,89 @@
+[{"stream_name":"stdout","time":0.956731805,"data":"[    0.1s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":0.956784969,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":25.532872522,"data":"[   24.7s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"NVIDIA Nsight Systems version 2025.1.1.0\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":34.675642292,"data":"[   33.8s] repo at af78a2c85fd2848c6e28d02a5c64cfca45282ef1 on gpu-phase2\n"}
+,{"stream_name":"stdout","time":35.118248311,"data":"[   34.3s] archive: /kaggle/input/datasets/tanushbhatia/exchange-engine-archive\n"}
+,{"stream_name":"stdout","time":35.227620223,"data":"[   34.4s] archive source=real snapshots=863153 trades=280818 hash=10e3c7d79010feb6\n"}
+,{"stream_name":"stdout","time":35.236153258,"data":"[   34.4s] running: /usr/bin/python3 -u -m bench.run_all --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --out /kaggle/working/results/bench_all-20261022-011024 --source real --budget-minutes 36\n"}
+,{"stream_name":"stdout","time":50.081264118,"data":"[run_all] archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive (real, 863,153 snapshots, 280,818 trades) -\u003e /kaggle/working/results/bench_all-20261022-011024\n"}
+,{"stream_name":"stdout","time":50.081297166,"data":"[run_all] gpu Tesla T4; sections ladder, scans, precision, layout, slippage, ofi, pipeline, resources; engine 100,000 orders / 10,000 cancels; iters 30; quick False\n"}
+,{"stream_name":"stdout","time":52.912302733,"data":"[ladder] bandwidth: copy kernel 221.6 GB/s, cudaMemcpy 231.9 GB/s, read-only 262.3 GB/s, theoretical 320.1\n"}
+,{"stream_name":"stdout","time":55.643267882,"data":"[ladder] n=863,153 levels=50 n_stride=863,156\n"}
+,{"stream_name":"stdout","time":56.185916066,"data":"[ladder] verify v0_aos: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":56.273024798,"data":"[ladder] verify v1_soa: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":56.365459013,"data":"[ladder] verify v2_soa_fused: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":56.457597023,"data":"[ladder] verify v3_soa_fused_vec4: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":56.54803238,"data":"[ladder] verify v4_soa_fused_vec4_sweep: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":58.58754216,"data":"[ladder] sweep best: block 128 grid 80 1.4810 ms\n"}
+,{"stream_name":"stdout","time":73.559281579,"data":"[ladder] Triton 3.6.0: verified True, identical to v2 True, best {'block_size': 1024, 'num_warps': 8, 'median_ms': 1.6964640021324158, 'iqr_ms': 0.01212000846862793}\n"}
+,{"stream_name":"stdout","time":83.117734934,"data":"[ladder] queued timing: host enqueue max 313.7 us against a 1000 us wait\n"}
+,{"stream_name":"stdout","time":119.310511137,"data":"[ladder] best rung v4_soa_fused_vec4_sweep: kernel 1.4884 ms (251.1 GB/s, 95.7% of ceiling), e2e 31.82 ms; speedups {'best_rung': 'v4_soa_fused_vec4_sweep', 'e2e_vs_numpy': 2.66641444712828, 'e2e_vs_numpy_pageable': 1.055576595919854, 'kernel_vs_cupy': 2.7980435708196416, 'e2e_vs_cupy': 1.1065663600015776, 'v0_to_best_kernel': 28.152572514713746, 'kernel_vs_cpp_single': 23.5472372435091, 'kernel_vs_cpp_omp': 11.524685032392567, 'e2e_vs_cpp_single': 1.101430814503636}\n"}
+,{"stream_name":"stdout","time":119.369172057,"data":"[run_all] ladder         69.3 s  ok\n"}
+,{"stream_name":"stdout","time":125.786619542,"data":"[scans] look-back check: passed (3.28 s)\n"}
+,{"stream_name":"stdout","time":139.9641766,"data":"[scans] scans n=863,153: winner cub_device_scan; n=16,777,216: winner cub_device_scan\n"}
+,{"stream_name":"stdout","time":141.029254444,"data":"[scans] rolling vwap: 1.059 ms, decimal max rel err 1.88e-16, {'1s': {'nan_pattern_equal': True, 'max_rel_err': 0.0, 'reference': 'math.fsum over each sampled window', 'sample': 2000, 'float64_cumsum_max_rel_err': 1.4835426079406455e-05, 'gpu_vs_numpy_cumsum_max_rel_err': 0.0004258928190165954, 'coverage_pct': 74.33965936514151}, '10s': {'nan_pattern_equal': True, 'max_rel_err': 0.0, 'reference': 'math.fsum over each sampled window', 'sample': 2000, 'float64_cumsum_max_rel_err': 6.041221601206292e-07, 'gpu_vs_numpy_cumsum_max_rel_err': 1.2830449770460848e-05, 'coverage_pct': 99.86051140411955}}\n"}
+,{"stream_name":"stdout","time":141.86097561,"data":"[scans] rolling book: 1.462 ms, spread err 0.00e+00, imbalance err 1.79e-07\n"}
+,{"stream_name":"stdout","time":141.871257148,"data":"[run_all] scans          22.2 s  ok\n"}
+,{"stream_name":"stdout","time":141.9377325,"data":"[precision] n=1,726,306 values, window=100\n"}
+,{"stream_name":"stdout","time":143.13447131,"data":"[precision] exact reference in 1.2 s ({'base_exponent': -32, 'max_shift_bits': 36, 'values': 1726306})\n"}
+,{"stream_name":"stdout","time":150.482214989,"data":"[precision] float32_naive: window max 3.485e+00 median 2.467e-04; prefix max 2.210e-07\n"}
+,{"stream_name":"stdout","time":150.563462322,"data":"[precision] float64: window max 1.777e-08 median 4.134e-15; prefix max 4.039e-16\n"}
+,{"stream_name":"stdout","time":150.65831154,"data":"[precision] kahan_float32: window max 1.254e-04 median 9.994e-09; prefix max 7.091e-08\n"}
+,{"stream_name":"stdout","time":150.76202786,"data":"[precision] block_rebased_float32: window max 4.722e-03 median 2.069e-07; prefix max 2.210e-07\n"}
+,{"stream_name":"stdout","time":150.845060407,"data":"[precision] double_double: window max 0.000e+00 median 0.000e+00; prefix max 0.000e+00\n"}
+,{"stream_name":"stdout","time":151.445527049,"data":"[precision] Window sums of 100 values over 1,726,306 top-of-book notionals: float32 naive reaches a maximum relative error of 3.49e+00 because two large prefixes cancel; double_double keeps the maximum at 0.00e+00, inside the 1.2e-08 budget (a tenth of a tick at 8,485,607 ticks), and is the fastest variant that does (double_double qualify), at +645.4% time versus float32 naive.\n"}
+,{"stream_name":"stdout","time":151.449865726,"data":"[run_all] precision       9.5 s  ok\n"}
+,{"stream_name":"stdout","time":173.789122645,"data":"[run_all] layout         22.3 s  ok\n"}
+,{"stream_name":"stdout","time":266.825250267,"data":"[run_all] slippage       93.0 s  ok\n"}
+,{"stream_name":"stdout","time":281.226632435,"data":"[run_all] ofi            14.3 s  ok\n"}
+,{"stream_name":"stdout","time":281.273914303,"data":"[bench_pipeline] n=863153 (archive 863153), levels=50, chunks=16, quick=False, int16=True\n"}
+,{"stream_name":"stdout","time":282.20433248,"data":"[bench_pipeline] staged 690.5 MB pinned in 810 ms; device buffers 132.7 MB\n"}
+,{"stream_name":"stdout","time":282.522668862,"data":"[bench_pipeline] verified serial=True overlapped=True max_abs_err={'spread_ticks': 0, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset': 0.00012264311612852907} bad_books=0\n"}
+,{"stream_name":"stdout","time":286.645526987,"data":"[bench_pipeline] overlapped 57.67 ms, serial 61.98 ms, saved 6.9%\n"}
+,{"stream_name":"stdout","time":290.368844783,"data":"[bench_pipeline] breakdown h2d 57.32 ms (12.0 GB/s), kernel 3.64 ms, d2h 1.71 ms (10.1 GB/s), transfer share 94.2%\n"}
+,{"stream_name":"stdout","time":290.424732926,"data":"[bench_pipeline] nsys profile: /opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/nsys profile --trace=cuda,nvtx --stats=false --force-overwrite true -o /kaggle/working/results/bench_all-20261022-011024/raw/pipeline /usr/bin/python3 -m bench.bench_pipeline --nsys-child --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --chunks 16\n"}
+,{"stream_name":"stdout","time":295.472138311,"data":"[bench_pipeline] nsys timeline: {'h2d': 16, 'kernel': 16, 'd2h': 16} bars, overlap 8.7% of 56.53 ms\n"}
+,{"stream_name":"stdout","time":304.772104639,"data":"[bench_pipeline] two cards: 57.68 ms on one, 56.34 ms on two (1.02x); copy-only 12.1 GB/s on one, 12.3 GB/s on two; identical outputs True\n"}
+,{"stream_name":"stdout","time":305.895658761,"data":"[bench_pipeline] int16 encode: 1116 ms on the host, 0 of 16 chunks fell back to int32, bytes 690536448 -\u003e 524812288\n"}
+,{"stream_name":"stdout","time":310.327390759,"data":"[bench_pipeline] done\n"}
+,{"stream_name":"stdout","time":310.333243339,"data":"[run_all] pipeline       29.1 s  ok\n"}
+,{"stream_name":"stdout","time":341.07646193,"data":"[run_all] resources      30.7 s  ok\n"}
+,{"stream_name":"stdout","time":341.076634352,"data":"[run_all] $ python /kaggle/working/repo/scripts/benchmark.py --orders 100000 --cancels 10000 --results-dir /kaggle/working/results/bench_all-20261022-011024/engine\n"}
+,{"stream_name":"stdout","time":342.74939374,"data":"    Benchmarking OrderBook with 100,000 orders (mid=64,000)...\n"}
+,{"stream_name":"stdout","time":342.749429942,"data":"\n"}
+,{"stream_name":"stdout","time":342.749435496,"data":"    add_order (insert + match) (100,000 ops)\n"}
+,{"stream_name":"stdout","time":342.74943996,"data":"      mean :    10.31 us\n"}
+,{"stream_name":"stdout","time":342.749444175,"data":"      p50  :     7.65 us\n"}
+,{"stream_name":"stdout","time":342.749448275,"data":"      p95  :    22.27 us\n"}
+,{"stream_name":"stdout","time":342.749452377,"data":"      p99  :    31.82 us\n"}
+,{"stream_name":"stdout","time":342.74946181,"data":"\n"}
+,{"stream_name":"stdout","time":342.749464929,"data":"    cancel_order (10,000 ops)\n"}
+,{"stream_name":"stdout","time":342.749467691,"data":"      mean :     1.80 us\n"}
+,{"stream_name":"stdout","time":342.749470488,"data":"      p50  :     0.36 us\n"}
+,{"stream_name":"stdout","time":342.749473262,"data":"      p95  :     5.04 us\n"}
+,{"stream_name":"stdout","time":342.749476293,"data":"      p99  :     5.96 us\n"}
+,{"stream_name":"stdout","time":342.749479097,"data":"\n"}
+,{"stream_name":"stdout","time":342.749481802,"data":"    Target: median add_order under 50 us.\n"}
+,{"stream_name":"stdout","time":342.749484545,"data":"\n"}
+,{"stream_name":"stdout","time":342.749487338,"data":"    Wrote /kaggle/working/results/bench_all-20261022-011024/engine/metrics.json, /kaggle/working/results/bench_all-20261022-011024/engine/manifest.json and /kaggle/working/results/bench_all-20261022-011024/engine/raw/engine_latency_us.json\n"}
+,{"stream_name":"stdout","time":342.757872637,"data":"[run_all] engine          1.7 s  ok\n"}
+,{"stream_name":"stdout","time":342.75802181,"data":"[run_all] $ python /kaggle/working/repo/scripts/benchmark_native.py --results-dir /kaggle/working/results/bench_all-20261022-011024/native_engine --orders 100000 --cancels 10000 --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --realistic-max-ops 1000000\n"}
+,{"stream_name":"stdout","time":438.859827749,"data":"    realistic: 1,000,020 ops {'limit': 491040, 'market': 26311, 'cancel': 482669}; native limit p99 0.140 us, python engine limit p99 12.689 us; consistent True\n"}
+,{"stream_name":"stdout","time":438.859865682,"data":"    fuzz: 10,000 streams, 548,317 operations, 0 divergences\n"}
+,{"stream_name":"stdout","time":438.859871109,"data":"    native           add p50    0.077 p99    0.386 p99.9    0.575 us | cancel p50    0.048 p99    0.400 p99.9    0.543 us\n"}
+,{"stream_name":"stdout","time":438.859875861,"data":"    binding          add p50    0.508 p99    1.079 p99.9    4.472 us | cancel p50    0.391 p99    0.930 p99.9    3.004 us\n"}
+,{"stream_name":"stdout","time":438.859884737,"data":"    binding_decimal  add p50    3.428 p99   14.985 p99.9   29.751 us | cancel p50    0.530 p99    1.760 p99.9    5.249 us\n"}
+,{"stream_name":"stdout","time":438.859888921,"data":"    python_engine    add p50    6.208 p99   28.327 p99.9   57.698 us | cancel p50    0.428 p99    6.102 p99.9   15.572 us\n"}
+,{"stream_name":"stdout","time":438.859893216,"data":"    consistent across all four: True {'native': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}, 'binding': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}, 'binding_decimal': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}, 'python_engine': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}}\n"}
+,{"stream_name":"stdout","time":438.878899602,"data":"[run_all] native         96.1 s  ok\n"}
+,{"stream_name":"stdout","time":438.882599822,"data":"[run_all] done in 403.3 s: 12 section(s) in /kaggle/working/results/bench_all-20261022-011024/metrics.json, 0 error(s)\n"}
+,{"stream_name":"stdout","time":441.181096916,"data":"[  440.3s] run_all exit code 0\n"}
+,{"stream_name":"stdout","time":441.252098603,"data":"[  440.4s] finished: complete 440s\n"}
+,{"stream_name":"stdout","time":498.037067779,"data":"RESULT_BUNDLE results_bench_all-20261022-011024.tar.gz\n"}
+,{"stream_name":"stderr","time":500.386387559,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":500.386413352,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":500.63417635,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":500.634202909,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":501.471114921,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":502.547225123,"data":"[NbConvertApp] Writing 340979 bytes to __results__.html\n"}
+]
