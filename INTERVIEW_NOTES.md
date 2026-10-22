@@ -6,11 +6,11 @@ Rendered from the measured numbers by `scripts/render_docs.py`.
 
 ### 1. Why is the end-to-end speedup so much smaller than the per-kernel one?
 
-The kernel is 24.2 times faster than single-threaded C++, but end to end it is 2.7 times faster than NumPy because the inputs cross PCIe first. The work is a few adds per byte, so the copy dominates; that is why analyses run in one residency.
+The kernel is 23.5 times faster than single-threaded C++, but end to end it is 2.7 times faster than NumPy because the inputs cross PCIe first. The work is a few adds per byte, so the copy dominates; that is why analyses run in one residency.
 
 ### 2. How close to the hardware limit is the best feature kernel?
 
-250.5 GB/s of minimum traffic, 95.3% of the 262.8 GB/s the read-only streaming kernel achieves (a copy is slower because half its traffic is writes) and 78.3% of the theoretical figure.
+251.1 GB/s of minimum traffic, 95.7% of the 262.3 GB/s the read-only streaming kernel achieves (a copy is slower because half its traffic is writes) and 78.5% of the theoretical figure.
 
 ### 3. What did each rung of the ladder buy?
 
@@ -22,15 +22,15 @@ No: 129 floating-point operations per 433 bytes, far left of the roofline's ridg
 
 ### 5. Why compare against OpenMP when the bullet quotes single-threaded C++?
 
-Because an honest comparison beats a flattering one: with every core the CPU closes the gap to 11.6 times.
+Because an honest comparison beats a flattering one: with every core the CPU closes the gap to 11.5 times.
 
 ### 6. How did you measure the layout effect?
 
-The same four kernels in both layouts under `nsys profile`, total kernel time from `cuda_gpu_kern_sum`: 4,843 ms versus 204 ms, 95.8% less.
+The same four kernels in both layouts under `nsys profile`, total kernel time from `cuda_gpu_kern_sum`: 4,848 ms versus 204 ms, 95.8% less.
 
 ### 7. Which scan won?
 
-`cub_device_scan` on 16,777,216 elements. The hand-written single-pass decoupled look-back scan came within 4.2% of it (1.68 ms against 1.61 ms); both read and write each element once, while the Blelloch and warp-shuffle scans need a second pass for the block carries.
+`cub_device_scan` on 16,777,216 elements. The hand-written single-pass decoupled look-back scan came within 3.5% of it (1.79 ms against 1.73 ms); both read and write each element once, while the Blelloch and warp-shuffle scans need a second pass for the block carries.
 
 ### 8. How do you know the rolling price is right?
 
@@ -38,11 +38,11 @@ Against `metrics.rolling_vwap` in Decimal on sampled trades: maximum relative er
 
 ### 9. Why not float32, or even float64, for the prefix sums?
 
-Window error reached 3.5e+00 relative in float32 and 1.8e-08 in float64, both above a tenth of a tick; the double-double scan stays inside it at 748.7% extra time over float32, which is still a few milliseconds.
+Window error reached 3.5e+00 relative in float32 and 1.8e-08 in float64, both above a tenth of a tick; the double-double scan stays inside it at 645.4% extra time over float32, which is still a few milliseconds.
 
 ### 10. What is divergence and how big was it here?
 
-Lanes of a warp taking different branch paths serialize. The thread-per-order walk lost 77.9% of its time to it; the warp-cooperative kernel runs 4.5 times faster.
+Lanes of a warp taking different branch paths serialize. The thread-per-order walk lost 78.0% of its time to it; the warp-cooperative kernel runs 4.6 times faster.
 
 ### 11. How was the execution-cost kernel verified?
 
@@ -50,7 +50,7 @@ On 1,000 random snapshots against a Decimal book walker, exact in ticks for the 
 
 ### 12. Did the three streams actually overlap?
 
-Yes, the Nsight Systems timeline shows copy and compute lanes active together; overlap saved 7.0% of the serial wall time, and transfers were still 94.2% of stage time.
+Yes, the Nsight Systems timeline shows copy and compute lanes active together; overlap saved 6.9% of the serial wall time, and transfers were still 94.2% of stage time.
 
 ### 13. Does order flow imbalance predict anything?
 
@@ -68,9 +68,9 @@ From the compiler and the occupancy API: `nvcc -Xptxas -v` gives registers, spil
 
 Blocks take tile numbers from an atomic counter instead of trusting the launch order, so every tile a block waits on belongs to a block that is already running; statuses are published with release stores and read with acquire loads. Before timing, it ran in a child process with a timeout on integer inputs that must match `numpy.cumsum` bit for bit at any summation order, 20 times at 16,777,216 elements with 0 mismatches.
 
-### 17. What did the second T4 buy?
+### 17. Why did the second T4 not speed up the pipeline?
 
-Copy bandwidth: the copy-only pass moved 12.1 GB/s on one card and 24.6 GB/s on two together, and `nvidia-smi topo -m` reports their connection as `PHB`, through a PCIe host bridge, that is the CPU. The whole pipeline ran 2.02 times as fast on two cards as on one. An earlier run on another Kaggle machine that reported the same topology showed no gain, so the answer depends on the machine, not on what `nvidia-smi topo -m` prints.
+Because the pipeline is transfer-bound and the copies hit a limit both cards share: the copy-only pass moved 12.1 GB/s on one card and 12.3 GB/s on two together, and `nvidia-smi topo -m` reports their connection as `PHB`, through a PCIe host bridge, that is the CPU. A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps. That holds in this session, while 1 of the 2 other full runs, each in its own Kaggle session reporting the same topology, showed close to double, so the result varies between sessions, and the runs do not show why.
 
 ### 18. What did narrowing prices to int16 buy?
 
@@ -82,7 +82,7 @@ The differential fuzzer checks it against the naive list-based reference book th
 
 ### 20. Where does the time go when the C++ core is called from Python?
 
-Natively an `add` costs 0.082 microseconds at the median; through the binding with integers 0.518, and with Decimal orders 3.473, so the Python call and the Decimal conversion cost more than the matching itself. Decimal is converted only at that boundary, so the core works in integer ticks.
+Natively an `add` costs 0.077 microseconds at the median; through the binding with integers 0.508, and with Decimal orders 3.428, so the Python call costs more than the matching itself, and the Decimal path adds the conversion and the Python fill objects on top. Decimal is converted only at that boundary, so the core works in integer ticks.
 
 ### 21. Why integer ticks?
 

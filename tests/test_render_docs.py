@@ -249,9 +249,12 @@ def test_an_earlier_run_with_a_different_second_card_verdict_is_named(tree: Path
     assert _render(tree) == 0
     bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
     # the fixtures carry no PCIe lines, so the topology is not claimed to match
-    assert "An earlier full run in another Kaggle session, `fixture-older`, found that two cards copied no faster" in bench
-    assert "these two runs do not show why" in bench
-    assert "showed no gain, so the result varies between sessions" in (tree / "INTERVIEW_NOTES.md").read_text(encoding="utf-8")
+    assert ("The result is not stable across Kaggle sessions. Of the 2 full runs that measured it, each in its own session, "
+            "`fixture-older` found that two cards copied no faster than one; `fixture-run` found that two cards copied close "
+            "to twice as fast as one. These runs do not show why; this page reports `fixture-run`, the latest.") in bench
+    assert "read the same" not in bench
+    interview = (tree / "INTERVIEW_NOTES.md").read_text(encoding="utf-8")
+    assert "That holds in this session, while the other full run, in its own Kaggle session, showed no gain, so the result varies" in interview
     assert "`fixture-older`" in (tree / "DESIGN.md").read_text(encoding="utf-8")
     assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
 
@@ -262,3 +265,11 @@ def test_same_topology_needs_matching_links_and_pcie_lines() -> None:
     assert not render_docs.same_topology(a, {**a, "topology": {"links": {"GPU0-GPU1": "SYS"}}})
     assert not render_docs.same_topology(a, {**a, "pcie": ["0, 00000000:00:05.0, 3, 16"]})
     assert not render_docs.same_topology({"topology": a["topology"]}, {"topology": a["topology"]})  # nothing to compare
+
+
+def test_split_regimes_finds_two_levels_and_ignores_one() -> None:
+    two = [10.5] * 8 + [30.9] + [42.0] * 21
+    cut = render_docs.split_regimes(two)
+    assert cut is not None and 10.5 < cut <= 30.9
+    assert render_docs.split_regimes([1.5, 1.49, 1.51] * 10) is None
+    assert render_docs.split_regimes([1.0, 1.0, 9.0] + [1.0] * 27) is None  # one outlier is not a level

@@ -223,6 +223,115 @@ def ceiling_words(r: "Renderer") -> str:
             "copy_kernel": "measured copy ceiling"}.get(kind, "measured bandwidth ceiling")
 
 
+def split_regimes(xs: Sequence[float]) -> Optional[float]:
+    """The threshold between two levels of a sample set, when its sorted values jump by half or more and each side
+    holds at least three samples; ``None`` for a single level."""
+    ys = sorted(xs)
+    best = None
+    for k in range(3, len(ys) - 2):
+        if ys[k - 1] > 0 and ys[k] / ys[k - 1] >= 1.5 and (best is None or ys[k] / ys[k - 1] > best[0]):
+            best = (ys[k] / ys[k - 1], (ys[k] + ys[k - 1]) / 2.0)
+    return best[1] if best else None
+
+
+def monitor_clock_at(r: Renderer, run_id: str, monitor_file: str, iterations_file: str, variant: str) -> List[Tuple[float, float, list]]:
+    """``(ms, SM clock, active reasons)`` for every timed call of ``variant``, from the nearest monitor sample."""
+    sys.path.insert(0, str(REPO))
+    from bench.common import parse_monitor
+
+    run_dir = next(run.path for run in r.runs if run.id == run_id)
+    try:
+        rows = parse_monitor((run_dir / "raw" / monitor_file).read_text(encoding="utf-8"))
+        calls = json.loads((run_dir / "raw" / iterations_file).read_text(encoding="utf-8"))["calls"]
+    except (OSError, ValueError, KeyError):
+        return []
+    if not rows or not calls:
+        return []
+    import calendar
+    stamp = [calendar.timegm(time.strptime(x["timestamp"].split(".")[0], "%Y/%m/%d %H:%M:%S"))
+             + float("0." + x["timestamp"].split(".")[1]) for x in rows]
+    # nvidia-smi prints the container's local time; the monitor starts just before the first call,
+    # so the offset to the calls' epoch times is that gap rounded to whole quarter hours
+    offset = round((stamp[0] - calls[0]["t0"]) / 900.0) * 900.0
+    out = []
+    for c in calls:
+        if c["variant"] != variant:
+            continue
+        i = min(range(len(rows)), key=lambda j: abs(stamp[j] - offset - (c["t0"] + c["t1"]) / 2.0))
+        out.append((c["ms"], rows[i]["sm_clock_mhz"], rows[i].get("reasons") or []))
+    return out
+
+
+def v0_regimes_md(r: Renderer) -> List[str]:
+    """v0's samples in two levels, set against the card's clock and power state when each was taken."""
+    rungs = r.get("ladder", "rungs", []) or []
+    idx = next((i for i, x in enumerate(rungs) if x["name"] == "v0_aos"), None)
+    if idx is None:
+        return []
+    km = rungs[idx]["kernel_ms"]
+    run = r.run_of("ladder")
+    try:
+        xs = json.loads((run.path / km["samples_file"]).read_text(encoding="utf-8"))["ms"]
+    except (OSError, ValueError, KeyError):
+        return []
+    cut = split_regimes(xs)
+    if cut is None:
+        return []
+    fast = [x for x in xs if x < cut]
+    slow = [x for x in xs if x >= cut]
+    first_fast = all(x < cut for x in xs[:len(fast)])
+    rec = lambda v, kind, what: r.record(format_value(v, kind), run.id, f"ladder v0 samples ({km['samples_file']}): {what}", v)  # noqa: E731
+    text = (f"v0 is the one rung whose time changes with the card's state. Its {rec(len(xs), 'int', 'samples')} interleaved samples "
+            f"fall in two levels: {rec(len(fast), 'int', 'fast samples')}"
+            + (" (the first ones)" if first_fast else "")
+            + f" near {rec(sorted(fast)[len(fast) // 2], 'ms', 'fast median')} ms and {rec(len(slow), 'int', 'slow samples')} near "
+              f"{rec(sorted(slow)[len(slow) // 2], 'ms', 'slow median')} ms.")
+    mon = km.get("monitor") or {}
+    at = monitor_clock_at(r, run.id, mon.get("file", ""), mon.get("iterations_file", ""), "v0_aos") if mon else []
+    if at:
+        fc = [c for ms, c, _rs in at if ms < cut]
+        sc = [c for ms, c, _rs in at if ms >= cut]
+        capped = sum(1 for ms, _c, rs in at if ms >= cut and "sw_power_cap" in rs)
+        if fc and sc:
+            text += (f" In the background log, sampled every 100 ms, the fast ones fall at an SM clock of at most "
+                     f"{rec(max(fc), 'int', 'fast clock max')} MHz, before the card boosted, and the slow ones at a median of "
+                     f"{rec(sorted(sc)[len(sc) // 2], 'int', 'slow clock median')} MHz"
+                     + (f", {rec(capped, 'int', 'slow samples under the power cap')} of them with the software power cap active"
+                        if capped else "") + ".")
+    alone = r.get("ladder", "v0_alone_ms") or {}
+    if alone.get("median_ms") is not None:
+        am = alone.get("monitor") or {}
+        text += (f" Timed alone, v0 took {r.fmt('ladder', 'v0_alone_ms.median_ms', 'ms')} ms at the median (IQR "
+                 f"{r.fmt('ladder', 'v0_alone_ms.iqr_ms', 'ms')})"
+                 + (f" with the card at {r.fmt('ladder', 'v0_alone_ms.monitor.sm_clock_min_mhz', 'int')} to "
+                    f"{r.fmt('ladder', 'v0_alone_ms.monitor.sm_clock_max_mhz', 'int')} MHz" if am.get("samples") else "")
+                 + ", so the slow level is its steady state once the card is under sustained load, the state the table's median reflects.")
+    fast_iters = [i for i, x in enumerate(xs) if x < cut]
+    slow_iters = [i for i, x in enumerate(xs) if x >= cut]
+    changes = {}
+    for f in sorted((run.path / "raw").glob("ladder_kernel__*.json")):
+        variant = f.name[len("ladder_kernel__"):-len(".json")]
+        if variant in ("v0_aos", "iterations"):
+            continue
+        try:
+            ys = json.loads(f.read_text(encoding="utf-8"))["ms"]
+        except (OSError, ValueError, KeyError):
+            continue
+        a = sorted(ys[i] for i in fast_iters if i < len(ys))
+        b = sorted(ys[i] for i in slow_iters if i < len(ys))
+        if a and b:
+            changes[variant] = (b[len(b) // 2] / a[len(a) // 2] - 1.0) * 100.0
+    if changes:
+        lo, hi = min(changes, key=changes.get), max(changes, key=changes.get)
+
+        def change(v: str) -> str:
+            c = changes[v]
+            return f"{rec(abs(c), 'pct', f'{v} change across the switch')}% {'faster' if c < 0 else 'slower'} (`{v}`)"
+        text += f" Over the same iterations the other variants changed between {change(lo)} and {change(hi)}."
+    text += " Why the uncoalesced array-of-structures kernels slow down at the higher clock is not established by these measurements."
+    return ["### v0 and the card's clock", "", text, ""]
+
+
 def queued_md(r: Renderer) -> List[str]:
     """Every rung's GPU-only time (launches queued behind a busy-wait) beside its event-timed figure."""
     q = r.get("ladder", "queued") or {}
@@ -238,13 +347,19 @@ def queued_md(r: Renderer) -> List[str]:
               "dispatch may remain inside these figures."), "",
            "| Rung | Events around the launch, median ms | Launches queued, median ms (IQR) | Host enqueue, median µs |",
            "|---|---:|---:|---:|"]
+    above = []
     for i, rung in ladder_rows(r):
         name = rung["name"]
         if name not in q["kernel_ms"]:
             continue
         out.append(f"| {rung_label(name)} | {r.fmt('ladder', f'rungs.{i}.kernel_ms.median_ms', 'ms')} | "
                    f"{r.fmt_m('ladder', f'queued.kernel_ms.{name}')} | {r.fmt('ladder', f'queued.host_enqueue_us.{name}.median_us', 'us')} |")
-    return out + [""]
+        if q["kernel_ms"][name]["median_ms"] > rung["kernel_ms"]["median_ms"]:
+            above.append(name)
+    note = ([f"Where the queued median sits above the event-timed one ({', '.join(f'`{n}`' for n in above)}), the two blocks ran "
+             "at different times, and the difference is not dispatch: it is the block-to-block variation of the card's clock "
+             "and power state" + (", which v0 feels most (see above)." if "v0_aos" in above else ".")] if above else [])
+    return out + [""] + (note + [""] if note else [])
 
 
 def triton_md(r: Renderer) -> List[str]:
@@ -370,11 +485,83 @@ def throttle_notes(r: Renderer) -> List[str]:
     return notes
 
 
+SLOWDOWN_REASONS = ("hw_slowdown", "sw_thermal", "hw_thermal", "hw_power_brake")
+
+
+def monitored_blocks(r: Renderer) -> Tuple[Dict[str, Tuple[str, dict]], Dict[str, Tuple[str, dict]]]:
+    """``(monitored, unmonitored)`` timed blocks of the rendered runs, keyed by block name: ``(run id, info)``.
+
+    Read from each run's ``raw/`` directory: a block is monitored when it left a ``<block>__gpu_monitor.csv``;
+    ``info`` is the monitor's summary, or for an unmonitored block its clock samples.
+    """
+    sys.path.insert(0, str(REPO))
+    from bench.common import summarize_monitor
+
+    mon: Dict[str, Tuple[str, dict]] = {}
+    unmon: Dict[str, Tuple[str, dict]] = {}
+    for run in sorted({run for run, _ in r.sections.values()}, key=lambda x: x.started):
+        raw = run.path / "raw"
+        logs = {f.name[: -len("__gpu_monitor.csv")]: f for f in raw.glob("*__gpu_monitor.csv")}
+        if not logs:
+            continue
+        for block, f in logs.items():
+            summary = summarize_monitor(f)
+            if summary.get("samples"):
+                mon[block] = (run.id, summary)
+        for f in raw.glob("*__*.json"):
+            block = f.name.split("__")[0]
+            if block in logs or block in unmon or f.name.endswith("__iterations.json"):
+                continue
+            try:
+                d = json.loads(f.read_text(encoding="utf-8"))
+            except ValueError:
+                continue
+            if isinstance(d, dict) and isinstance(d.get("before"), dict) and isinstance(d.get("after"), dict):
+                b, a = d["before"], d["after"]
+                if b.get("sm_clock_mhz") is not None and a.get("sm_clock_mhz") is not None:
+                    drop = (b["sm_clock_mhz"] - a["sm_clock_mhz"]) / b["sm_clock_mhz"] * 100.0 if b["sm_clock_mhz"] else 0.0
+                    unmon[block] = (run.id, {"before": b["sm_clock_mhz"], "max": b.get("max_sm_clock_mhz"), "drop_pct": drop})
+    return mon, unmon
+
+
+def monitor_lines(r: Renderer) -> List[str]:
+    mon, unmon = monitored_blocks(r)
+    if not mon:
+        return []
+    run_id = next(iter(mon.values()))[0]
+    capped = sorted(b for b, (_i, m) in mon.items() if m["reason_counts"].get("sw_power_cap"))
+    slowed = sorted(b for b, (_i, m) in mon.items() if any(m["reason_counts"].get(x) for x in SLOWDOWN_REASONS))
+    n_mon = r.record(format_value(len(mon), "int"), run_id, "derived: blocks logged by the background monitor", len(mon))
+    n_cap = r.record(format_value(len(capped), "int"), run_id, "derived: monitored blocks with the power cap active", len(capped))
+    lines = [f"The driver's clock-event reasons were logged every 100 ms during the {n_mon} blocks that time GPU work alone. "
+             + (f"In {n_cap} of them the card reached its software power cap for part of the block "
+                f"({', '.join(f'`{b}`' for b in capped)}), so their figures were measured at a power-limited clock"
+                if capped else "None of them reached the card's software power cap")
+             + ("; none reported a thermal or hardware slowdown." if not slowed else
+                f"; {', '.join(f'`{b}`' for b in slowed)} also reported a thermal or hardware slowdown.")]
+    if unmon:
+        run_u = next(iter(unmon.values()))[0]
+        idle = sorted(b for b, (_i, m) in unmon.items() if m.get("max") and m["before"] < 0.5 * m["max"])
+        flagged = sorted(b for b, (_i, m) in unmon.items() if m["drop_pct"] > 10.0)
+        n_un = r.record(format_value(len(unmon), "int"), run_u, "derived: blocks without the background monitor", len(unmon))
+        n_idle = r.record(format_value(len(idle), "int"), run_u, "derived: unmonitored blocks starting below half the max clock", len(idle))
+        lines.append(f"The {n_un} blocks that time host code or wall-clock transfers were not polled, so the poller could not "
+                     "disturb the host; for them the SM clock was sampled after the warmup and after the last iteration. "
+                     + (f"{', '.join(f'`{b}`' for b in flagged)} lost more than a tenth of its SM clock between the two"
+                        if flagged else "None lost more than a tenth of its SM clock between the two")
+                     + (f", but {n_idle} of them began below half the card's maximum clock, where that comparison cannot show a "
+                        "drop." if idle else "."))
+    return lines
+
+
 def clock_section(r: Renderer) -> List[str]:
     sampled, total, missing = clock_coverage(r)
     notes = throttle_notes(r)
     lines = []
-    if sampled:
+    mon = monitor_lines(r)
+    if mon:
+        lines += mon
+    elif sampled:
         lines += notes or [("No timed block lost more than a tenth of its SM clock between the samples taken before and after it"
                             + (", on every card the block used." if sampled == total else
                                " among the blocks that have samples."))]
@@ -587,32 +774,51 @@ def same_topology(a: dict, b: dict) -> bool:
         and a.get("pcie") == b.get("pcie")
 
 
-def earlier_two_gpu(r: Renderer) -> Optional[Tuple[str, str, bool]]:
-    """``(run id, kind, same topology)`` of the newest other full real T4 run whose second-card verdict differs."""
+def two_gpu_history(r: Renderer) -> List[Tuple[str, str, bool]]:
+    """``(run id, kind, same topology as the rendered run)`` for every full real T4 run that measured two cards, oldest first."""
     if not r.has("pipeline"):
-        return None
-    cur_run, cur = r.sections["pipeline"]
-    t = cur.get("two_gpu") or {}
-    if "two_gpu_ms" not in t:
-        return None
-    kind = two_gpu_kind(t)
-    for run in sorted(r.runs, key=lambda x: x.started, reverse=True):
-        if run.id == cur_run.id or not (run.t4 and run.real and not run.quick):
+        return []
+    t = r.sections["pipeline"][1].get("two_gpu") or {}
+    out = []
+    for run in sorted(r.runs, key=lambda x: x.started):
+        if not (run.t4 and run.real and not run.quick):
             continue
         other = ((run.metrics.get("sections") or {}).get("pipeline") or {}).get("two_gpu") or {}
-        if "two_gpu_ms" in other and two_gpu_kind(other) != kind:
-            return run.id, two_gpu_kind(other), same_topology(t, other)
-    return None
+        if "two_gpu_ms" in other:
+            out.append((run.id, two_gpu_kind(other), same_topology(t, other)))
+    return out
 
 
 def earlier_two_gpu_sentence(r: Renderer) -> str:
-    e = earlier_two_gpu(r)
-    if not e:
+    """When full runs in different sessions disagree about the second card, every one of them, named."""
+    hist = two_gpu_history(r)
+    if len({k for _i, k, _s in hist}) < 2:
         return ""
-    return (f" An earlier full run in another Kaggle session, `{e[0]}`"
-            + (", whose `nvidia-smi` topology, bus ids and rated links read the same," if e[2] else ",")
-            + f" found {KIND_FOUND[e[1]]}; these two runs do not show why, and DECISIONS.md compares them. "
-            "This page reports the run above.")
+    cur = r.run_of("pipeline").id
+    found = "; ".join(f"`{rid}` found {KIND_FOUND[k]}" for rid, k, _s in hist)
+    same = all(s for _i, _k, s in hist)
+    total = r.record(format_value(len(hist), "int"), cur, "derived: full runs that measured two cards", len(hist))
+    return (f" The result is not stable across Kaggle sessions. Of the {total} full runs that measured it, each in its own "
+            f"session, {found}" + (", and their `nvidia-smi` topology, bus ids and rated links read the same" if same else "")
+            + f". These runs do not show why; this page reports `{cur}`, the latest.")
+
+
+def other_sessions_short(r: Renderer) -> str:
+    """``" in this session, while 1 of the 2 other full runs ... showed close to double"`` when runs disagree, else ``""``."""
+    hist = two_gpu_history(r)
+    if len({k for _i, k, _s in hist}) < 2:
+        return ""
+    cur = r.run_of("pipeline").id
+    mine = next((k for i, k, _s in hist if i == cur), None)
+    others = [(i, k) for i, k, _s in hist if i != cur]
+    differ = [k for _i, k in others if k != mine]
+    same = all(s for _i, _k, s in hist)
+    n_diff = r.record(format_value(len(differ), "int"), cur, "derived: other full runs with a different second-card verdict", len(differ))
+    n_other = r.record(format_value(len(others), "int"), cur, "derived: other full runs that measured two cards", len(others))
+    who = ("the other full run, in its own Kaggle session" if len(others) == 1 else
+           f"{n_diff} of the {n_other} other full runs, each in its own Kaggle session")
+    return (f" in this session, while {who}" + (" reporting the same topology," if same else ",") + " "
+            + " or ".join(KIND_SHORT[k] for k in sorted(set(differ))))
 
 
 def transfer_bound(r: Renderer) -> bool:
@@ -744,7 +950,7 @@ def benchmarks_md(r: Renderer) -> str:
                            f"{r.fmt('ladder', p + '.median_ms', 'ms')} | {r.fmt('ladder', p + '.iqr_ms', 'ms')} | "
                            f"{r.fmt('ladder', p + '.effective_bw_gbs', 'gbs')} |")
             out.append("")
-        out += queued_md(r) + triton_md(r)
+        out += v0_regimes_md(r) + queued_md(r) + triton_md(r)
     if r.has("baselines"):
         out += ["## Baselines (same machine, same job, same archive)", "",
                 "| Implementation | Median ms (IQR) | Verified | Raw |", "|---|---:|:---:|---|"]
@@ -1152,11 +1358,8 @@ def readme_phase2_findings(r: Renderer) -> List[str]:
         if t.get("h2d_gbs_one_gpu") and t.get("h2d_gbs_two_gpu_aggregate"):
             verdict = {"none": "adds no copy bandwidth", "barely": "adds almost no copy bandwidth",
                        "partial": "adds some copy bandwidth", "scales": "nearly doubles the copy bandwidth"}[two_gpu_kind(t)]
-            e2 = earlier_two_gpu(r)
             line += (f"; a second T4 {verdict}: {r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two cards "
-                     f"against {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one"
-                     + (f" in this session, while an earlier Kaggle session{' reporting the same topology' if e2[2] else ''} "
-                        f"{KIND_SHORT[e2[1]]}." if e2 else "."))
+                     f"against {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one" + other_sessions_short(r) + ".")
         else:
             line += "."
         out.append(line)
@@ -1213,7 +1416,7 @@ def design_phase2(r: Renderer) -> List[str]:
                       " Sending fewer bytes helps either way: the int16 encoding cuts ")
                      + f"{r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% of them"
                      + (" with identical outputs." if same else ", though its outputs differ from the int32 pass."))
-        earlier = earlier_two_gpu_sentence(r).replace(" This page reports the run above.", "")
+        earlier = earlier_two_gpu_sentence(r)
         if kind in ("none", "barely"):
             out += ["## Two cards, one bottleneck", "",
                     why + f"Measured, it does not: {rates}. Whatever they share upstream of their own links sets the ceiling."
@@ -1427,23 +1630,19 @@ def phase2_questions(r: Renderer) -> List[Tuple[str, str]]:
                  f"{r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two together, and `nvidia-smi topo -m` reports "
                  f"their connection as `{link}`, {meaning}")
         if two_gpu_kind(t) in ("none", "barely"):
-            e2 = earlier_two_gpu(r)
             qa.append(("Why did the second T4 not speed up the pipeline?",
                        ("Because the pipeline is transfer-bound and the copies hit a limit both cards share: " if transfer_bound(r) else
                         "Because the copies hit a limit both cards share: ") + moved + "."
                        + (" A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps."
                           if transfer_bound(r) else "")
-                       + (f" An earlier run in another Kaggle session{' that reported the same topology' if e2[2] else ''} "
-                          f"{KIND_SHORT[e2[1]]}, so the result varies between sessions, and these two runs do not show why."
-                          if e2 else "")))
+                       + (f" That holds{other_sessions_short(r)}, so the result varies between sessions, and the runs do not "
+                          "show why." if other_sessions_short(r) else "")))
         else:
-            e2 = earlier_two_gpu(r)
             qa.append(("What did the second T4 buy?",
                        f"Copy bandwidth: {moved}. The whole pipeline ran {r.fmt('pipeline', 'two_gpu.speedup', 'num')} times as fast "
                        "on two cards as on one."
-                       + (f" An earlier run in another Kaggle session{' that reported the same topology' if e2[2] else ''} "
-                          f"{KIND_SHORT[e2[1]]}, so the result varies between sessions, and these two runs do not show why."
-                          if e2 else "")))
+                       + (f" That holds{other_sessions_short(r)}, so the result varies between sessions, and the runs do not "
+                          "show why." if other_sessions_short(r) else "")))
     e = r.get("pipeline", "int16_encoding") or {}
     if e.get("ok") and "e2e_ms" in e:
         qa.append(("What did narrowing prices to int16 buy?",
@@ -1602,7 +1801,8 @@ def bullet_specs(r: Renderer) -> List[Tuple[str, List[List[str]]]]:
                [f"{pct}% of the measured memory ceiling, ", f"or {pct}% of the measured memory ceiling, ",
                 f"{pct}% of the measured bandwidth ceiling, "],
                ["with structure-of-arrays levels and 128-bit loads.", "using structure-of-arrays levels and 128-bit loads.",
-                "with structure-of-arrays book levels and 128-bit loads.", "by moving book levels to structure-of-arrays order.",
+                "with structure-of-arrays book levels and 128-bit loads.", "by fusing kernels over structure-of-arrays book levels.",
+                "with fused kernels over structure-of-arrays book levels.", "using fused kernels on structure-of-arrays levels.",
                 "with structure-of-arrays book levels and vectorized 128-bit loads."]]),
         ("5", [["Wrote ", "Built "], ["a warp-cooperative CUDA kernel that prices ", "a warp-cooperative CUDA slippage kernel that prices "],
                [f"orders of {sizes} sizes against every recorded book snapshot ", f"market orders of {sizes} sizes against every recorded book snapshot ",
