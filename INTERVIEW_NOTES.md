@@ -70,7 +70,7 @@ Blocks take tile numbers from an atomic counter instead of trusting the launch o
 
 ### 17. Why did the second T4 not speed up the pipeline?
 
-Because the pipeline is transfer-bound and the copies hit a limit both cards share: the copy-only pass moved 12.1 GB/s on one card and 12.3 GB/s on two together, and `nvidia-smi topo -m` reports their connection as `PHB`, through a PCIe host bridge, that is the CPU. A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps. That holds in this session, while 1 of the 2 other full runs, each in its own Kaggle session reporting the same topology, showed close to double, so the result varies between sessions, and the runs do not show why.
+Because the pipeline is transfer-bound and, in this session, the copies hit a limit both cards shared: the copy-only pass moved 12.1 GB/s on one card and 12.3 GB/s on two together, and `nvidia-smi topo -m` reports their connection as `PHB`, through a PCIe host bridge, that is the CPU. Here the second card added only compute, which this pipeline barely uses; sending fewer bytes helps either way. That holds in this session, while 1 of the 2 other full runs, each in its own Kaggle session reporting the same topology, showed close to double, so the result varies between sessions, and the runs do not show why.
 
 ### 18. What did narrowing prices to int16 buy?
 

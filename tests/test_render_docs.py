@@ -155,7 +155,7 @@ def test_second_card_verdict_follows_the_measurement_in_every_document(tree: Pat
     assert "yet the whole pipeline's speedup stays well short of that" in bench
     assert "rated `Gen3 x16` and running at `Gen3 x16` just after the copies" in bench
     design = (tree / "DESIGN.md").read_text(encoding="utf-8")
-    assert "## Two cards\n" in design and "one bottleneck" not in design and "Measured, it nearly does" in design
+    assert "## Two cards\n" in design and "one bottleneck" not in design and "Measured in this session, it nearly does" in design
     interview = (tree / "INTERVIEW_NOTES.md").read_text(encoding="utf-8")
     assert "What did the second T4 buy?" in interview and "not speed up" not in interview
     assert "through the CPU interconnect between NUMA nodes" in interview
@@ -273,3 +273,27 @@ def test_split_regimes_finds_two_levels_and_ignores_one() -> None:
     assert cut is not None and 10.5 < cut <= 30.9
     assert render_docs.split_regimes([1.5, 1.49, 1.51] * 10) is None
     assert render_docs.split_regimes([1.0, 1.0, 9.0] + [1.0] * 27) is None  # one outlier is not a level
+
+
+def test_block_clock_counts_only_samples_inside_the_timed_span(tmp_path: Path) -> None:
+    """A made-up block: two monitor samples before its first call, two inside, one after (UTC container clock)."""
+    raw = tmp_path / "raw"
+    raw.mkdir()
+    import calendar
+    import time as _time
+
+    base = calendar.timegm(_time.strptime("2026/10/22 01:00:00", "%Y/%m/%d %H:%M:%S"))
+    lines = ["timestamp,index,clocks.sm,clocks.mem,power.draw,temperature.gpu,pstate,clocks_event_reasons.active"]
+    for t, mhz, bits in ((0.0, 1590, 0), (0.1, 585, 1), (0.3, 1395, 4), (0.4, 1410, 4), (0.9, 585, 1)):
+        stamp = _time.strftime("%Y/%m/%d %H:%M:%S", _time.gmtime(base + int(t))) + f".{int(round((t % 1) * 1000)):03d}"
+        lines.append(f"{stamp}, 0, {mhz}, 5000, 60.0, 50, P0, 0x{bits:016x}")
+    (raw / "blk__gpu_monitor.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    calls = [{"iteration": i, "variant": "v", "t0": base + 0.25 + 0.1 * i, "t1": base + 0.3 + 0.1 * i, "ms": 1.0} for i in range(3)]
+    (raw / "blk__iterations.json").write_text(json.dumps({"calls": calls}), encoding="utf-8")
+    (raw / "blk__v.json").write_text(json.dumps({"ms": [1.0] * 3, "before": {"sm_clock_mhz": 1380.0, "max_sm_clock_mhz": 1590.0},
+                                                 "after": {"sm_clock_mhz": 1400.0}}), encoding="utf-8")
+    info = render_docs.block_clock(tmp_path, "blk")
+    assert [x["sm_clock_mhz"] for x in info["in_span"]] == [1395.0, 1410.0]
+    assert info["reasons"] == {"sw_power_cap": 2} and info["polled"]
+    assert (info["clock_min"], info["clock_max"], info["clock_median"]) == (1380.0, 1410.0, 1400.0)
+    assert render_docs.block_clock(tmp_path, "missing") is None

@@ -234,31 +234,80 @@ def split_regimes(xs: Sequence[float]) -> Optional[float]:
     return best[1] if best else None
 
 
-def monitor_clock_at(r: Renderer, run_id: str, monitor_file: str, iterations_file: str, variant: str) -> List[Tuple[float, float, list]]:
-    """``(ms, SM clock, active reasons)`` for every timed call of ``variant``, from the nearest monitor sample."""
+def monitor_timeline(run_dir: Path, block: str) -> Tuple[List[dict], List[dict]]:
+    """A block's monitor rows, each with an ``epoch`` time aligned to the calls' ``time.time()`` stamps, and its calls."""
     sys.path.insert(0, str(REPO))
+    import calendar
+
     from bench.common import parse_monitor
 
-    run_dir = next(run.path for run in r.runs if run.id == run_id)
     try:
-        rows = parse_monitor((run_dir / "raw" / monitor_file).read_text(encoding="utf-8"))
-        calls = json.loads((run_dir / "raw" / iterations_file).read_text(encoding="utf-8"))["calls"]
-    except (OSError, ValueError, KeyError):
-        return []
+        rows = parse_monitor((run_dir / "raw" / f"{block}__gpu_monitor.csv").read_text(encoding="utf-8"))
+        calls = json.loads((run_dir / "raw" / f"{block}__iterations.json").read_text(encoding="utf-8"))["calls"]
+    except (OSError, ValueError, KeyError, TypeError):
+        return [], []
     if not rows or not calls:
-        return []
-    import calendar
-    stamp = [calendar.timegm(time.strptime(x["timestamp"].split(".")[0], "%Y/%m/%d %H:%M:%S"))
-             + float("0." + x["timestamp"].split(".")[1]) for x in rows]
+        return [], calls or []
+    for x in rows:
+        whole, _, frac = x["timestamp"].partition(".")
+        x["epoch"] = calendar.timegm(time.strptime(whole, "%Y/%m/%d %H:%M:%S")) + float("0." + (frac or "0"))
     # nvidia-smi prints the container's local time; the monitor starts just before the first call,
     # so the offset to the calls' epoch times is that gap rounded to whole quarter hours
-    offset = round((stamp[0] - calls[0]["t0"]) / 900.0) * 900.0
+    offset = round((rows[0]["epoch"] - calls[0]["t0"]) / 900.0) * 900.0
+    for x in rows:
+        x["epoch"] -= offset
+    return rows, calls
+
+
+def block_clock(run_dir: Path, block: str) -> Optional[dict]:
+    """A block's clock as seen during its timed iterations: monitor samples inside the span, plus its raw clock samples."""
+    rows, calls = monitor_timeline(run_dir, block)
+    b = a = {}
+    for f in sorted((run_dir / "raw").glob(f"{block}__*.json")):  # the first of the block's sample files with clock samples
+        if f.name.endswith("__iterations.json"):
+            continue
+        try:
+            d = json.loads(f.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        if isinstance(d, dict) and isinstance(d.get("before"), dict) and isinstance(d.get("after"), dict) \
+                and d["before"].get("sm_clock_mhz") is not None and d["after"].get("sm_clock_mhz") is not None:
+            b, a = d["before"], d["after"]
+            break
+    if not b:
+        return None
+    out = {"before": b["sm_clock_mhz"], "after": a["sm_clock_mhz"], "max": b.get("max_sm_clock_mhz"),
+           "polled": (run_dir / "raw" / f"{block}__gpu_monitor.csv").exists(), "in_span": []}
+    if rows and calls:
+        lo, hi = min(c["t0"] for c in calls), max(c["t1"] for c in calls)
+        out["in_span"] = [x for x in rows if lo <= x["epoch"] <= hi]
+        if len(rows) > 1:
+            gaps = sorted(rows[i + 1]["epoch"] - rows[i]["epoch"] for i in range(len(rows) - 1))
+            out["interval_ms"] = gaps[len(gaps) // 2] * 1000.0
+    span = out["in_span"]
+    clocks = sorted([x["sm_clock_mhz"] for x in span] + [out["before"], out["after"]])  # timed span plus its two edges
+    out["clock_min"], out["clock_max"], out["clock_median"] = clocks[0], clocks[-1], clocks[len(clocks) // 2]
+    reasons: Dict[str, int] = {}
+    for x in span:
+        for n in x.get("reasons") or []:
+            reasons[n] = reasons.get(n, 0) + 1
+    out["reasons"] = reasons
+    return out
+
+
+def monitor_clock_at(r: Renderer, run_id: str, block: str, variant: str) -> List[Tuple[float, float, list]]:
+    """``(ms, SM clock, active reasons)`` for every timed call of ``variant``, from the nearest monitor sample."""
+    run_dir = next(run.path for run in r.runs if run.id == run_id)
+    rows, calls = monitor_timeline(run_dir, block)
+    if not rows:
+        return []
     out = []
     for c in calls:
         if c["variant"] != variant:
             continue
-        i = min(range(len(rows)), key=lambda j: abs(stamp[j] - offset - (c["t0"] + c["t1"]) / 2.0))
-        out.append((c["ms"], rows[i]["sm_clock_mhz"], rows[i].get("reasons") or []))
+        mid = (c["t0"] + c["t1"]) / 2.0
+        x = min(rows, key=lambda row: abs(row["epoch"] - mid))
+        out.append((c["ms"], x["sm_clock_mhz"], x.get("reasons") or []))
     return out
 
 
@@ -287,7 +336,7 @@ def v0_regimes_md(r: Renderer) -> List[str]:
             + f" near {rec(sorted(fast)[len(fast) // 2], 'ms', 'fast median')} ms and {rec(len(slow), 'int', 'slow samples')} near "
               f"{rec(sorted(slow)[len(slow) // 2], 'ms', 'slow median')} ms.")
     mon = km.get("monitor") or {}
-    at = monitor_clock_at(r, run.id, mon.get("file", ""), mon.get("iterations_file", ""), "v0_aos") if mon else []
+    at = monitor_clock_at(r, run.id, "ladder_kernel", "v0_aos") if mon else []
     if at:
         fc = [c for ms, c, _rs in at if ms < cut]
         sc = [c for ms, c, _rs in at if ms >= cut]
@@ -300,11 +349,12 @@ def v0_regimes_md(r: Renderer) -> List[str]:
                         if capped else "") + ".")
     alone = r.get("ladder", "v0_alone_ms") or {}
     if alone.get("median_ms") is not None:
-        am = alone.get("monitor") or {}
+        ac = block_clock(run.path, "ladder_v0_alone") or {}
+        span = ac.get("in_span") or []
         text += (f" Timed alone, v0 took {r.fmt('ladder', 'v0_alone_ms.median_ms', 'ms')} ms at the median (IQR "
                  f"{r.fmt('ladder', 'v0_alone_ms.iqr_ms', 'ms')})"
-                 + (f" with the card at {r.fmt('ladder', 'v0_alone_ms.monitor.sm_clock_min_mhz', 'int')} to "
-                    f"{r.fmt('ladder', 'v0_alone_ms.monitor.sm_clock_max_mhz', 'int')} MHz" if am.get("samples") else "")
+                 + (f" with the card at {rec(ac['clock_min'], 'int', 'v0 alone in-span clock min')} to "
+                    f"{rec(ac['clock_max'], 'int', 'v0 alone in-span clock max')} MHz during its timed iterations" if span else "")
                  + ", so the slow level is its steady state once the card is under sustained load, the state the table's median reflects.")
     fast_iters = [i for i, x in enumerate(xs) if x < cut]
     slow_iters = [i for i, x in enumerate(xs) if x >= cut]
@@ -356,9 +406,10 @@ def queued_md(r: Renderer) -> List[str]:
                    f"{r.fmt_m('ladder', f'queued.kernel_ms.{name}')} | {r.fmt('ladder', f'queued.host_enqueue_us.{name}.median_us', 'us')} |")
         if q["kernel_ms"][name]["median_ms"] > rung["kernel_ms"]["median_ms"]:
             above.append(name)
-    note = ([f"Where the queued median sits above the event-timed one ({', '.join(f'`{n}`' for n in above)}), the two blocks ran "
-             "at different times, and the difference is not dispatch: it is the block-to-block variation of the card's clock "
-             "and power state" + (", which v0 feels most (see above)." if "v0_aos" in above else ".")] if above else [])
+    note = ([f"Where the queued median sits above the event-timed one ({', '.join(f'`{n}`' for n in above)}), the difference "
+             "cannot be dispatch, which only the event-timed figure contains. These runs do not separate the two blocks' "
+             "different moments of the card's clock and power state from the effect of the near-idle busy-wait itself on that "
+             "state" + (", and v0 is the rung most sensitive to it (see above)." if "v0_aos" in above else ".")] if above else [])
     return out + [""] + (note + [""] if note else [])
 
 
@@ -488,69 +539,75 @@ def throttle_notes(r: Renderer) -> List[str]:
 SLOWDOWN_REASONS = ("hw_slowdown", "sw_thermal", "hw_thermal", "hw_power_brake")
 
 
-def monitored_blocks(r: Renderer) -> Tuple[Dict[str, Tuple[str, dict]], Dict[str, Tuple[str, dict]]]:
-    """``(monitored, unmonitored)`` timed blocks of the rendered runs, keyed by block name: ``(run id, info)``.
+def monitored_blocks(r: Renderer) -> Dict[str, Tuple[str, dict]]:
+    """Every timed block of the rendered runs that left clock samples, keyed by block name: ``(run id, block_clock)``.
 
-    Read from each run's ``raw/`` directory: a block is monitored when it left a ``<block>__gpu_monitor.csv``;
-    ``info`` is the monitor's summary, or for an unmonitored block its clock samples.
+    Only runs that used the background monitor are included; older runs are covered by the before/after flag.
     """
-    sys.path.insert(0, str(REPO))
-    from bench.common import summarize_monitor
-
-    mon: Dict[str, Tuple[str, dict]] = {}
-    unmon: Dict[str, Tuple[str, dict]] = {}
+    out: Dict[str, Tuple[str, dict]] = {}
     for run in sorted({run for run, _ in r.sections.values()}, key=lambda x: x.started):
         raw = run.path / "raw"
-        logs = {f.name[: -len("__gpu_monitor.csv")]: f for f in raw.glob("*__gpu_monitor.csv")}
-        if not logs:
+        if not any(raw.glob("*__gpu_monitor.csv")):
             continue
-        for block, f in logs.items():
-            summary = summarize_monitor(f)
-            if summary.get("samples"):
-                mon[block] = (run.id, summary)
-        for f in raw.glob("*__*.json"):
-            block = f.name.split("__")[0]
-            if block in logs or block in unmon or f.name.endswith("__iterations.json"):
-                continue
-            try:
-                d = json.loads(f.read_text(encoding="utf-8"))
-            except ValueError:
-                continue
-            if isinstance(d, dict) and isinstance(d.get("before"), dict) and isinstance(d.get("after"), dict):
-                b, a = d["before"], d["after"]
-                if b.get("sm_clock_mhz") is not None and a.get("sm_clock_mhz") is not None:
-                    drop = (b["sm_clock_mhz"] - a["sm_clock_mhz"]) / b["sm_clock_mhz"] * 100.0 if b["sm_clock_mhz"] else 0.0
-                    unmon[block] = (run.id, {"before": b["sm_clock_mhz"], "max": b.get("max_sm_clock_mhz"), "drop_pct": drop})
-    return mon, unmon
+        for block in sorted({f.name.split("__")[0] for f in raw.glob("*__*.json")}):
+            info = block_clock(run.path, block)
+            if info is not None:
+                out[block] = (run.id, info)
+    return out
 
 
 def monitor_lines(r: Renderer) -> List[str]:
-    mon, unmon = monitored_blocks(r)
-    if not mon:
+    blocks = monitored_blocks(r)
+    if not blocks:
         return []
-    run_id = next(iter(mon.values()))[0]
-    capped = sorted(b for b, (_i, m) in mon.items() if m["reason_counts"].get("sw_power_cap"))
-    slowed = sorted(b for b, (_i, m) in mon.items() if any(m["reason_counts"].get(x) for x in SLOWDOWN_REASONS))
-    n_mon = r.record(format_value(len(mon), "int"), run_id, "derived: blocks logged by the background monitor", len(mon))
-    n_cap = r.record(format_value(len(capped), "int"), run_id, "derived: monitored blocks with the power cap active", len(capped))
-    lines = [f"The driver's clock-event reasons were logged every 100 ms during the {n_mon} blocks that time GPU work alone. "
-             + (f"In {n_cap} of them the card reached its software power cap for part of the block "
-                f"({', '.join(f'`{b}`' for b in capped)}), so their figures were measured at a power-limited clock"
-                if capped else "None of them reached the card's software power cap")
+    run_id = next(iter(blocks.values()))[0]
+    rec = lambda v, kind, what: r.record(format_value(v, kind), run_id, f"derived from raw/*__gpu_monitor.csv: {what}", v)  # noqa: E731
+    names = lambda bs: ", ".join(f"`{b}`" for b in bs)  # noqa: E731
+    polled = {b: i for b, (_r, i) in blocks.items() if i["polled"]}
+    sampled = {b: i for b, i in polled.items() if i["in_span"]}
+    thin = sorted(b for b, i in polled.items() if not i["in_span"])
+    unpolled = {b: i for b, (_r, i) in blocks.items() if not i["polled"]}
+    capped = sorted(b for b, i in sampled.items() if i["reasons"].get("sw_power_cap"))
+    slowed = sorted(b for b, i in sampled.items() if any(i["reasons"].get(x) for x in SLOWDOWN_REASONS))
+    top = max((i["max"] for _b, (_r, i) in blocks.items() if i.get("max")), default=None)
+    # power-capped blocks boosted and were held down, which the sentence above covers; the rest ran mostly unboosted
+    reduced = sorted(b for b, (_r, i) in blocks.items()
+                     if top and i["clock_median"] < 0.9 * top and b not in capped)
+    intervals = sorted(i["interval_ms"] for i in polled.values() if i.get("interval_ms"))
+    lines = [f"`nvidia-smi` polled the SM clock and the driver's clock-event reasons in the background during the "
+             f"{rec(len(polled), 'int', 'polled blocks')} blocks that time GPU work alone, at a requested 100 ms"
+             + (f" (about every {rec(intervals[len(intervals) // 2], 'int', 'median polling interval ms')} ms in practice)" if intervals else "")
+             + f". {rec(len(sampled), 'int', 'polled blocks with samples inside their timed iterations')} of them lasted long enough "
+               "to be sampled during their timed iterations"
+             + (f"; {names(thin)} did not, and for them only the samples taken after the warmup and after the last iteration "
+                "exist." if thin else ".")
+             + (f" In {rec(len(capped), 'int', 'sampled blocks with the power cap active')} of the sampled blocks the card reached "
+                f"its software power cap ({names(capped)}), so their figures were measured at a power-limited clock"
+                if capped else " None of the sampled blocks reached the card's software power cap")
              + ("; none reported a thermal or hardware slowdown." if not slowed else
-                f"; {', '.join(f'`{b}`' for b in slowed)} also reported a thermal or hardware slowdown.")]
-    if unmon:
-        run_u = next(iter(unmon.values()))[0]
-        idle = sorted(b for b, (_i, m) in unmon.items() if m.get("max") and m["before"] < 0.5 * m["max"])
-        flagged = sorted(b for b, (_i, m) in unmon.items() if m["drop_pct"] > 10.0)
-        n_un = r.record(format_value(len(unmon), "int"), run_u, "derived: blocks without the background monitor", len(unmon))
-        n_idle = r.record(format_value(len(idle), "int"), run_u, "derived: unmonitored blocks starting below half the max clock", len(idle))
-        lines.append(f"The {n_un} blocks that time host code or wall-clock transfers were not polled, so the poller could not "
-                     "disturb the host; for them the SM clock was sampled after the warmup and after the last iteration. "
-                     + (f"{', '.join(f'`{b}`' for b in flagged)} lost more than a tenth of its SM clock between the two"
-                        if flagged else "None lost more than a tenth of its SM clock between the two")
-                     + (f", but {n_idle} of them began below half the card's maximum clock, where that comparison cannot show a "
-                        "drop." if idle else "."))
+                f"; {names(slowed)} also reported a thermal or hardware slowdown.")]
+    if reduced:
+        parts = []
+        for b in reduced:
+            i = blocks[b][1]
+            lo, hi = rec(i["clock_min"], "int", f"{b} lowest clock"), rec(i["clock_max"], "int", f"{b} highest clock")
+            parts.append(f"`{b}` ({lo} MHz)" if i["clock_min"] == i["clock_max"] else f"`{b}` ({lo} to {hi} MHz)")
+        polled_red = [b for b in reduced if blocks[b][1]["polled"]]
+        lines.append(f"For most of the timing of {rec(len(reduced), 'int', 'blocks mostly below 90% of the maximum clock')} other "
+                     f"blocks the card's clock stayed below nine tenths of its {rec(top, 'int', 'maximum SM clock')} MHz maximum "
+                     "(clock samples during and at the edges of the timing"
+                     + ("; none of the polled ones showed a power-cap or slowdown reason, so the card had simply not boosted"
+                        if polled_red and not any(blocks[b][1]["reasons"] for b in polled_red) else "")
+                     + f"): {', '.join(parts)}. Their variants are interleaved, so the comparisons inside each block are like for "
+                       "like, but their absolute figures, the bandwidths and rates on this page, were measured at those clocks.")
+    if unpolled:
+        flagged = sorted(b for b, i in unpolled.items() if i["before"] and (i["before"] - i["after"]) / i["before"] > 0.10)
+        lines.append(f"The {rec(len(unpolled), 'int', 'unpolled blocks')} blocks that time host code or wall-clock transfers "
+                     "were not polled, to keep the poller's own CPU use out of their host timings; the polled blocks are not free "
+                     "of host work either, since their event-timed figures include host dispatch. For the unpolled blocks the SM "
+                     "clock was sampled after the warmup and after the last iteration, and "
+                     + (f"{names(flagged)} lost more than a tenth of it between the two." if flagged else
+                        "none lost more than a tenth of it between the two."))
     return lines
 
 
@@ -836,17 +893,17 @@ def two_gpu_md(r: Renderer) -> List[str]:
     link, meaning = two_gpu_link(t)
     kind = two_gpu_kind(t)
     if kind == "scales":
-        verdict = ("the two cards' copies run side by side at close to each card's own rate, so each T4 has its own path "
-                   "to host memory"
+        verdict = ("the two cards' copies run side by side at close to each card's own rate, so in this session each T4 had "
+                   "its own path to host memory"
                    + (", and the whole pipeline scales with the second card" if (t.get("speedup") or 0.0) >= 1.5 else
                       ", yet the whole pipeline's speedup stays well short of that, so something besides the copies limits it"))
     elif kind in ("none", "barely"):
         verdict = (("two cards together copy no faster than one" if kind == "none" else "two cards together copy barely faster than one")
-                   + ", so the limit sits upstream of the cards' own links, on a path both share"
-                   + (", and the second card only adds compute this transfer-bound pipeline does not need" if transfer_bound(r) else ""))
+                   + ", so in this session the limit sat upstream of the cards' own links, on a path both shared"
+                   + (", and the second card only added compute this transfer-bound pipeline does not need" if transfer_bound(r) else ""))
     else:
-        verdict = ("the second card adds copy bandwidth but not a full card's worth, so part of the path to host memory is "
-                   "shared between them")
+        verdict = ("the second card adds copy bandwidth but not a full card's worth, so in this session part of the path to "
+                   "host memory was shared between them")
     now = {}
     for line in t.get("pcie_current_after_copies") or []:
         parts = [x.strip() for x in line.split(",")]
@@ -1418,12 +1475,12 @@ def design_phase2(r: Renderer) -> List[str]:
                      + (" with identical outputs." if same else ", though its outputs differ from the int32 pass."))
         earlier = earlier_two_gpu_sentence(r)
         if kind in ("none", "barely"):
-            out += ["## Two cards, one bottleneck", "",
-                    why + f"Measured, it does not: {rates}. Whatever they share upstream of their own links sets the ceiling."
-                    + earlier + lever, ""]
+            out += ["## Two cards", "",
+                    why + f"Measured in this session, it does not: {rates}. Here, whatever they share upstream of their own links "
+                    "set the ceiling." + earlier + lever, ""]
         else:
             out += ["## Two cards", "",
-                    why + f"Measured, {'it nearly does' if kind == 'scales' else 'it partly does'}: {rates}. Two cards run the whole "
+                    why + f"Measured in this session, {'it nearly does' if kind == 'scales' else 'it partly does'}: {rates}. Two cards ran the whole "
                     f"pipeline {r.fmt('pipeline', 'two_gpu.speedup', 'num')} times as fast as one." + earlier + lever, ""]
     if r.has("native_engine"):
         out += ["## A C++ core beside the Python engine", "",
@@ -1631,10 +1688,10 @@ def phase2_questions(r: Renderer) -> List[Tuple[str, str]]:
                  f"their connection as `{link}`, {meaning}")
         if two_gpu_kind(t) in ("none", "barely"):
             qa.append(("Why did the second T4 not speed up the pipeline?",
-                       ("Because the pipeline is transfer-bound and the copies hit a limit both cards share: " if transfer_bound(r) else
-                        "Because the copies hit a limit both cards share: ") + moved + "."
-                       + (" A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps."
-                          if transfer_bound(r) else "")
+                       ("Because the pipeline is transfer-bound and, in this session, the copies hit a limit both cards shared: "
+                        if transfer_bound(r) else "Because, in this session, the copies hit a limit both cards shared: ") + moved + "."
+                       + (" Here the second card added only compute, which this pipeline barely uses; sending fewer bytes helps "
+                          "either way." if transfer_bound(r) else "")
                        + (f" That holds{other_sessions_short(r)}, so the result varies between sessions, and the runs do not "
                           "show why." if other_sessions_short(r) else "")))
         else:

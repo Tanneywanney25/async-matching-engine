@@ -78,7 +78,7 @@ Buffer size 1,073,741,824 bytes. Measured ceiling 262.3 GB/s, 82.0% of the 320.1
 
 ### v0 and the card's clock
 
-v0 is the one rung whose time changes with the card's state. Its 30 interleaved samples fall in two levels: 8 (the first ones) near 10.6 ms and 22 near 42.0 ms. In the background log, sampled every 100 ms, the fast ones fall at an SM clock of at most 675 MHz, before the card boosted, and the slow ones at a median of 1,395 MHz, 21 of them with the software power cap active. Timed alone, v0 took 41.9 ms at the median (IQR 0.163) with the card at 1,350 to 1,590 MHz, so the slow level is its steady state once the card is under sustained load, the state the table's median reflects. Over the same iterations the other variants changed between 32.4% faster (`cupy_chain`) and 0.7% slower (`v1_soa`). Why the uncoalesced array-of-structures kernels slow down at the higher clock is not established by these measurements.
+v0 is the one rung whose time changes with the card's state. Its 30 interleaved samples fall in two levels: 8 (the first ones) near 10.6 ms and 22 near 42.0 ms. In the background log, sampled every 100 ms, the fast ones fall at an SM clock of at most 675 MHz, before the card boosted, and the slow ones at a median of 1,395 MHz, 21 of them with the software power cap active. Timed alone, v0 took 41.9 ms at the median (IQR 0.163) with the card at 1,350 to 1,485 MHz during its timed iterations, so the slow level is its steady state once the card is under sustained load, the state the table's median reflects. Over the same iterations the other variants changed between 32.4% faster (`cupy_chain`) and 0.7% slower (`v1_soa`). Why the uncoalesced array-of-structures kernels slow down at the higher clock is not established by these measurements.
 
 ### GPU time with the launches queued ahead
 
@@ -93,7 +93,7 @@ The per-kernel times above record the start event on an idle GPU, so each includ
 | v4 v3 + grid-stride, best launch configuration | 1.49 | 1.47 (IQR 0.0107) | 17.71 |
 | Triton, fused like v2 (extra rung, best of a small sweep) | 1.76 | 1.69 (IQR 0.0106) | 65.04 |
 
-Where the queued median sits above the event-timed one (`v0_aos`), the two blocks ran at different times, and the difference is not dispatch: it is the block-to-block variation of the card's clock and power state, which v0 feels most (see above).
+Where the queued median sits above the event-timed one (`v0_aos`), the difference cannot be dispatch, which only the event-timed figure contains. These runs do not separate the two blocks' different moments of the card's clock and power state from the effect of the near-idle busy-wait itself on that state, and v0 is the rung most sensitive to it (see above).
 
 ### Extra rung: the fused kernel in Triton
 
@@ -234,7 +234,7 @@ The encoding moves 24.0% fewer bytes; none of the 16 chunks needed the int32 fal
 | Copy-only pass, host to device (median ms, IQR) | 57.1 (IQR 0.0241) | 56.0 (IQR 0.00925) |
 | Host-to-device bandwidth (GB/s, aggregate for two) | 12.1 | 12.3 |
 
-Two cards take 56.3 ms against 57.7 ms on one, a speedup of 1.02 (51.2% of perfect scaling), and copy 1.02 times as many bytes per second as one card: two cards together copy no faster than one, so the limit sits upstream of the cards' own links, on a path both share, and the second card only adds compute this transfer-bound pipeline does not need. A single-threaded host memcpy on this machine runs at 5.5 GB/s for comparison. The two-card outputs are bit-for-bit identical to the one-card outputs and match the NumPy reference. The result is not stable across Kaggle sessions. Of the 3 full runs that measured it, each in its own session, `bench_rerun-20261021-233009` found that two cards copied no faster than one; `bench_all-20261022-003544` found that two cards copied close to twice as fast as one; `bench_all-20261022-011024` found that two cards copied no faster than one, and their `nvidia-smi` topology, bus ids and rated links read the same. These runs do not show why; this page reports `bench_all-20261022-011024`, the latest.
+Two cards take 56.3 ms against 57.7 ms on one, a speedup of 1.02 (51.2% of perfect scaling), and copy 1.02 times as many bytes per second as one card: two cards together copy no faster than one, so in this session the limit sat upstream of the cards' own links, on a path both shared, and the second card only added compute this transfer-bound pipeline does not need. A single-threaded host memcpy on this machine runs at 5.5 GB/s for comparison. The two-card outputs are bit-for-bit identical to the one-card outputs and match the NumPy reference. The result is not stable across Kaggle sessions. Of the 3 full runs that measured it, each in its own session, `bench_rerun-20261021-233009` found that two cards copied no faster than one; `bench_all-20261022-003544` found that two cards copied close to twice as fast as one; `bench_all-20261022-011024` found that two cards copied no faster than one, and their `nvidia-smi` topology, bus ids and rated links read the same. These runs do not show why; this page reports `bench_all-20261022-011024`, the latest.
 
 ## Matching engine (CPU)
 
@@ -346,8 +346,9 @@ Every swept block size reaches the same theoretical occupancy, so occupancy does
 
 ## Clock throttling
 
-The driver's clock-event reasons were logged every 100 ms during the 12 blocks that time GPU work alone. In 5 of them the card reached its software power cap for part of the block (`ladder_kernel`, `ladder_kernel_queued`, `ladder_v0_alone`, `ladder_v4_sweep`, `slippage_full_pass`), so their figures were measured at a power-limited clock; none reported a thermal or hardware slowdown.
-The 6 blocks that time host code or wall-clock transfers were not polled, so the poller could not disturb the host; for them the SM clock was sampled after the warmup and after the last iteration. None lost more than a tenth of its SM clock between the two, but 1 of them began below half the card's maximum clock, where that comparison cannot show a drop.
+`nvidia-smi` polled the SM clock and the driver's clock-event reasons in the background during the 12 blocks that time GPU work alone, at a requested 100 ms (about every 129 ms in practice). 9 of them lasted long enough to be sampled during their timed iterations; `rolling_book`, `rolling_vwap`, `scan_snapshots` did not, and for them only the samples taken after the warmup and after the last iteration exist. In 5 of the sampled blocks the card reached its software power cap (`ladder_kernel`, `ladder_kernel_queued`, `ladder_v0_alone`, `ladder_v4_sweep`, `slippage_full_pass`), so their figures were measured at a power-limited clock; none reported a thermal or hardware slowdown.
+For most of the timing of 5 other blocks the card's clock stayed below nine tenths of its 1,590 MHz maximum (clock samples during and at the edges of the timing; none of the polled ones showed a power-cap or slowdown reason, so the card had simply not boosted): `ofi_stencil` (585 MHz), `precision` (585 to 780 MHz), `rolling_book` (735 MHz), `scan_large` (585 to 1,440 MHz), `scan_snapshots` (585 MHz). Their variants are interleaved, so the comparisons inside each block are like for like, but their absolute figures, the bandwidths and rates on this page, were measured at those clocks.
+The 6 blocks that time host code or wall-clock transfers were not polled, to keep the poller's own CPU use out of their host timings; the polled blocks are not free of host work either, since their event-timed figures include host dispatch. For the unpolled blocks the SM clock was sampled after the warmup and after the last iteration, and none lost more than a tenth of it between the two.
 
 ## Runs
 

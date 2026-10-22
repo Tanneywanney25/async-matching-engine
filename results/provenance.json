@@ -1,5 +1,5 @@
 {
- "generated_unix": 1792632282.4824238,
+ "generated_unix": 1792632902.1141934,
  "tokens": {
   "0": [
    {
@@ -1983,12 +1983,6 @@
     "value": 1
    },
    {
-    "doc": "BENCHMARKS.md",
-    "path": "derived: unmonitored blocks starting below half the max clock",
-    "run_id": "bench_all-20261022-011024",
-    "value": 1
-   },
-   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "derived: other full runs with a different second-card verdict",
     "run_id": "bench_all-20261022-011024",
@@ -2164,7 +2158,7 @@
   "1,350": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.v0_alone_ms.monitor.sm_clock_min_mhz",
+    "path": "ladder v0 samples (raw/ladder_kernel__v0_aos.json): v0 alone in-span clock min",
     "run_id": "bench_all-20261022-011024",
     "value": 1350.0
    }
@@ -2177,10 +2171,26 @@
     "value": 1395.0
    }
   ],
+  "1,440": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: scan_large highest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 1440.0
+   }
+  ],
+  "1,485": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "ladder v0 samples (raw/ladder_kernel__v0_aos.json): v0 alone in-span clock max",
+    "run_id": "bench_all-20261022-011024",
+    "value": 1485.0
+   }
+  ],
   "1,590": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "ladder.v0_alone_ms.monitor.sm_clock_max_mhz",
+    "path": "derived from raw/*__gpu_monitor.csv: maximum SM clock",
     "run_id": "bench_all-20261022-011024",
     "value": 1590.0
    }
@@ -3408,7 +3418,7 @@
    },
    {
     "doc": "BENCHMARKS.md",
-    "path": "derived: blocks logged by the background monitor",
+    "path": "derived from raw/*__gpu_monitor.csv: polled blocks",
     "run_id": "bench_all-20261022-011024",
     "value": 12
    },
@@ -3590,6 +3600,12 @@
    }
   ],
   "129": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: median polling interval ms",
+    "run_id": "bench_all-20261022-011024",
+    "value": 128.9999485015869
+   },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "ladder.flops_per_snapshot",
@@ -6466,7 +6482,13 @@
   "5": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "derived: monitored blocks with the power cap active",
+    "path": "derived from raw/*__gpu_monitor.csv: sampled blocks with the power cap active",
+    "run_id": "bench_all-20261022-011024",
+    "value": 5
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: blocks mostly below 90% of the maximum clock",
     "run_id": "bench_all-20261022-011024",
     "value": 5
    },
@@ -6809,6 +6831,44 @@
     "value": 58.202999980494496
    }
   ],
+  "585": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: ofi_stencil lowest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 585.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: ofi_stencil highest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 585.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: precision lowest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 585.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: scan_large lowest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 585.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: scan_snapshots lowest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 585.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: scan_snapshots highest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 585.0
+   }
+  ],
   "59.1": [
    {
     "doc": "BENCHMARKS.md",
@@ -6828,7 +6888,7 @@
   "6": [
    {
     "doc": "BENCHMARKS.md",
-    "path": "derived: blocks without the background monitor",
+    "path": "derived from raw/*__gpu_monitor.csv: unpolled blocks",
     "run_id": "bench_all-20261022-011024",
     "value": 6
    },
@@ -7269,6 +7329,20 @@
     "value": 73.38601036269431
    }
   ],
+  "735": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: rolling_book lowest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 735.0
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: rolling_book highest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 735.0
+   }
+  ],
   "74.4": [
    {
     "doc": "BENCHMARKS.md",
@@ -7363,6 +7437,14 @@
     "path": "ladder.rungs.4.pct_of_theoretical",
     "run_id": "bench_all-20261022-011024",
     "value": 78.45474152244822
+   }
+  ],
+  "780": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: precision highest clock",
+    "run_id": "bench_all-20261022-011024",
+    "value": 780.0
    }
   ],
   "79.8": [
@@ -7670,6 +7752,12 @@
    }
   ],
   "9": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "derived from raw/*__gpu_monitor.csv: polled blocks with samples inside their timed iterations",
+    "run_id": "bench_all-20261022-011024",
+    "value": 9
+   },
    {
     "doc": "INTERVIEW_NOTES.md",
     "path": "question_index",
