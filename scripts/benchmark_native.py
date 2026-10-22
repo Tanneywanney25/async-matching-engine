@@ -16,6 +16,11 @@ in this process on this machine:
 * ``python_engine``: :class:`exchange_engine.orderbook.OrderBook`, the reference implementation,
   timed the same way here so all four sit side by side.
 
+With ``--archive DIR`` the same four paths also replay a realistic stream derived from the
+recorded book (``bench.realistic_stream``: snapshots reconciled into limit orders and cancels,
+trades replayed as market orders), latencies kept per operation kind, as section
+``native_engine.realistic``.
+
 Orders are built before their timed region, as in ``scripts/benchmark.py``. Fill counts and the
 number of resting orders must agree across all four, or the run says so (``consistent``).
 Percentiles are nearest-rank, identical to ``scripts/benchmark.py``, with p99.9 added. Writes
@@ -224,6 +229,140 @@ def time_orders(stream: dict, book) -> dict:
     return {"add_us": add_us, "cancel_us": cancel_us, "fills": fills, "resting_after_adds": resting, "cancels_found": found}
 
 
+# --------------------------------------------------------------------------- #
+# The realistic stream (mixed operations in recorded order)
+# --------------------------------------------------------------------------- #
+
+KINDS = ("limit", "market", "cancel")
+
+
+def write_ops(path: Path, ops: Sequence[tuple]) -> None:
+    with open(path, "wb") as fh:
+        fh.write(b"EEOPSV02" + struct.pack("<QQ", len(ops), 0))
+        for op in ops:
+            if op[0] == "limit":
+                fh.write(struct.pack("<BB6xqqq", 0, 0 if op[2] == "bid" else 1, op[1], op[3], op[4]))
+            elif op[0] == "market":
+                fh.write(struct.pack("<BB6xqqq", 1, 0 if op[2] == "bid" else 1, op[1], 0, op[3]))
+            else:
+                fh.write(struct.pack("<BB6xqqq", 2, 0, op[1], 0, 0))
+
+
+def time_ops_binding(ops: Sequence[tuple]) -> dict:
+    from exchange_engine import _native
+
+    book = _native.Book(WINDOW_TICKS, max(len(ops) // 4, 1024), True)
+    us = {k: [] for k in KINDS}
+    fills = found = 0
+    for op in ops:
+        kind = op[0]
+        if kind == "limit":
+            side = 0 if op[2] == "bid" else 1
+            t0 = time.perf_counter_ns()
+            fills += book.add_limit_count(op[1], side, op[3], op[4])
+        elif kind == "market":
+            side = 0 if op[2] == "bid" else 1
+            t0 = time.perf_counter_ns()
+            fills += len(book.match_market(side, op[3]))
+        else:
+            t0 = time.perf_counter_ns()
+            found += book.cancel(op[1])
+        us[kind].append((time.perf_counter_ns() - t0) / 1000.0)
+    return {"us": us, "fills": fills, "resting_at_end": len(book), "cancels_found": found}
+
+
+def time_ops_book(ops: Sequence[tuple], book) -> dict:
+    """Any book with the OrderBook interface; Orders and Decimal quantities are built before timing."""
+    prepared = []
+    for op in ops:
+        if op[0] == "limit":
+            prepared.append(("limit", Order(Side.BID if op[2] == "bid" else Side.ASK, op[3] * TICK, op[4] * LOT, id=op[1])))
+        elif op[0] == "market":
+            prepared.append(("market", (Side.BID if op[2] == "bid" else Side.ASK, op[3] * LOT, op[1])))
+        else:
+            prepared.append(("cancel", op[1]))
+    us = {k: [] for k in KINDS}
+    fills = found = 0
+    for kind, arg in prepared:
+        if kind == "limit":
+            t0 = time.perf_counter_ns()
+            fills += len(book.add_order(arg))
+        elif kind == "market":
+            t0 = time.perf_counter_ns()
+            fills += len(book.match_market_order(*arg))
+        else:
+            t0 = time.perf_counter_ns()
+            found += book.cancel_order(arg)
+        us[kind].append((time.perf_counter_ns() - t0) / 1000.0)
+    return {"us": us, "fills": fills, "resting_at_end": len(book), "cancels_found": found}
+
+
+def measure_realistic(archive: Path, results_dir: Path, build_dir: Path, passes: int, max_ops: int) -> dict:
+    sys.path.insert(0, str(REPO))
+    from bench.common import load_archive
+    from bench.realistic_stream import derive
+    from exchange_engine.native_book import NativeOrderBook
+
+    t0 = time.perf_counter()
+    arch = load_archive(archive)
+    stream = derive(arch, "BTC-USD", max_ops=max_ops)
+    ops = stream["ops"]
+    derive_s = time.perf_counter() - t0
+    raw_dir = results_dir / "raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    ops_file = results_dir / "stream_realistic.bin"
+    write_ops(ops_file, ops)
+    stream_file = file_digest(ops_file)
+    exe = build_dir / ("bench_native.exe" if os.name == "nt" else "bench_native")
+    harness_file = raw_dir / "native_realistic_harness.json"
+    proc = subprocess.run([str(exe), str(ops_file), str(harness_file), "--passes", str(passes)], capture_output=True,
+                          text=True, timeout=1800)
+    ops_file.unlink()  # reproducible from the archive with derive(); only its digest is kept
+    if proc.returncode != 0:
+        raise RuntimeError(f"bench_native (ops) failed: {proc.stderr[-2000:]}")
+    native = json.loads(harness_file.read_text(encoding="utf-8"))
+    binding = time_ops_binding(ops)
+    dec = time_ops_book(ops, NativeOrderBook("REAL", window_ticks=WINDOW_TICKS, order_capacity=max(len(ops) // 4, 1024),
+                                             prefault=True))
+    py = time_ops_book(ops, OrderBook("REAL"))
+    counts = {"native": (native["fills"], native["resting_at_end"], native["cancels_found"])}
+    for name, res in (("binding", binding), ("binding_decimal", dec), ("python_engine", py)):
+        counts[name] = (res["fills"], res["resting_at_end"], res["cancels_found"])
+    raw_rel = "raw/realistic_native_engine_latency_us.json"
+    (results_dir / raw_rel).write_text(json.dumps({
+        "unit": "microseconds", "order": "measurement order per kind, unsorted", "stream": stream["description"],
+        **{f"native_{k}_us": native[f"{k}_us"] for k in KINDS},
+        **{f"{name}_{k}_us": res["us"][k] for name, res in (("binding", binding), ("binding_decimal", dec), ("python_engine", py))
+           for k in KINDS}}), encoding="utf-8")
+    section = {"stream": stream["description"], "ops": len(ops), "op_counts": stream["counts"],
+               "snapshots_used": stream["snapshots_used"], "trades_used": stream["trades_used"], "max_ops": max_ops,
+               "span_seconds": stream["span_seconds"], "derive_seconds": round(derive_s, 1), "raw_file": raw_rel,
+               "stream_file": stream_file,
+               "native": {k: native[k] for k in KINDS} | {"passes": native["passes"], "per_pass": native["per_pass"],
+                                                          "timer": native["timer"],
+                                                          "far_levels_at_end": native["far_levels_at_end"]},
+               "calls": {"binding": "exchange_engine._native.Book.add_limit_count / match_market / cancel",
+                         "binding_decimal": "NativeOrderBook.add_order / match_market_order / cancel_order",
+                         "python_engine": "OrderBook.add_order / match_market_order / cancel_order"},
+               "counts": {k: {"fills": v[0], "resting_at_end": v[1], "cancels_found": v[2]} for k, v in counts.items()},
+               "consistent": len(set(counts.values())) == 1}
+    for name, res in (("binding", binding), ("binding_decimal", dec), ("python_engine", py)):
+        section[name] = {k: stats(res["us"][k]) for k in KINDS}
+    for k in KINDS:
+        section[f"p99_{k}_python_engine_over_native"] = section["python_engine"][k]["p99_us"] / section["native"][k]["p99_us"]
+    return section
+
+
+def file_digest(path: Path) -> dict:
+    import hashlib
+
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return {"name": path.name, "bytes": path.stat().st_size, "sha256": h.hexdigest()}
+
+
 def cpu_model() -> str:
     try:
         sys.path.insert(0, str(REPO / "scripts"))
@@ -240,7 +379,11 @@ def measure(stream: dict, results_dir: Path, build_dir: Path, passes: int, label
     raw_dir.mkdir(parents=True, exist_ok=True)
     stream_file = results_dir / f"stream_{label}.bin"
     write_stream(stream_file, stream)
-    native = run_native(build_dir, stream_file, raw_dir / f"native_{label}_harness.json", passes)
+    stream_digest = file_digest(stream_file)
+    try:
+        native = run_native(build_dir, stream_file, raw_dir / f"native_{label}_harness.json", passes)
+    finally:
+        stream_file.unlink()  # regenerated from the seed; only its digest is kept
     binding = time_binding(stream)
     from exchange_engine.native_book import NativeOrderBook
 
@@ -268,7 +411,7 @@ def measure(stream: dict, results_dir: Path, build_dir: Path, passes: int, label
         "python_engine": {"add_order": stats(py["add_us"]), "cancel_order": stats(py["cancel_us"]),
                           "call": "exchange_engine.orderbook.OrderBook.add_order / cancel_order"},
         "counts": {k: {"fills": v[0], "resting_after_adds": v[1], "cancels_found": v[2]} for k, v in counts.items()},
-        "consistent": len(set(counts.values())) == 1, "raw_file": raw_rel,
+        "consistent": len(set(counts.values())) == 1, "raw_file": raw_rel, "stream_file": stream_digest,
     }
     for name in ("binding", "binding_decimal", "python_engine"):
         section[f"p99_add_python_engine_over_{name}"] = (section["python_engine"]["add_order"]["p99_us"]
@@ -289,6 +432,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--build-dir", type=Path, default=REPO / "build" / "native")
     parser.add_argument("--no-build", action="store_true", help="use an existing build in --build-dir")
     parser.add_argument("--fuzz-streams", type=int, default=10_000, help="differential fuzz streams (0 = skip)")
+    parser.add_argument("--archive", type=Path, default=None, help="also replay a stream derived from this archive")
+    parser.add_argument("--realistic-max-ops", type=int, default=1_000_000)
     args = parser.parse_args(argv)
     args.results_dir.mkdir(parents=True, exist_ok=True)
     build = {"skipped": True} if args.no_build else build_native(args.build_dir)
@@ -296,6 +441,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     section = measure(stream, args.results_dir, args.build_dir, args.passes)
     section.update({"build": build, "cpu_model": cpu_model(), "cpu_cores": os.cpu_count(), "python": platform.python_version(),
                     "platform": platform.platform()})
+    if args.archive is not None:
+        section["realistic"] = measure_realistic(args.archive, args.results_dir, args.build_dir, args.passes,
+                                                 args.realistic_max_ops)
+        r = section["realistic"]
+        print(f"realistic: {r['ops']:,} ops {r['op_counts']}; native limit p99 {r['native']['limit']['p99_us']:.3f} us, "
+              f"python engine limit p99 {r['python_engine']['limit']['p99_us']:.3f} us; consistent {r['consistent']}", flush=True)
     if args.fuzz_streams:
         section["fuzz"] = fuzz(args.fuzz_streams)
         print(f"fuzz: {section['fuzz']['streams']:,} streams, {section['fuzz']['operations']:,} operations, "
@@ -309,7 +460,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         print(f"{name:16s} add p50 {a['p50_us']:8.3f} p99 {a['p99_us']:8.3f} p99.9 {a['p999_us']:8.3f} us | "
               f"cancel p50 {c['p50_us']:8.3f} p99 {c['p99_us']:8.3f} p99.9 {c['p999_us']:8.3f} us")
     print(f"consistent across all four: {section['consistent']} {section['counts']}")
-    return 0 if section["consistent"] and not (section.get("fuzz") or {}).get("divergences") else 1
+    ok = section["consistent"] and (section.get("realistic") or {}).get("consistent", True)
+    return 0 if ok and not (section.get("fuzz") or {}).get("divergences") else 1
 
 
 if __name__ == "__main__":

@@ -235,13 +235,14 @@ def engine_benchmark(engine_dir: Path, raw_dir: Path, orders: int, cancels: int)
     return section
 
 
-def native_engine_benchmark(out_dir: Path, raw_dir: Path, orders: int, cancels: int, archive: Optional[Path]) -> dict:
+def native_engine_benchmark(out_dir: Path, raw_dir: Path, orders: int, cancels: int, archive: Optional[Path],
+                            realistic_ops: int = 1_000_000) -> dict:
     """Run ``scripts/benchmark_native.py`` into ``out_dir`` and return its ``native_engine`` section."""
     out_dir.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, str(REPO_ROOT / "scripts" / "benchmark_native.py"), "--results-dir", str(out_dir),
            "--orders", str(orders), "--cancels", str(cancels)]
-    if archive is not None:
-        cmd += ["--archive", str(archive)]
+    if archive is not None and realistic_ops > 0:
+        cmd += ["--archive", str(archive), "--realistic-max-ops", str(realistic_ops)]
     print("[run_all] $ python " + " ".join(cmd[1:]), flush=True)
     proc = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True, timeout=3600)
     _print_block(proc.stdout)
@@ -268,12 +269,13 @@ def _engine_section_from_key(out_dir: Path, key: str) -> Optional[dict]:
         return None
 
 
-def run_native_engine(bench: Bench, orders: int, cancels: int, archive: Optional[Path], errors: List[dict]) -> Tuple[bool, float]:
+def run_native_engine(bench: Bench, orders: int, cancels: int, archive: Optional[Path], errors: List[dict],
+                      realistic_ops: int = 1_000_000) -> Tuple[bool, float]:
     t0 = time.perf_counter()
     ok = True
     try:
         bench.section("native_engine", native_engine_benchmark(bench.out_dir / "native_engine", bench.raw_dir, orders,
-                                                               cancels, archive))
+                                                               cancels, archive, realistic_ops))
     except (Exception, SystemExit) as exc:  # noqa: BLE001
         ok = False
         _record_error(errors, "native_engine", exc, t0)
@@ -403,6 +405,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--engine-cancels", type=int, default=10_000)
     p.add_argument("--skip-engine", action="store_true", help="do not run scripts/benchmark.py")
     p.add_argument("--skip-native", action="store_true", help="do not build and benchmark the C++ core (native/)")
+    p.add_argument("--native-realistic-ops", type=int, default=None,
+                   help="operations in the stream derived from the archive (0 = skip; default 1,000,000, quick 100,000)")
     p.add_argument("--budget-minutes", type=float, default=0.0,
                    help="skip GPU sections not started within this wall-clock budget (0 = no limit)")
     p.add_argument("--engine-standalone", action="store_true", help=argparse.SUPPRESS)
@@ -483,7 +487,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         ok, seconds = run_engine(bench, args.engine_orders, args.engine_cancels, errors)
         _report("engine", ok, seconds, errors)
     if not args.skip_native:
-        ok, seconds = run_native_engine(bench, args.engine_orders, args.engine_cancels, None, errors)
+        realistic_ops = args.native_realistic_ops
+        if realistic_ops is None:
+            realistic_ops = 100_000 if args.quick else 1_000_000
+        ok, seconds = run_native_engine(bench, args.engine_orders, args.engine_cancels, Path(archive_dir), errors,
+                                        realistic_ops)
         _report("native", ok, seconds, errors)
 
     bench.metrics["run_all"]["finished_unix"] = time.time()
