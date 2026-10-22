@@ -35,8 +35,8 @@ at 1.69 billion simulated orders per second, 4.4 times faster than a divergent t
 ## Alternate: the C++20 order book core
 
 <!-- bullet:6 -->
-Wrote a C++20 limit order book core with pybind11 bindings and no heap allocation per order that matched the
-Python engine on 10,000 fuzzed order streams, at 0.42 microseconds 99th-percentile latency, 69.9 times faster.
+Wrote a C++20 order book core for Python with no heap allocation per order that matched a reference order
+book on 10,000 fuzzed streams, at 0.42 microseconds 99th-percentile latency, 69.9 times faster than Python.
 
 ## Alternate: transfer engineering (int16 tick offsets)
 

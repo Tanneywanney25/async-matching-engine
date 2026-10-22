@@ -1,5 +1,5 @@
 {
- "generated_unix": 1792626290.3471198,
+ "generated_unix": 1792628799.043597,
  "tokens": {
   "0": [
    {
@@ -1643,6 +1643,12 @@
     "value": 0.516
    },
    {
+    "doc": "DESIGN.md",
+    "path": "native_engine.binding.add_order.p50_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 0.516
+   },
+   {
     "doc": "INTERVIEW_NOTES.md",
     "path": "native_engine.binding.add_order.p50_us",
     "run_id": "bench_rerun-20261021-233814",
@@ -2439,6 +2445,12 @@
     "path": "native_engine.stream (the run's own description)",
     "run_id": "bench_rerun-20261021-233814",
     "value": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
+   },
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.cancels",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 10000
    },
    {
     "doc": "INTERVIEW_NOTES.md",
@@ -3861,6 +3873,12 @@
     "path": "pipeline.int16_encoding e2e change %",
     "run_id": "bench_rerun-20261021-233009",
     "value": 23.747249512417856
+   },
+   {
+    "doc": "README.md (GPU section)",
+    "path": "pipeline.int16_encoding e2e change %",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": -23.747249512417856
    }
   ],
   "230.1": [
@@ -4621,6 +4639,14 @@
     "value": "3"
    }
   ],
+  "3,575": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "native_engine.counts.native.cancels_found",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 3575
+   }
+  ],
   "3,650": [
    {
     "doc": "BENCHMARKS.md",
@@ -4942,6 +4968,12 @@
    }
   ],
   "39.35": [
+   {
+    "doc": "BENCHMARKS.md",
+    "path": "engine.add_order.p99_us",
+    "run_id": "bench_rerun-20261021-233814",
+    "value": 39.346
+   },
    {
     "doc": "BENCHMARKS.md",
     "path": "engine.add_order.p99_us",
@@ -6736,6 +6768,12 @@
   "94.1": [
    {
     "doc": "BENCHMARKS.md",
+    "path": "pipeline.transfer_share_pct",
+    "run_id": "bench_rerun-20261021-233009",
+    "value": 94.05292322680388
+   },
+   {
+    "doc": "DESIGN.md",
     "path": "pipeline.transfer_share_pct",
     "run_id": "bench_rerun-20261021-233009",
     "value": 94.05292322680388

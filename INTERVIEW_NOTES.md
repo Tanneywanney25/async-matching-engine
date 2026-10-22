@@ -62,7 +62,7 @@ Clarity and Decimal exactness. On the job's host CPU `add_order` p99 was 39.35 m
 
 ### 15. Without hardware counters, how do you know what limits a kernel?
 
-From the compiler and the occupancy API: `nvcc -Xptxas -v` gives registers, spills and shared memory, and `cudaOccupancyMaxActiveBlocksPerMultiprocessor` gives resident blocks at the benchmarked block size. 41 of 43 launched kernels reach full theoretical occupancy, so for the slow ones the answer lies elsewhere: divergence and uncoalesced reads, which the slippage and layout sections measure. It is a theoretical figure, not achieved occupancy.
+From the compiler and the occupancy API: `nvcc -Xptxas -v` gives registers, spills and shared memory, and `cudaOccupancyMaxActiveBlocksPerMultiprocessor` gives resident blocks at the benchmarked block size. 41 of 43 launched kernels reach full theoretical occupancy, the three slowest among them, so for those the answer lies elsewhere: divergence and uncoalesced reads, which the slippage and layout sections measure. It is a theoretical figure, not achieved occupancy.
 
 ### 16. How does the single-pass scan avoid deadlock, and how did you test it?
 
@@ -70,15 +70,15 @@ Blocks take tile numbers from an atomic counter instead of trusting the launch o
 
 ### 17. Why did the second T4 not speed up the pipeline?
 
-Because the pipeline is transfer-bound and both cards share the path to host memory: the copy-only pass moved 12.4 GB/s on one card and 12.4 GB/s on two together, and `nvidia-smi topo -m` puts them behind one host bridge (`PHB`). A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps.
+Because the pipeline is transfer-bound and the copies hit a limit both cards share: the copy-only pass moved 12.4 GB/s on one card and 12.4 GB/s on two together, and `nvidia-smi topo -m` reports their connection as `PHB`, through a PCIe host bridge, that is the CPU. A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps.
 
 ### 18. What did narrowing prices to int16 buy?
 
 24.0% fewer bytes over PCIe and 43.0 ms instead of 56.4 ms end to end, with outputs identical bit for bit, because each level is sent as an offset from its side's best price and 0 chunks needed the int32 fallback.
 
-### 19. How do you know the C++ core matches the Python engine?
+### 19. How do you know the C++ core has the Python engine's semantics?
 
-The differential fuzzer drives both against the same reference book: 10,000 seeded streams, 548,317 operations, 0 divergences, comparing fills, statuses, best prices and depth after every operation, and the benchmark checks that all four replay paths agree on fills and resting orders.
+The differential fuzzer checks it against the naive list-based reference book that the test suite also checks the Python engine against (`tests/test_differential.py`): 10,000 seeded streams, 548,317 operations, 0 divergences, comparing fills, statuses, best prices and depth after every operation. The benchmark also checks that all four replay paths, the Python engine among them, agree on fills, resting orders and cancels found.
 
 ### 20. Where does the time go when the C++ core is called from Python?
 

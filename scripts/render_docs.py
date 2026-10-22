@@ -254,7 +254,11 @@ def triton_md(r: Renderer) -> List[str]:
         return []
     if not t.get("ok"):
         why = str(t.get("reason") or t.get("error") or "unknown")[:200].replace("`", "'")
-        return ["### Extra rung: the fused kernel in Triton", "", f"Not measured in this run: `{why}`.", ""]
+        failed = [k for k, v in (t.get("verification_by_config") or {}).items() if not (v.get("verification") or {}).get("verified")]
+        detail = (f" Configurations that failed the tolerance check against the NumPy reference: {', '.join(f'`{k}`' for k in failed)}."
+                  if failed else "")
+        return ["### Extra rung: the fused kernel in Triton", "",
+                f"Triton `{t.get('version', '?')}` was not timed in this run: `{why}`.{detail}", ""]
     idx = {rung["name"]: i for i, rung in enumerate(r.get("ladder", "rungs", []) or [])}
     if "triton_fused" not in idx or "v2_soa_fused" not in idx:
         return []
@@ -285,8 +289,10 @@ def triton_md(r: Renderer) -> List[str]:
                   f"best CUDA rung ({best_label}), events around the launch.")
     return ["### Extra rung: the fused kernel in Triton", "",
             f"Triton `{t.get('version')}` compiles the same fused computation as v2 (level sums in level order, IEEE division) and "
-            "reads the ladder's own device arrays, so it competes on identical data. Its launch configurations, timed in an "
-            f"interleaved block of their own: {'; '.join(sweep)}. {timing} It sits in the ladder table (its Block column is "
+            "reads the ladder's own device arrays, so it competes on identical data. Every launch configuration was checked "
+            "against the NumPy reference before any was timed; the ones that passed, timed "
+            + ("with launches queued ahead, GPU time only, " if t.get("sweep_timing") else "with events around the launch, ")
+            + f"in an interleaved block of their own: {'; '.join(sweep)}. {timing} It sits in the ladder table (its Block column is "
             "snapshots per program) and is never counted as the best rung. Its outputs "
             + ("are bit-for-bit identical to v2's." if same else
                "differ from v2's in at least one output, though they pass the same tolerance check against the NumPy reference."
@@ -444,16 +450,38 @@ def native_engine_md(r: Renderer) -> List[str]:
             continue
         out.append(f"| {label} | " + " | ".join(r.fmt(sec, f"{p}{op}.{stat}", "us3") for op in ("add_order", "cancel_order")
                                                  for stat in ("p50_us", "p99_us", "p999_us")) + " |")
-    out += ["", f"At p99 the native `add` is {r.fmt(sec, 'p99_add_python_engine_over_native', 'x')} times faster than the Python "
-            f"engine's, {r.fmt(sec, 'p99_add_python_engine_over_binding', 'x')} times through the binding and "
-            f"{r.fmt(sec, 'p99_add_python_engine_over_binding_decimal', 'x')} times with Decimal orders, where converting and "
-            "building Python objects costs more than the matching. The native harness reads `std::chrono::steady_clock` twice per "
-            f"operation; a pair of reads costs {r.fmt(sec, 'native.timer_overhead_us.p50', 'us3')} µs at the median, included above, "
-            f"not subtracted. Raw: {r.raw_link(sec, r.get(sec, 'raw_file'))}.", ""]
+    found, cancels = r.get(sec, "counts.native.cancels_found"), r.get(sec, "cancels")
+    found_txt = (f"Of the {r.fmt(sec, 'cancels', 'int')} cancels, {r.fmt(sec, 'counts.native.cancels_found', 'int')} found a resting "
+                 "order; the others name orders the stream had already filled, so their latency is a lookup that finds nothing. "
+                 if found is not None and cancels and found < cancels else "")
+    engine_txt = ""
+    if r.has("engine") and r.get("engine", "add_order.p99_us") is not None:
+        where = ("in this job" if r.run_of("engine").id == r.run_of(sec).id else f"in run `{r.run_of('engine').id}`")
+        engine_txt = (f" (`scripts/benchmark.py`, run separately {where}, reported a p99 `add_order` of "
+                      f"{r.fmt('engine', 'add_order.p99_us', 'us')} µs)")
+    out += ["", found_txt + "Every ratio here uses the Python engine row of this table, measured in the same process on the same "
+            f"stream{engine_txt}. At p99 the native `add` is {faster_slower(r, sec, 'p99_add_python_engine_over_native')} than the "
+            f"Python engine's, {faster_slower(r, sec, 'p99_add_python_engine_over_binding')} through the binding with integers and "
+            f"{faster_slower(r, sec, 'p99_add_python_engine_over_binding_decimal')} with Decimal orders. The binding rows differ from "
+            "the native one only by the call from Python, and from each other only by the Decimal conversion in `NativeOrderBook`. "
+            "The native harness reads `std::chrono::steady_clock` twice per operation; a pair of reads costs "
+            f"{r.fmt(sec, 'native.timer_overhead_us.p50', 'us3')} µs at the median, included above, not subtracted. "
+            f"Raw: {r.raw_link(sec, r.get(sec, 'raw_file'))}.", ""]
     return out
 
 
 REALISTIC_KINDS = (("limit", "limit"), ("market", "market"), ("cancel", "cancel"))
+
+
+def faster_slower(r: Renderer, sec: str, path: str) -> str:
+    """``"X times faster"`` for a ratio of at least 1, else ``"Y times slower"`` with Y its inverse."""
+    v = r.get(sec, path)
+    if v is None or not isinstance(v, (int, float)) or v <= 0:
+        return "n/a"
+    if v >= 1.0:
+        return f"{r.fmt(sec, path, 'x')} times faster"
+    inv = 1.0 / v
+    return f"{r.record(format_value(inv, 'x'), r.run_of(sec).id, f'{sec}.{path} (inverted)', inv)} times slower"
 
 
 def realistic_engine_md(r: Renderer) -> List[str]:
@@ -467,8 +495,8 @@ def realistic_engine_md(r: Renderer) -> List[str]:
     out = ["### The same paths on a stream derived from the recorded book", "",
            f"Stream: {stream} ({r.fmt(sec, q + 'ops', 'int')} operations: {r.fmt(sec, q + 'op_counts.limit', 'int')} limit orders, "
            f"{r.fmt(sec, q + 'op_counts.market', 'int')} market orders, {r.fmt(sec, q + 'op_counts.cancel', 'int')} cancels). "
-           "Removals come before additions within each snapshot and the recorded book never crosses, so the limit orders "
-           "rest without matching and every fill comes from a market order. The paths agreed on fills, resting orders and "
+           + limit_match_sentence(r)
+           + "The paths agreed on fills, resting orders and "
            f"cancels found: {'yes' if r.get(sec, q + 'consistent') else 'NO'}.", "",
            "| Path | limit p50 µs | limit p99 µs | market p50 µs | market p99 µs | cancel p50 µs | cancel p99 µs |",
            "|---|---:|---:|---:|---:|---:|---:|"]
@@ -478,12 +506,28 @@ def realistic_engine_md(r: Renderer) -> List[str]:
             continue
         out.append(f"| {label} | " + " | ".join(r.fmt(sec, f"{p}{kind}.{stat}", "us3") for kind, _ in REALISTIC_KINDS
                                                  for stat in ("p50_us", "p99_us")) + " |")
-    out += ["", f"At p99 the native core is {r.fmt(sec, q + 'p99_limit_python_engine_over_native', 'x')} times faster than the "
-            f"Python engine on limit orders and {r.fmt(sec, q + 'p99_market_python_engine_over_native', 'x')} times on market "
-            f"orders; cancels gain {r.fmt(sec, q + 'p99_cancel_python_engine_over_native', 'x')} times. On the synthetic stream "
-            f"above the `add` ratio is {r.fmt(sec, 'p99_add_python_engine_over_native', 'x')} times. "
+    timer = (f" A pair of clock reads in this mode costs {r.fmt(sec, q + 'native.timer_overhead_us.p50', 'us3')} µs at the median, "
+             "included above." if r.get(sec, q + "native.timer_overhead_us.p50") is not None else "")
+    out += ["", f"Against the Python engine row, measured in the same process on the same operations, the native core is "
+            f"{faster_slower(r, sec, q + 'p99_limit_python_engine_over_native')} at p99 on limit orders and "
+            f"{faster_slower(r, sec, q + 'p99_market_python_engine_over_native')} on market orders; on cancels it is "
+            f"{faster_slower(r, sec, q + 'p99_cancel_python_engine_over_native')}. On the synthetic stream above the `add` ratio "
+            f"is {r.fmt(sec, 'p99_add_python_engine_over_native', 'x')}.{timer} "
             f"Raw: {r.raw_link(sec, r.get(sec, q + 'raw_file'))}.", ""]
     return out
+
+
+def limit_match_sentence(r: Renderer) -> str:
+    """Whether any derived limit order matched on arrival, as counted by the generator."""
+    sec, q = "native_engine", "realistic."
+    matched = r.get(sec, q + "limit_orders_matched")
+    if matched is None:
+        return ""
+    if matched == 0:
+        return ("Removals come before additions within each snapshot, and no limit order matched on arrival, so every fill "
+                "comes from a market order. ")
+    return (f"{r.fmt(sec, q + 'limit_orders_matched', 'int')} limit orders crossed a stale level outside a snapshot's reconciled "
+            f"range and matched on arrival ({r.fmt(sec, q + 'limit_fills', 'int')} fills); every other limit order rested. ")
 
 
 def int16_md(r: Renderer) -> List[str]:
@@ -514,6 +558,27 @@ def int16_md(r: Renderer) -> List[str]:
             f"({'verified' if e.get('ok') else 'check failed'} against the NumPy reference too).", ""]
 
 
+LINK_MEANING = {"SYS": "through the CPU interconnect between NUMA nodes", "NODE": "through PCIe host bridges within one NUMA node",
+                "PHB": "through a PCIe host bridge, that is the CPU", "PXB": "through more than one PCIe switch",
+                "PIX": "through a single PCIe switch"}
+
+
+def two_gpu_link(t: dict) -> Tuple[str, str]:
+    link = (t.get("topology") or {}).get("links", {}).get("GPU0-GPU1", "unknown")
+    return link, LINK_MEANING.get(link, "by a path `nvidia-smi` does not name")
+
+
+def two_gpu_kind(t: dict) -> str:
+    """How much copy bandwidth the second card added: ``scales``, ``partial``, ``barely`` or ``none``."""
+    ratio = t.get("h2d_aggregate_vs_one_gpu") or 0.0
+    return "scales" if ratio >= 1.7 else "none" if ratio <= 1.05 else "barely" if ratio <= 1.25 else "partial"
+
+
+def transfer_bound(r: Renderer) -> bool:
+    share = r.get("pipeline", "transfer_share_pct")
+    return share is not None and share >= 50.0
+
+
 def two_gpu_md(r: Renderer) -> List[str]:
     t = r.get("pipeline", "two_gpu") or {}
     if not t.get("attempted"):
@@ -521,26 +586,31 @@ def two_gpu_md(r: Renderer) -> List[str]:
     if "two_gpu_ms" not in t:
         return ["### One card against two", "", f"Not measured in this run: `{str(t.get('reason') or t.get('error'))[:160]}`.", ""]
     q = "two_gpu"
-    link = (t.get("topology") or {}).get("links", {}).get("GPU0-GPU1", "unknown")
-    meaning = {"SYS": "through the CPU interconnect between NUMA nodes", "NODE": "through PCIe host bridges within one NUMA node",
-               "PHB": "through a PCIe host bridge, that is the CPU", "PXB": "through more than one PCIe switch",
-               "PIX": "through a single PCIe switch"}.get(link, "by a path `nvidia-smi` does not name")
-    ratio = t.get("h2d_aggregate_vs_one_gpu") or 0.0
-    if ratio >= 1.7:
+    link, meaning = two_gpu_link(t)
+    kind = two_gpu_kind(t)
+    if kind == "scales":
         verdict = ("the two cards' copies run side by side at close to each card's own rate, so each T4 has its own path "
-                   "to host memory and the transfer-bound pipeline scales with the second card")
-    elif ratio <= 1.25:
-        verdict = (("two cards together copy no faster than one" if ratio <= 1.05 else "two cards together copy barely faster than one")
-                   + ", so the limit sits upstream of the cards' own links, on a path both share, and the second card only adds "
-                   "compute this transfer-bound pipeline does not need")
+                   "to host memory"
+                   + (", and the whole pipeline scales with the second card" if (t.get("speedup") or 0.0) >= 1.5 else
+                      ", yet the whole pipeline's speedup stays well short of that, so something besides the copies limits it"))
+    elif kind in ("none", "barely"):
+        verdict = (("two cards together copy no faster than one" if kind == "none" else "two cards together copy barely faster than one")
+                   + ", so the limit sits upstream of the cards' own links, on a path both share"
+                   + (", and the second card only adds compute this transfer-bound pipeline does not need" if transfer_bound(r) else ""))
     else:
         verdict = ("the second card adds copy bandwidth but not a full card's worth, so part of the path to host memory is "
                    "shared between them")
+    now = {}
+    for line in t.get("pcie_current_after_copies") or []:
+        parts = [x.strip() for x in line.split(",")]
+        if len(parts) == 3:
+            now[parts[0]] = f"Gen{parts[1]} x{parts[2]}"
     cards = []
     for line in t.get("pcie") or []:
         parts = [x.strip() for x in line.split(",")]
         if len(parts) == 4:
-            cards.append(f"`GPU{parts[0]}` at `{parts[1]}` on a `Gen{parts[2]} x{parts[3]}` link")
+            cards.append(f"`GPU{parts[0]}` at `{parts[1]}`, rated `Gen{parts[2]} x{parts[3]}`"
+                         + (f" and running at `{now[parts[0]]}` just after the copies" if parts[0] in now else ""))
     return ["### One card against two", "",
             f"`nvidia-smi topo -m` reports the two cards as `{link}`, connected {meaning}; each has its own PCIe link "
             f"({', '.join(cards)}). The archive is split in two contiguous halves of "
@@ -653,9 +723,12 @@ def benchmarks_md(r: Renderer) -> str:
                 "faster than the CuPy chain with its own transfers. From pageable memory the end-to-end advantage over NumPy "
                 f"shrinks to {r.fmt('ladder', sp + '.e2e_vs_numpy_pageable', 'x')} times.", ""]
     if r.has("scans"):
+        same_job = bool((r.get("scans", "ceilings_gbs") or {}).get("read_ceiling"))
+        ceiling_src = ("the read-only streaming ceiling measured in the same job" if same_job else
+                       f"the bandwidth ceiling of run `{r.run_of('bandwidth').id}`, a different job, since this run measured none"
+                       if r.has("bandwidth") else "a ceiling this run did not measure")
         out += ["## Prefix scans", "",
-                "GB/s counts every float64 element twice, once read and once written; the last column compares that with "
-                "the read-only streaming ceiling measured in the same job.", ""]
+                f"GB/s counts every float64 element twice, once read and once written; the last column compares that with {ceiling_src}.", ""]
         out += lookback_check_lines(r)
         for key, title in (("", "Archive-length series"), ("large.", "Large series")):
             n = r.fmt("scans", key + "n_elements", "int")
@@ -887,6 +960,15 @@ def kernel_launch_ms(r: Renderer) -> Dict[str, Tuple[str, str, float]]:
     return out
 
 
+def slowest_full(r: Renderer) -> Optional[bool]:
+    """Whether the three kernels with the longest measured launches all reach full theoretical occupancy."""
+    rows = {row["kernel"]: row for _i, row in resource_kernel_rows(r)}
+    timed = sorted(((ms, k) for k, (_sec, _path, ms) in kernel_launch_ms(r).items() if k in rows), reverse=True)[:3]
+    if not timed:
+        return None
+    return all((primary_occupancy(rows[k])[1] or {}).get("occupancy", 0) >= 0.999 for _ms, k in timed)
+
+
 def occupancy_design_note(r: Renderer) -> str:
     rows = {row["kernel"]: (i, row) for i, row in resource_kernel_rows(r)}
     timed = sorted(((ms, k, sec, path) for k, (sec, path, ms) in kernel_launch_ms(r).items() if k in rows), reverse=True)[:3]
@@ -1022,8 +1104,8 @@ def readme_phase2_findings(r: Renderer) -> List[str]:
                 f"{'with bit-identical outputs' if same else 'but its outputs are NOT identical to the int32 pass'}")
         t = r.get("pipeline", "two_gpu") or {}
         if t.get("h2d_gbs_one_gpu") and t.get("h2d_gbs_two_gpu_aggregate"):
-            ratio = t["h2d_gbs_two_gpu_aggregate"] / t["h2d_gbs_one_gpu"]
-            verdict = ("adds no copy bandwidth" if ratio < 1.1 else "raises the copy bandwidth")
+            verdict = {"none": "adds no copy bandwidth", "barely": "adds almost no copy bandwidth",
+                       "partial": "adds some copy bandwidth", "scales": "nearly doubles the copy bandwidth"}[two_gpu_kind(t)]
             line += (f"; a second T4 {verdict}: {r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two cards "
                      f"against {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one.")
         else:
@@ -1038,12 +1120,13 @@ def readme_phase2_findings(r: Renderer) -> List[str]:
                    + ("with bit-identical outputs." if t.get("identical_to_v2_all") else "and passes the same tolerance check."))
     if r.has("native_engine") and r.get("native_engine", "native.add_order"):
         div = r.get("native_engine", "fuzz.divergences")
-        fuzz = ("" if div is None else ", and matches it on every fuzzed stream" if div == 0 else
-                f", but diverges from it on {r.fmt('native_engine', 'fuzz.divergences', 'int')} fuzzed streams")
+        fuzz = ("" if div is None else ", and matches the reference book on every fuzzed stream" if div == 0 else
+                f", but diverges from the reference book on {r.fmt('native_engine', 'fuzz.divergences', 'int')} fuzzed streams")
         out.append(f"- The C++20 core adds an order in {r.fmt('native_engine', 'native.add_order.p99_us', 'us3')} microseconds at p99 natively, "
-                   f"{r.fmt('native_engine', 'p99_add_python_engine_over_native', 'x')} times faster than the Python engine on the same stream{fuzz}."
+                   f"{faster_slower(r, 'native_engine', 'p99_add_python_engine_over_native')} than the Python engine on the same stream in the same "
+                   f"process{fuzz}."
                    + (f" On a stream derived from the recorded book its p99 limit order is "
-                      f"{r.fmt('native_engine', 'realistic.p99_limit_python_engine_over_native', 'x')} times faster than the Python engine's."
+                      f"{faster_slower(r, 'native_engine', 'realistic.p99_limit_python_engine_over_native')} than the Python engine's."
                       if r.get("native_engine", "realistic.p99_limit_python_engine_over_native") else ""))
     if r.has("resources"):
         rows = r.get("resources", "kernels", []) or []
@@ -1066,14 +1149,27 @@ def design_phase2(r: Renderer) -> List[str]:
     out: List[str] = []
     t = r.get("pipeline", "two_gpu") or {}
     if "two_gpu_ms" in t:
-        out += ["## Two cards, one bottleneck", "",
-                "The pipeline spends most of its time copying, so a second T4 with its own PCIe link looked like a way to double the "
-                f"copy rate. Measured, it does not: one card copies at {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s and two "
-                f"together at {r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s, and `nvidia-smi topo -m` shows both behind "
-                f"one host bridge (`{(t.get('topology') or {}).get('links', {}).get('GPU0-GPU1', '?')}`). Whatever they share upstream of their "
-                "own links sets the ceiling, so the lever that works here is sending fewer bytes: the int16 encoding"
-                + (f" cuts {r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% of them with identical outputs." if (r.get("pipeline", "int16_encoding") or {}).get("ok") else "."),
-                ""]
+        kind = two_gpu_kind(t)
+        link, meaning = two_gpu_link(t)
+        rates = (f"one card copies at {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s and two together at "
+                 f"{r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s, and `nvidia-smi topo -m` reports their "
+                 f"connection as `{link}`, {meaning}")
+        why = (f"Transfers take {r.fmt('pipeline', 'transfer_share_pct', 'pct')}% of the pipeline's stage time, so a second T4 with "
+               "its own PCIe link looked like a way to double the copy rate. ")
+        e = r.get("pipeline", "int16_encoding") or {}
+        if kind in ("none", "barely"):
+            lever = ""
+            if e.get("ok") and e.get("bytes_saved_pct") is not None:
+                same = (e.get("identical_to_int32") or {}).get("identical")
+                lever = (" The lever that works here is sending fewer bytes: the int16 encoding cuts "
+                         f"{r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% of them"
+                         + (" with identical outputs." if same else ", though its outputs differ from the int32 pass."))
+            out += ["## Two cards, one bottleneck", "",
+                    why + f"Measured, it does not: {rates}. Whatever they share upstream of their own links sets the ceiling." + lever, ""]
+        else:
+            out += ["## Two cards", "",
+                    why + f"Measured, {'it nearly does' if kind == 'scales' else 'it partly does'}: {rates}. Two cards run the whole "
+                    f"pipeline {r.fmt('pipeline', 'two_gpu.speedup', 'num')} times as fast as one.", ""]
     if r.has("native_engine"):
         out += ["## A C++ core beside the Python engine", "",
                 "The Python engine stays the reference: it is clear, exact in Decimal, and the fuzzer's reference book checks it. The C++20 "
@@ -1083,9 +1179,10 @@ def design_phase2(r: Renderer) -> List[str]:
                 "open-addressing map finds an order to cancel. Fills are reported through a callback, so after construction the hot path "
                 f"allocates nothing (a counting allocator saw {r.fmt('native_engine', 'build.test_no_alloc.allocations', 'int')} allocations over "
                 f"{r.fmt('native_engine', 'build.test_no_alloc.operations', 'int')} operations). Decimal becomes integer ticks and lots only in "
-                "`NativeOrderBook`, which is why a call with Decimal orders costs "
-                f"{r.fmt('native_engine', 'binding_decimal.add_order.p50_us', 'us3')} microseconds at the median against "
-                f"{r.fmt('native_engine', 'native.add_order.p50_us', 'us3')} natively.", ""]
+                "`NativeOrderBook`, at the boundary: a call with Decimal orders costs "
+                f"{r.fmt('native_engine', 'binding_decimal.add_order.p50_us', 'us3')} microseconds at the median, one with integers through "
+                f"the binding {r.fmt('native_engine', 'binding.add_order.p50_us', 'us3')}, and the core itself "
+                f"{r.fmt('native_engine', 'native.add_order.p50_us', 'us3')}.", ""]
     return out
 
 
@@ -1224,13 +1321,19 @@ def design_md(r: Renderer) -> str:
 
 def went_wrong(decisions: str) -> List[str]:
     lines = [ln[2:].strip() for ln in decisions.splitlines() if ln.startswith("- ")]
+
+    def tags(ln: str) -> set:  # tags lead an entry, right after its timestamp; a tag named in prose is not one
+        m = re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2} ((?:\[[a-z-]+\] ?)*)", ln)
+        return set(re.findall(r"\[([a-z-]+)\]", m.group(1))) if m else set()
+
     # newest first: the log is chronological, and the latest phase's biggest problems lead
-    tagged = [ln for ln in reversed(lines) if "[biggest]" in ln] + [ln for ln in lines if "[went-wrong]" in ln and "[biggest]" not in ln]
+    tagged = ([ln for ln in reversed(lines) if "biggest" in tags(ln)]
+              + [ln for ln in lines if "went-wrong" in tags(ln) and "biggest" not in tags(ln)])
     if len(tagged) < 3:
         tagged += [ln for ln in reversed(lines) if ln not in tagged and re.search(r"failed|fix|fallback", ln, re.I)]
     out = []
     for ln in tagged[:3]:
-        ln = re.sub(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2} ", "", ln).replace("[went-wrong] ", "").replace("[biggest] ", "")
+        ln = re.sub(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2} (?:\[[a-z-]+\] ?)*", "", ln)
         parts = ln.split("`")  # even indices are prose, odd ones are existing code spans
         out.append("`".join(NUM_RE.sub(lambda m: f"`{m.group(0)}`", part) if i % 2 == 0 else part
                             for i, part in enumerate(parts)))
@@ -1249,8 +1352,13 @@ def phase2_questions(r: Renderer) -> List[Tuple[str, str]]:
                    f"`cudaOccupancyMaxActiveBlocksPerMultiprocessor` gives resident blocks at the benchmarked block size. "
                    f"{r.record(format_value(full, 'int'), run_id, 'derived: kernels at full theoretical occupancy', full)} of "
                    f"{r.record(format_value(len(rows), 'int'), run_id, 'derived: launched kernels', len(rows))} launched kernels reach full "
-                   "theoretical occupancy, so for the slow ones the answer lies elsewhere: divergence and uncoalesced reads, which the "
-                   "slippage and layout sections measure. It is a theoretical figure, not achieved occupancy."))
+                   "theoretical occupancy"
+                   + ({True: ", the three slowest among them, so for those the answer lies elsewhere: divergence and uncoalesced "
+                             "reads, which the slippage and layout sections measure.",
+                       False: ", but not all of the three slowest, so for those occupancy is the first thing to check; DESIGN.md "
+                              "names what binds each.",
+                       None: "."}[slowest_full(r)])
+                   + " It is a theoretical figure, not achieved occupancy."))
     chk = r.get("scans", "lookback_check") or {}
     if chk.get("passed") and r.get("scans", "large.lookback_vs_cub"):
         qa.append(("How does the single-pass scan avoid deadlock, and how did you test it?",
@@ -1262,26 +1370,38 @@ def phase2_questions(r: Renderer) -> List[Tuple[str, str]]:
                    "mismatches."))
     t = r.get("pipeline", "two_gpu") or {}
     if "two_gpu_ms" in t:
-        qa.append(("Why did the second T4 not speed up the pipeline?",
-                   f"Because the pipeline is transfer-bound and both cards share the path to host memory: the copy-only pass moved "
-                   f"{r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one card and "
-                   f"{r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two together, and `nvidia-smi topo -m` puts "
-                   f"them behind one host bridge (`{(t.get('topology') or {}).get('links', {}).get('GPU0-GPU1', '?')}`). A second card adds "
-                   "compute, which this pipeline barely uses; sending fewer bytes is what helps."))
+        link, meaning = two_gpu_link(t)
+        moved = (f"the copy-only pass moved {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one card and "
+                 f"{r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two together, and `nvidia-smi topo -m` reports "
+                 f"their connection as `{link}`, {meaning}")
+        if two_gpu_kind(t) in ("none", "barely"):
+            qa.append(("Why did the second T4 not speed up the pipeline?",
+                       ("Because the pipeline is transfer-bound and the copies hit a limit both cards share: " if transfer_bound(r) else
+                        "Because the copies hit a limit both cards share: ") + moved + "."
+                       + (" A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps."
+                          if transfer_bound(r) else "")))
+        else:
+            qa.append(("What did the second T4 buy?",
+                       f"Copy bandwidth: {moved}. The whole pipeline ran {r.fmt('pipeline', 'two_gpu.speedup', 'num')} times as fast "
+                       "on two cards as on one."))
     e = r.get("pipeline", "int16_encoding") or {}
     if e.get("ok") and "e2e_ms" in e:
         qa.append(("What did narrowing prices to int16 buy?",
                    f"{r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% fewer bytes over PCIe and "
                    f"{r.fmt('pipeline', 'int16_encoding.e2e_ms.median_ms', 'ms')} ms instead of "
-                   f"{r.fmt('pipeline', 'int16_encoding.int32_e2e_ms.median_ms', 'ms')} ms end to end, with outputs identical bit for bit, "
-                   f"because each level is sent as an offset from its side's best price and {r.fmt('pipeline', 'int16_encoding.overflow_fallbacks', 'int')} "
+                   f"{r.fmt('pipeline', 'int16_encoding.int32_e2e_ms.median_ms', 'ms')} ms end to end, "
+                   + ("with outputs identical bit for bit, " if (e.get("identical_to_int32") or {}).get("identical") else
+                      "though its outputs are NOT identical to the int32 pass, ")
+                   + f"because each level is sent as an offset from its side's best price and {r.fmt('pipeline', 'int16_encoding.overflow_fallbacks', 'int')} "
                    "chunks needed the int32 fallback."))
-    if r.has("native_engine") and r.get("native_engine", "fuzz"):
-        qa += [("How do you know the C++ core matches the Python engine?",
-                f"The differential fuzzer drives both against the same reference book: {r.fmt('native_engine', 'fuzz.streams', 'int')} "
-                f"seeded streams, {r.fmt('native_engine', 'fuzz.operations', 'int')} operations, {r.fmt('native_engine', 'fuzz.divergences', 'int')} "
-                "divergences, comparing fills, statuses, best prices and depth after every operation, and the benchmark checks that "
-                "all four replay paths agree on fills and resting orders."),
+    if r.has("native_engine") and r.get("native_engine", "fuzz.divergences") == 0:
+        agree = (" The benchmark also checks that all four replay paths, the Python engine among them, agree on fills, resting "
+                 "orders and cancels found." if r.get("native_engine", "consistent") else "")
+        qa += [("How do you know the C++ core has the Python engine's semantics?",
+                "The differential fuzzer checks it against the naive list-based reference book that the test suite also checks the "
+                f"Python engine against (`tests/test_differential.py`): {r.fmt('native_engine', 'fuzz.streams', 'int')} seeded streams, "
+                f"{r.fmt('native_engine', 'fuzz.operations', 'int')} operations, {r.fmt('native_engine', 'fuzz.divergences', 'int')} "
+                "divergences, comparing fills, statuses, best prices and depth after every operation." + agree),
                ("Where does the time go when the C++ core is called from Python?",
                 f"Natively an `add` costs {r.fmt('native_engine', 'native.add_order.p50_us', 'us3')} microseconds at the median; through the "
                 f"binding with integers {r.fmt('native_engine', 'binding.add_order.p50_us', 'us3')}, and with Decimal orders "
@@ -1432,20 +1552,21 @@ def bullet_specs(r: Renderer) -> List[Tuple[str, List[List[str]]]]:
 def phase2_bullet_specs(r: Renderer) -> List[Tuple[str, List[List[str]]]]:
     """Alternates for 0.3.0 results, each only when its measurement exists in a real run."""
     specs: List[Tuple[str, List[List[str]]]] = []
-    if r.has("native_engine") and r.get("native_engine", "fuzz.divergences") == 0 and r.get("native_engine", "consistent"):
+    if (r.has("native_engine") and r.get("native_engine", "fuzz.divergences") == 0 and r.get("native_engine", "consistent")
+            and (r.get("native_engine", "p99_add_python_engine_over_native") or 0) > 1):
         streams = r.fmt("native_engine", "fuzz.streams", "int")
         p99 = r.fmt("native_engine", "native.add_order.p99_us", "us")
         speed = r.fmt("native_engine", "p99_add_python_engine_over_native", "x")
         specs.append(("6", [["Wrote ", "Built "],
-                            ["a C++20 limit order book core with pybind11 bindings and no heap allocation per order ",
-                             "a C++20 order book core with pybind11 bindings and zero heap allocations per order ",
-                             "a C++20 order book core with pybind11 bindings and no heap allocation on the order path "],
-                            [f"that matched the Python engine on {streams} fuzzed order streams, ",
-                             f"that matched the Python reference engine across {streams} fuzzed streams, ",
-                             f"matching the Python engine on {streams} differential fuzz streams, "],
-                            [f"at {p99} microseconds 99th-percentile latency, {speed} times faster.",
-                             f"at {p99} microseconds of 99th-percentile latency, {speed} times faster than Python.",
-                             f"with {p99} microseconds 99th-percentile latency, {speed} times faster than Python."]]))
+                            ["a C++20 order book core for Python with no heap allocation per order ",
+                             "a C++20 order book core with pybind11 bindings and no heap allocation per order ",
+                             "a C++20 order book core for Python with no heap allocation on the order path "],
+                            [f"that matched a reference order book on {streams} fuzzed streams, ",
+                             f"that matched a reference book on {streams} fuzzed order streams, ",
+                             f"matching a reference order book on {streams} fuzzed streams, "],
+                            [f"at {p99} microseconds 99th-percentile latency, {speed} times faster than Python.",
+                             f"with {p99} microseconds 99th-percentile latency, {speed} times faster than Python.",
+                             f"at a 99th-percentile latency of {p99} microseconds, {speed} times faster than Python."]]))
     e = r.get("pipeline", "int16_encoding") or {}
     if e.get("ok") and "e2e_ms" in e and e["e2e_ms"]["median_ms"] < e["int32_e2e_ms"]["median_ms"]:
         n = r.fmt_archive("n_snapshots")

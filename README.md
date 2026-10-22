@@ -201,9 +201,9 @@ Archive: 863,153 book snapshots and 280,818 trades of BTC-USD and ETH-USD, 9.36 
 - Ten-level order flow imbalance has essentially no out-of-sample power for the next second's mid move (R squared -0.0020 for BTC-USD), as expected of a liquid market; it is reported as a description, not a signal.
 - Transfers take 94.1% of the pipeline's stage time even with three overlapping streams, so the archive should stay resident on the card and every analysis should run in one residency.
 - A hand-written single-pass decoupled look-back scan reaches 150.0 GB/s on 16,777,216 elements, 3.4% behind CUB.
-- Sending prices as int16 offsets from the best price moves 24.0% fewer bytes and makes the transfer-bound pipeline faster with bit-identical outputs, while a second T4 adds no copy bandwidth: 12.4 GB/s on two cards against 12.4 GB/s on one.
-- The C++20 core adds an order in 0.417 microseconds at p99 natively, 69.9 times faster than the Python engine on the same stream, and matches it on every fuzzed stream.
-- 41 of 43 launched kernels reach full theoretical occupancy, so occupancy is not what holds the slow ones back.
+- Sending prices as int16 offsets from the best price moves 24.0% fewer bytes and makes the transfer-bound pipeline 23.7% faster end to end, with bit-identical outputs; a second T4 adds no copy bandwidth: 12.4 GB/s on two cards against 12.4 GB/s on one.
+- The C++20 core adds an order in 0.417 microseconds at p99 natively, 69.9 times faster than the Python engine on the same stream in the same process, and matches the reference book on every fuzzed stream.
+- 41 of 43 launched kernels reach full theoretical occupancy; the others are listed in BENCHMARKS.md with the resource that limits them.
 
 **The GPU is not in the live matching path.** A PCIe round trip alone takes longer than the engine's matching latency, so the GPU only ever analyses recorded history.
 

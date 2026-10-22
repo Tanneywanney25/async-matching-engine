@@ -202,7 +202,7 @@ The encoding moves 24.0% fewer bytes; none of the 16 chunks needed the int32 fal
 
 ### One card against two
 
-`nvidia-smi topo -m` reports the two cards as `PHB`, connected through a PCIe host bridge, that is the CPU; each has its own PCIe link (`GPU0` at `00000000:00:04.0` on a `Gen3 x16` link, `GPU1` at `00000000:00:05.0` on a `Gen3 x16` link). The archive is split in two contiguous halves of 8 chunks, each card with its own pinned host buffer, module, streams and device buffers, and the two cards' chunks are issued alternately.
+`nvidia-smi topo -m` reports the two cards as `PHB`, connected through a PCIe host bridge, that is the CPU; each has its own PCIe link (`GPU0` at `00000000:00:04.0`, rated `Gen3 x16`, `GPU1` at `00000000:00:05.0`, rated `Gen3 x16`). The archive is split in two contiguous halves of 8 chunks, each card with its own pinned host buffer, module, streams and device buffers, and the two cards' chunks are issued alternately.
 
 | Measurement | One card | Two cards |
 |---|---:|---:|
@@ -236,7 +236,7 @@ Stream: scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1%
 | C++ core through `NativeOrderBook`, Decimal orders | 3.663 | 17.0 | 35.0 | 0.586 | 2.784 | 18.7 |
 | Python engine (the reference implementation) | 6.333 | 29.1 | 56.2 | 0.434 | 5.968 | 15.3 |
 
-At p99 the native `add` is 69.9 times faster than the Python engine's, 24.4 times through the binding and 1.7 times with Decimal orders, where converting and building Python objects costs more than the matching. The native harness reads `std::chrono::steady_clock` twice per operation; a pair of reads costs 0.024 µs at the median, included above, not subtracted. Raw: [raw](results/bench_rerun-20261021-233814/raw/synthetic_native_engine_latency_us.json).
+Of the 10,000 cancels, 3,575 found a resting order; the others name orders the stream had already filled, so their latency is a lookup that finds nothing. Every ratio here uses the Python engine row of this table, measured in the same process on the same stream (`scripts/benchmark.py`, run separately in this job, reported a p99 `add_order` of 39.35 µs). At p99 the native `add` is 69.9 times faster than the Python engine's, 24.4 times faster through the binding with integers and 1.7 times faster with Decimal orders. The binding rows differ from the native one only by the call from Python, and from each other only by the Decimal conversion in `NativeOrderBook`. The native harness reads `std::chrono::steady_clock` twice per operation; a pair of reads costs 0.024 µs at the median, included above, not subtracted. Raw: [raw](results/bench_rerun-20261021-233814/raw/synthetic_native_engine_latency_us.json).
 
 ## Kernel resources and theoretical occupancy
 

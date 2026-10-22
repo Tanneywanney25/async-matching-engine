@@ -125,6 +125,41 @@ def test_recorded_book_stream_renders_beside_the_synthetic_one(tree: Path, monke
     lab = json.loads((tree / "public" / "data" / "gpu_lab.json").read_text(encoding="utf-8"))
     real_lab = lab["native_engine"]["realistic"]
     assert [p["key"] for p in real_lab["paths"]] == list(paths) and real_lab["ops"] == 1234
+    assert "no limit order matched on arrival" not in bench  # the fixture did not count them
+    # a ratio below one reads as slower, and limit orders that matched are reported, not denied
+    met["sections"]["native_engine"]["p99_add_python_engine_over_binding_decimal"] = 0.5
+    met["sections"]["native_engine"]["realistic"].update({"limit_orders_matched": 3, "limit_fills": 4})
+    met_path.write_text(json.dumps(met), encoding="utf-8")
+    assert _render(tree) == 0
+    bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
+    assert "2.0 times slower with Decimal orders" in bench
+    assert "3 limit orders crossed a stale level outside a snapshot's reconciled range and matched on arrival (4 fills)" in bench
+    assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
+
+
+def test_second_card_verdict_follows_the_measurement_in_every_document(tree: Path, monkeypatch) -> None:
+    """Fixture values (not measurements): copies double on two cards but the pipeline does not speed up."""
+    monkeypatch.setattr(render_docs, "REPO", tree)
+    met_path = tree / "results" / "fixture-run" / "metrics.json"
+    met = json.loads(met_path.read_text(encoding="utf-8"))
+    pipe = met["sections"].setdefault("pipeline", {})
+    pipe["transfer_share_pct"] = 80.0
+    pipe["two_gpu"] = {"attempted": True, "ok": True, "chunks_per_device": 8, "speedup": 1.02, "scaling_efficiency_pct": 51.0,
+                       "one_gpu_ms": {"median_ms": 56.0, "iqr_ms": 0.5}, "two_gpu_ms": {"median_ms": 55.0, "iqr_ms": 0.5},
+                       "h2d_gbs_one_gpu": 12.0, "h2d_gbs_two_gpu_aggregate": 23.0, "h2d_aggregate_vs_one_gpu": 23.0 / 12.0,
+                       "topology": {"links": {"GPU0-GPU1": "SYS"}}, "pcie": ["0, 00000000:00:04.0, 3, 16"],
+                       "pcie_current_after_copies": ["0, 3, 16"]}
+    met_path.write_text(json.dumps(met), encoding="utf-8")
+    assert _render(tree) == 0
+    bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
+    assert "yet the whole pipeline's speedup stays well short of that" in bench
+    assert "rated `Gen3 x16` and running at `Gen3 x16` just after the copies" in bench
+    design = (tree / "DESIGN.md").read_text(encoding="utf-8")
+    assert "## Two cards\n" in design and "one bottleneck" not in design and "Measured, it nearly does" in design
+    interview = (tree / "INTERVIEW_NOTES.md").read_text(encoding="utf-8")
+    assert "What did the second T4 buy?" in interview and "not speed up" not in interview
+    assert "through the CPU interconnect between NUMA nodes" in interview
+    assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
 
 
 def test_triton_rung_is_reported_beside_the_cuda_rungs_but_never_best(tree: Path, monkeypatch) -> None:
@@ -168,4 +203,23 @@ def test_triton_rung_is_reported_beside_the_cuda_rungs_but_never_best(tree: Path
     lad["rungs"].pop()
     met_path.write_text(json.dumps(met), encoding="utf-8")
     assert _render(tree) == 0
-    assert "Not measured in this run: `triton is not installed`." in (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
+    assert "was not timed in this run: `triton is not installed`." in (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
+    lad["triton"] = {"attempted": True, "ok": False, "version": "9.9.9",
+                     "reason": "no launch configuration passed verification against the NumPy reference",
+                     "verification_by_config": {"b512_w4": {"verification": {"verified": False}},
+                                                "b1024_w4": {"verification": {"verified": False}}}}
+    met_path.write_text(json.dumps(met), encoding="utf-8")
+    assert _render(tree) == 0
+    bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
+    assert "Triton `9.9.9` was not timed in this run" in bench
+    assert "failed the tolerance check against the NumPy reference: `b512_w4`, `b1024_w4`." in bench
+
+
+def test_went_wrong_reads_tags_only_where_entries_carry_them() -> None:
+    log = "\n".join([
+        "- 2026-10-21 10:00 [went-wrong] [biggest] Old big problem.",
+        "- 2026-10-21 11:00 [went-wrong] Smaller problem.",
+        "- 2026-10-21 12:00 A note that mentions the `[biggest]` and [went-wrong] tags in prose.",
+        "- 2026-10-21 13:00 [went-wrong][biggest] New big problem.",
+    ])
+    assert render_docs.went_wrong(log) == ["New big problem.", "Old big problem.", "Smaller problem."]
