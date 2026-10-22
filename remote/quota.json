@@ -26,15 +26,15 @@
       "uploaded_at": "2026-10-21T19:03:40Z"
     }
   ],
-  "gpu_hours_used_estimate": 0.791,
+  "gpu_hours_used_estimate": 0.93,
   "kaggle_reported": {
-    "checked_at": "2026-10-22T00:35:30Z",
+    "checked_at": "2026-10-22T00:44:15Z",
     "gpu": {
-      "remaining_hours": 29.32,
+      "remaining_hours": 29.19,
       "total_hours": 30.0,
-      "used_hours": 0.68
+      "used_hours": 0.81
     },
-    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.68h  29.32h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
+    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.81h  29.19h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
     "tpu": {
       "remaining_hours": 20.0,
       "total_hours": 20.0,
@@ -43,7 +43,7 @@
   },
   "phase2": {
     "budget_gpu_hours": 6.0,
-    "gpu_hours_used_estimate": 0.537,
+    "gpu_hours_used_estimate": 0.676,
     "kaggle_used_hours_at_start": 0.2,
     "started_at": "2026-10-21T22:25:01Z"
   },
@@ -486,6 +486,27 @@
       "status": "complete",
       "timeout_minutes": 25,
       "wall_seconds": 171.17856812477112
+    },
+    {
+      "branch": "gpu-phase2",
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive"
+      ],
+      "env": {},
+      "finished_at": "2026-10-22T00:44:11Z",
+      "git_sha": "5fbb01146b544db348f056145fc106a6a27b519b",
+      "gpu_minutes": 8.32,
+      "gpu_name": "Tesla T4",
+      "job": "bench_all",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-all",
+      "pushed_at": "2026-10-22T00:35:47Z",
+      "result_status": "complete",
+      "run_id": "bench_all-20261022-003544",
+      "running_at": "2026-10-22T00:35:52Z",
+      "source": "real",
+      "status": "complete",
+      "timeout_minutes": 44,
+      "wall_seconds": 427.73946833610535
     }
   ]
 }
