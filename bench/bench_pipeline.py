@@ -741,11 +741,11 @@ def run_two_gpu(bench: Bench, pipe: DevicePipeline, staging: HostStaging, sub: d
     block = bench.block("pipeline_two_gpu", {
         "one_gpu": lambda: wall_all_ms(pipe.pass_overlapped, devices),
         "two_gpu": lambda: wall_all_ms(multi.pass_overlapped, devices),
-    }, n_iters=n_iters, devices=devices)
+    }, n_iters=n_iters, devices=devices, monitor=False)  # wall clock: a poller could disturb the host
     h2d = bench.block("pipeline_h2d_only", {
         "one_gpu": lambda: wall_all_ms(pipe.pass_h2d, devices),
         "two_gpu": lambda: wall_all_ms(multi.pass_h2d, devices),
-    }, n_iters=n_iters, devices=devices)
+    }, n_iters=n_iters, devices=devices, monitor=False)
     # the negotiated link right after the copies (an idle card may drop to a lower generation);
     # the "pcie" lines above are each card's maximum, what it is rated for
     current = subprocess.run(["nvidia-smi", "--query-gpu=index,pcie.link.gen.current,pcie.link.width.current",
@@ -992,7 +992,7 @@ def run(bench: Bench, arch: dict, quick: bool = False, int16: Optional[bool] = N
     block = bench.block("pipeline", {
         "overlapped": lambda: wall_time_ms(pipe.pass_overlapped),
         "serial": lambda: wall_time_ms(pipe.pass_serial),
-    }, n_iters=n_iters)
+    }, n_iters=n_iters, monitor=False)  # wall clock: a poller could disturb the host
     overlapped, serial = block["overlapped"], block["serial"]
     saved_pct = ((serial["median_ms"] - overlapped["median_ms"]) / serial["median_ms"] * 100.0
                  if serial["median_ms"] > 0 else 0.0)
@@ -1095,7 +1095,7 @@ def run_int16(bench: Bench, pipe: DevicePipeline, staging: HostStaging, sub: dic
     block = bench.block("pipeline_int16", {
         "int32": lambda: wall_time_ms(lambda: pipe.pass_overlapped("int32")),
         "int16": lambda: wall_time_ms(lambda: pipe.pass_overlapped("int16")),
-    }, n_iters=n_iters)
+    }, n_iters=n_iters, monitor=False)
     br16 = measure_breakdown(pipe, "overlapped", QUICK_ITERS if n_iters else max(10, bench.n_iters // 3), "int16")
     bytes_saved_pct = (staging.bytes_h2d - info["bytes_h2d"]) / staging.bytes_h2d * 100.0 if staging.bytes_h2d else 0.0
     ok = bool(ver["verified"] and ver["bad_books_device"] == 0 and same["identical"])

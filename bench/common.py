@@ -327,6 +327,8 @@ class Bench:
         self.raw_dir.mkdir(parents=True, exist_ok=True)
         self.n_iters = max(int(n_iters), MIN_ITERS) if n_iters >= MIN_ITERS else int(n_iters)
         self.warmup = warmup
+        # blocks log nvidia-smi in the background unless they time host work (they pass monitor=False)
+        self.monitor_default = has_gpu()
         self.path = self.out_dir / "metrics.json"
         if self.path.exists():
             self.metrics = json.loads(self.path.read_text(encoding="utf-8"))
@@ -360,15 +362,19 @@ class Bench:
         return f"raw/{name}.json"
 
     def block(self, name: str, variants: Dict[str, Callable[[], float]], n_iters: Optional[int] = None,
-              devices: Sequence[int] = (0,), monitor: bool = False) -> Dict[str, dict]:
+              devices: Sequence[int] = (0,), monitor: Optional[bool] = None) -> Dict[str, dict]:
         """Run an interleaved block and return ``{variant: summary}`` with raw samples saved.
 
         ``devices`` lists the cards the block runs on. Their clocks are sampled once before the
         warmup (kept as ``before_warmup``), then after the warmup, while the card is still under
         load, and after the last timed iteration; the clock-drop flag compares the last two, so an
-        idle card at the start of a block cannot hide a drop. ``monitor`` also logs ``nvidia-smi``
-        in the background and every timed call's wall-clock span.
+        idle card at the start of a block cannot hide a drop. ``monitor`` (default: on when a GPU is
+        present) also logs ``nvidia-smi`` in the background, with the driver's active clock-event
+        reasons, and every timed call's wall-clock span; blocks that time host code or wall-clock
+        transfers pass ``monitor=False`` so the poller cannot disturb the host.
         """
+        if monitor is None:
+            monitor = self.monitor_default
         before_warmup = gpu_state(devices)
         state: Dict[str, dict] = {}
         mon = GpuMonitor(self.raw_dir / f"{name}__gpu_monitor.csv", devices).start() if monitor else None

@@ -92,7 +92,7 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     if gpu.n == 0:
         raise ValueError("archive has no snapshots")
     summaries = bench.block("ofi_stencil", {"gpu_stencil": gpu.kernel_ms, "numpy_host": gpu.numpy_ms},
-                            n_iters=QUICK_ITERS if quick else None)
+                            n_iters=QUICK_ITERS if quick else None, monitor=False)  # a host variant inside
 
     ofi_gpu = gpu.result().astype(np.float64)
     ofi_ref, _ = ref.ofi_numpy(gpu.host["bid_px"], gpu.host["bid_sz"], gpu.host["ask_px"], gpu.host["ask_sz"],

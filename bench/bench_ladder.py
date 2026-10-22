@@ -487,12 +487,11 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     kernel_variants["cupy_chain"] = lambda: event_time_ms(lad.stream, cupy_kernel)
     if tr is not None:
         kernel_variants["triton_fused"] = lambda: event_time_ms(lad.stream, tr.launch)
-    kres = bench.block("ladder_kernel", kernel_variants, monitor=True)
+    kres = bench.block("ladder_kernel", kernel_variants)
     # v0 on its own, monitored: every full run so far saw v0's interleaved samples switch from one
     # level to a much slower one partway through the block; alone it shows whether that depends on
     # the other variants or on the card's state
-    v0_alone = bench.block("ladder_v0_alone", {"v0_aos": lambda: event_time_ms(lad.stream, lad.launcher("v0_aos"))},
-                           monitor=True)["v0_aos"]
+    v0_alone = bench.block("ladder_v0_alone", {"v0_aos": lambda: event_time_ms(lad.stream, lad.launcher("v0_aos"))})["v0_aos"]
 
     # 4b. the same launches queued behind a busy-wait, so host dispatch is outside the events
     cycles = spin_cycles()
@@ -532,7 +531,7 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     if lib is not None:
         e2e_variants["cpp_single"] = timed_cpu(lambda: cpp(1))
         e2e_variants["cpp_omp"] = timed_cpu(lambda: cpp(threads_all))
-    eres = bench.block("ladder_e2e_and_cpu", e2e_variants)
+    eres = bench.block("ladder_e2e_and_cpu", e2e_variants, monitor=False)  # host baselines inside
 
     # 6. assemble
     rungs = []

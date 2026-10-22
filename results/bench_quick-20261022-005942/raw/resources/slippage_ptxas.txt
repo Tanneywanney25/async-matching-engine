@@ -1,0 +1,11 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'slippage_warp' for 'sm_75'
+ptxas info    : Function properties for slippage_warp
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 49 registers, used 0 barriers, 10240 bytes smem, 456 bytes cmem[0]
+ptxas info    : Compile time = 49.170 ms
+ptxas info    : Compiling entry function 'slippage_naive' for 'sm_75'
+ptxas info    : Function properties for slippage_naive
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 0 barriers, 456 bytes cmem[0]
+ptxas info    : Compile time = 50.594 ms

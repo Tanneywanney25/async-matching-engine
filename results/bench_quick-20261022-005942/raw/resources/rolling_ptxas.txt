@@ -1,0 +1,31 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'vwap_time_window_dd' for 'sm_75'
+ptxas info    : Function properties for vwap_time_window_dd
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 448 bytes cmem[0]
+ptxas info    : Compile time = 12.812 ms
+ptxas info    : Compiling entry function 'vwap_trade_window_dd' for 'sm_75'
+ptxas info    : Function properties for vwap_trade_window_dd
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 424 bytes cmem[0]
+ptxas info    : Compile time = 8.936 ms
+ptxas info    : Compiling entry function 'window_mean' for 'sm_75'
+ptxas info    : Function properties for window_mean
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 408 bytes cmem[0]
+ptxas info    : Compile time = 8.666 ms
+ptxas info    : Compiling entry function 'book_features_sorted' for 'sm_75'
+ptxas info    : Function properties for book_features_sorted
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 50 registers, used 0 barriers, 424 bytes cmem[0]
+ptxas info    : Compile time = 9.823 ms
+ptxas info    : Compiling entry function 'vwap_time_window' for 'sm_75'
+ptxas info    : Function properties for vwap_time_window
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 432 bytes cmem[0]
+ptxas info    : Compile time = 10.394 ms
+ptxas info    : Compiling entry function 'vwap_trade_window' for 'sm_75'
+ptxas info    : Function properties for vwap_trade_window
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 408 bytes cmem[0]
+ptxas info    : Compile time = 8.332 ms
