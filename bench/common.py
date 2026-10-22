@@ -431,7 +431,7 @@ def event_time_ms(stream, launch: Callable[[], None]) -> float:
     return float(cp.cuda.get_elapsed_time(start, end))
 
 
-SPIN_US = 300.0  # busy-wait ahead of a queued timing: far longer than any host dispatch measured here
+SPIN_US = 1000.0  # busy-wait ahead of a queued timing: several times the slowest host dispatch measured on Kaggle
 SPIN_SOURCE = r"""
 extern "C" __global__ void spin_wait(long long cycles) {
     const long long start = clock64();

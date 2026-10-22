@@ -26,15 +26,15 @@
       "uploaded_at": "2026-10-21T19:03:40Z"
     }
   ],
-  "gpu_hours_used_estimate": 0.67,
+  "gpu_hours_used_estimate": 0.73,
   "kaggle_reported": {
-    "checked_at": "2026-10-22T00:10:12Z",
+    "checked_at": "2026-10-22T00:31:03Z",
     "gpu": {
-      "remaining_hours": 29.43,
+      "remaining_hours": 29.37,
       "total_hours": 30.0,
-      "used_hours": 0.57
+      "used_hours": 0.63
     },
-    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.57h  29.43h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
+    "raw": "resource  used   remaining  total   refreshAt            \n--------  -----  ---------  ------  -------------------  \nGPU       0.63h  29.37h     30.00h  2026-10-24T00:00:00  \nTPU       0.00h  20.00h     20.00h  2026-10-24T00:00:00",
     "tpu": {
       "remaining_hours": 20.0,
       "total_hours": 20.0,
@@ -43,7 +43,7 @@
   },
   "phase2": {
     "budget_gpu_hours": 6.0,
-    "gpu_hours_used_estimate": 0.416,
+    "gpu_hours_used_estimate": 0.476,
     "kaggle_used_hours_at_start": 0.2,
     "started_at": "2026-10-21T22:25:01Z"
   },
@@ -444,6 +444,27 @@
       "status": "complete",
       "timeout_minutes": 25,
       "wall_seconds": 181.70121669769287
+    },
+    {
+      "branch": "gpu-phase2",
+      "datasets": [
+        "tanushbhatia/exchange-engine-archive-synth"
+      ],
+      "env": {},
+      "finished_at": "2026-10-22T00:31:00Z",
+      "git_sha": "f6a51787055d236a522e50ff98f3963b534adef6",
+      "gpu_minutes": 3.64,
+      "gpu_name": "Tesla T4",
+      "job": "bench_quick",
+      "kernel": "tanushbhatia/exchange-engine-gpu-bench-quick",
+      "pushed_at": "2026-10-22T00:27:16Z",
+      "result_status": "complete",
+      "run_id": "bench_quick-20261022-002714",
+      "running_at": "2026-10-22T00:27:21Z",
+      "source": "synthetic",
+      "status": "complete",
+      "timeout_minutes": 25,
+      "wall_seconds": 184.6867299079895
     }
   ]
 }
