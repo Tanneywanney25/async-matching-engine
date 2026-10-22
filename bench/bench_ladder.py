@@ -318,6 +318,51 @@ class Ladder:
         return {name: self.cp.asnumpy(arr) for name, arr in self.out.items()}
 
 
+def triton_rung(bench: Bench, lad: "Ladder", reference: dict, n: int, quick: bool):
+    """Set up, sweep and verify the Triton rung; ``(None, info)`` when Triton is unavailable or fails."""
+    from bench import triton_features as tf
+
+    info: dict = {"attempted": True}
+    module, version = tf.load(install=True)
+    if module is None:
+        info.update({"ok": False, "reason": version})
+        log("Triton rung skipped:", version)
+        return None, info
+    info["version"] = version
+    try:
+        tr = tf.TritonRung(lad)
+        lad.poison()
+        lad.v2()
+        v2_out = lad.outputs_host()
+        configs = tf.QUICK_CONFIGS if quick else tf.CONFIGS
+        for cfg in configs:  # compile every configuration before anything is timed
+            tr.launch(cfg)
+        lad.stream.synchronize()
+        sweep = bench.block("ladder_triton_sweep", {f"b{b}_w{w}": (lambda b=b, w=w: event_time_ms(lad.stream, tr.launcher((b, w))))
+                                                    for b, w in configs})
+        table = [{"block_size": b, "num_warps": w, "median_ms": sweep[f"b{b}_w{w}"]["median_ms"],
+                  "iqr_ms": sweep[f"b{b}_w{w}"]["iqr_ms"]} for b, w in configs]
+        best = min(table, key=lambda t: t["median_ms"])
+        tr.config = (best["block_size"], best["num_warps"])
+        lad.poison()
+        tr.launch()
+        got = lad.outputs_host()
+        ver = ref.compare(got, reference, n)
+        same = {name: bool(np.array_equal(got[name][:n].view(np.uint32) if got[name].dtype.itemsize == 4 else got[name][:n],
+                                          v2_out[name][:n].view(np.uint32) if v2_out[name].dtype.itemsize == 4 else v2_out[name][:n]))
+                for name in ref.OUTPUTS}
+        info.update({"ok": bool(ver["verified"]), "verification": ver, "identical_to_v2": same,
+                     "identical_to_v2_all": all(same.values()), "interop": tr.interop, "sweep": table,
+                     "stream": {"triton": tr.stream_ptr, "ladder": tr.ladder_stream_ptr},
+                     "best": best, "kernel_mirrors": "v2_fused (cuda/features.cu)"})
+        log(f"Triton {version}: verified {ver['verified']}, identical to v2 {all(same.values())}, best {best}")
+        return tr, info
+    except Exception as exc:  # noqa: BLE001 - an extra rung must never cost the required ones
+        info.update({"ok": False, "error": repr(exc)[:1500]})
+        log("Triton rung failed:", repr(exc)[:300])
+        return None, info
+
+
 def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     cp = cupy()
     t0 = time.perf_counter()
@@ -362,6 +407,11 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     lad.v4()
     verification["v4_soa_fused_vec4_sweep"] = ref.compare(lad.outputs_host(), reference, n)
     log(f"sweep best: block {best['block_size']} grid {best['grid']} {best['median_ms']:.4f} ms")
+
+    # 2b. extra rung: the fused kernel in Triton, if Triton runs here (never the best CUDA rung)
+    tr, triton_info = triton_rung(bench, lad, reference, n, quick)
+    if tr is not None:
+        verification["triton_fused"] = triton_info["verification"]
 
     # 3. baselines that need preparation: C++ library and the CuPy chain (verified first)
     baselines: dict = {}
@@ -421,6 +471,8 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     # 4. per-kernel block: every rung plus the CuPy chain, CUDA events around the launches only
     kernel_variants = {name: (lambda name=name: event_time_ms(lad.stream, lad.launcher(name))) for name, _, _ in RUNGS}
     kernel_variants["cupy_chain"] = lambda: event_time_ms(lad.stream, cupy_kernel)
+    if tr is not None:
+        kernel_variants["triton_fused"] = lambda: event_time_ms(lad.stream, tr.launch)
     kres = bench.block("ladder_kernel", kernel_variants)
 
     # 5. end-to-end block: every rung with transfers, CuPy with transfers, NumPy and C++ (wall clock)
@@ -428,6 +480,15 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     e2e_variants.update({f"{name}_e2e_pageable": (lambda name=name: wall_time_ms(lad.e2e(name, pinned=False)))
                          for name, _, _ in RUNGS})
     e2e_variants["cupy_e2e"] = lambda: wall_time_ms(cupy_e2e)
+    if tr is not None:
+        def triton_e2e(pinned: bool) -> Callable[[], None]:
+            def go() -> None:
+                lad.upload_soa(pinned)
+                tr.launch()
+                lad.download(pinned)
+            return go
+        e2e_variants["triton_fused_e2e"] = lambda: wall_time_ms(triton_e2e(True))
+        e2e_variants["triton_fused_e2e_pageable"] = lambda: wall_time_ms(triton_e2e(False))
     e2e_variants["numpy"] = timed_cpu(lambda: ref.features_numpy(lad.h["bid_px"], lad.h["bid_sz"], lad.h["ask_px"],
                                                                  lad.h["ask_sz"], lad.h_prod, lad.tick))
     if lib is not None:
@@ -454,7 +515,22 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
             "e2e_bytes_h2d": int(lad.h_aos.nbytes + lad.hp_prod.nbytes) if name == "v0_aos" else
             int(lad.hp["bid_sz"].nbytes + lad.hp["ask_sz"].nbytes + 2 * 4 * lad.n_stride + lad.hp_prod.nbytes),
         })
-    best_rung = min(rungs, key=lambda r: r["kernel_ms"]["median_ms"])
+    if tr is not None:
+        km = kres["triton_fused"]
+        eff = effective_bandwidth(min_io, km["median_ms"])
+        rungs.append({
+            "name": "triton_fused", "label": f"Triton {triton_info.get('version')}, fused (extra rung)", "extra": True,
+            "kernel_ms": km, "e2e_ms": eres["triton_fused_e2e"], "e2e_pageable_ms": eres["triton_fused_e2e_pageable"],
+            "effective_bw_gbs": eff, "pct_of_ceiling": eff / ceiling * 100.0, "pct_of_theoretical": eff / theoretical * 100.0,
+            "block_size": int(tr.config[0]), "num_warps": int(tr.config[1]), "grid": int(math.ceil(n / tr.config[0])),
+            "launches_per_pass": 1, "verified": verification["triton_fused"]["verified"],
+            "max_abs_err": verification["triton_fused"]["max_abs_err"], "violations": verification["triton_fused"]["violations"],
+            "arithmetic_intensity_flop_per_byte": intensity, "gflops": flops / (km["median_ms"] * 1e-3) / 1e9,
+            "e2e_bytes_h2d": int(lad.hp["bid_sz"].nbytes + lad.hp["ask_sz"].nbytes + 2 * 4 * lad.n_stride + lad.hp_prod.nbytes),
+            "block_size_meaning": "snapshots per Triton program",
+        })
+    # the headline compares CUDA rungs; the Triton rung is reported beside them, win or lose
+    best_rung = min((r for r in rungs if not r.get("extra")), key=lambda r: r["kernel_ms"]["median_ms"])
     bk, be = best_rung["kernel_ms"]["median_ms"], best_rung["e2e_ms"]["median_ms"]
     bep = best_rung["e2e_pageable_ms"]["median_ms"]
     speedups = {"best_rung": best_rung["name"],
@@ -474,7 +550,7 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
         "rungs": rungs,
         "sweep": {"rung": "v4_soa_fused_vec4_sweep", "table": table,
                   "best": {"block_size": best["block_size"], "grid": best["grid"], "median_ms": best["median_ms"]}},
-        "speedups": speedups, "outputs": list(ref.OUTPUTS),
+        "speedups": speedups, "outputs": list(ref.OUTPUTS), "triton": triton_info,
         "ceiling_gbs": ceiling, "theoretical_gbs": theoretical,
         "timing": {"kernel": "CUDA events around the launch(es) of one full pass, no transfers",
                    "e2e": "wall clock: host-to-device copy of exactly the inputs the kernels read from pinned host "

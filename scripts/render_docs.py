@@ -38,7 +38,7 @@ NUM_RE = re.compile(r"(?<![A-Za-z_\d.])\d[\d,]*(?:\.\d+)?(?:e[-+]?\d+)?")
 RAW_BASE = "https://github.com/Tanneywanney25/async-matching-engine/blob/main/"
 MARK_START, MARK_END = "<!-- gpu-lab:start -->", "<!-- gpu-lab:end -->"
 DATA_LIMIT_BYTES = 5 * 1024 * 1024
-LADDER_ORDER = ["v0_aos", "v1_soa", "v2_soa_fused", "v3_soa_fused_vec4", "v4_soa_fused_vec4_sweep"]
+LADDER_ORDER = ["v0_aos", "v1_soa", "v2_soa_fused", "v3_soa_fused_vec4", "v4_soa_fused_vec4_sweep", "triton_fused"]
 README_DOC = "README.md (GPU section)"
 # Markdown prose never needs a brace, so one outside code means a template expression or a
 # placeholder that was written out instead of evaluated (INTERVIEW_NOTES.md question 2 in 0.2.0).
@@ -223,10 +223,43 @@ def ceiling_words(r: "Renderer") -> str:
             "copy_kernel": "measured copy ceiling"}.get(kind, "measured bandwidth ceiling")
 
 
+def triton_md(r: Renderer) -> List[str]:
+    """The extra Triton rung, compared with v2 (the CUDA kernel it mirrors) and the best CUDA rung."""
+    t = r.get("ladder", "triton") or {}
+    if not t.get("attempted"):
+        return []
+    if not t.get("ok"):
+        why = str(t.get("reason") or t.get("error") or "unknown")[:200].replace("`", "'")
+        return ["### Extra rung: the fused kernel in Triton", "", f"Not measured in this run: `{why}`.", ""]
+    idx = {rung["name"]: i for i, rung in enumerate(r.get("ladder", "rungs", []) or [])}
+    if "triton_fused" not in idx or "v2_soa_fused" not in idx:
+        return []
+    ti, vi, bi = idx["triton_fused"], idx["v2_soa_fused"], best_index(r)
+    t_ms = r.get("ladder", f"rungs.{ti}.kernel_ms.median_ms")
+    v_ms = r.get("ladder", f"rungs.{vi}.kernel_ms.median_ms")
+    b_ms = r.get("ladder", f"rungs.{bi}.kernel_ms.median_ms")
+    run_id = r.run_of("ladder").id
+    vs_v2 = r.record(f"{t_ms / v_ms:.2f}", run_id, "ladder Triton kernel median / v2 kernel median", t_ms / v_ms)
+    vs_best = r.record(f"{t_ms / b_ms:.2f}", run_id, "ladder Triton kernel median / best CUDA rung median", t_ms / b_ms)
+    same = t.get("identical_to_v2_all")
+    sweep = [f"{r.fmt('ladder', f'triton.sweep.{i}.block_size', 'int')} snapshots and {r.fmt('ladder', f'triton.sweep.{i}.num_warps', 'int')} "
+             f"warps per program: {r.fmt('ladder', f'triton.sweep.{i}.median_ms', 'ms')} ms" for i, _ in enumerate(t.get("sweep") or [])]
+    return ["### Extra rung: the fused kernel in Triton", "",
+            f"Triton `{t.get('version')}` compiles the same fused computation as v2 (level sums in level order, IEEE division) and "
+            "reads the ladder's own device arrays, so it competes on identical data. Its launch configurations, timed in the same "
+            f"interleaved block: {'; '.join(sweep)}. The best one runs in {vs_v2} times the time of the CUDA v2 kernel it mirrors "
+            f"and {vs_best} times that of the best CUDA rung ({rung_label(r.get('ladder', 'speedups.best_rung'))}); it sits in the "
+            "table above (its Block column is snapshots per program) and is never counted as the best rung. Its outputs "
+            + ("are bit-for-bit identical to v2's." if same else
+               "differ from v2's in at least one output, though they pass the same tolerance check against the NumPy reference."
+               if r.get("ladder", f"rungs.{ti}.verified") else "FAIL the tolerance check against the NumPy reference."), ""]
+
+
 def rung_label(name: str) -> str:
     return {"v0_aos": "v0 array-of-structures, one kernel per metric", "v1_soa": "v1 structure-of-arrays, one kernel per metric",
             "v2_soa_fused": "v2 structure-of-arrays, fused", "v3_soa_fused_vec4": "v3 fused, 128-bit loads",
-            "v4_soa_fused_vec4_sweep": "v4 v3 + grid-stride, best launch configuration"}.get(name, name)
+            "v4_soa_fused_vec4_sweep": "v4 v3 + grid-stride, best launch configuration",
+            "triton_fused": "Triton, fused like v2 (extra rung, best of a small sweep)"}.get(name, name)
 
 
 def hardware_block(r: Renderer) -> str:
@@ -532,6 +565,7 @@ def benchmarks_md(r: Renderer) -> str:
                            f"{r.fmt('ladder', p + '.median_ms', 'ms')} | {r.fmt('ladder', p + '.iqr_ms', 'ms')} | "
                            f"{r.fmt('ladder', p + '.effective_bw_gbs', 'gbs')} |")
             out.append("")
+        out += triton_md(r)
     if r.has("baselines"):
         out += ["## Baselines (same machine, same job, same archive)", "",
                 "| Implementation | Median ms (IQR) | Verified | Raw |", "|---|---:|:---:|---|"]

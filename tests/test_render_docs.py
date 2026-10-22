@@ -93,3 +93,31 @@ def test_bullet_rules() -> None:
     assert check_bullets.problems(["GPU kernels " + "x" * 90, "y" * 100])  # abbreviation and lengths
     assert check_bullets.problems(lines, alternate=True)  # a three-item list is not allowed in alternates
     assert check_bullets.split_two_lines("too short") is None
+
+
+def test_triton_rung_is_reported_beside_the_cuda_rungs_but_never_best(tree: Path, monkeypatch) -> None:
+    """A Triton rung made from the fixture's own v2 rung (scaled, not measured) renders with its ratios."""
+    monkeypatch.setattr(render_docs, "REPO", tree)
+    met_path = tree / "results" / "fixture-run" / "metrics.json"
+    met = json.loads(met_path.read_text(encoding="utf-8"))
+    lad = met["sections"]["ladder"]
+    v2 = next(rung for rung in lad["rungs"] if rung["name"] == "v2_soa_fused")
+    tri = json.loads(json.dumps(v2))
+    tri["name"], tri["extra"] = "triton_fused", True
+    tri["kernel_ms"]["median_ms"] = v2["kernel_ms"]["median_ms"] * 1.25
+    lad["rungs"].append(tri)
+    lad["triton"] = {"attempted": True, "ok": True, "version": "9.9.9", "identical_to_v2_all": True,
+                     "sweep": [{"block_size": 512, "num_warps": 4, "median_ms": 1.5, "iqr_ms": 0.01}]}
+    met_path.write_text(json.dumps(met), encoding="utf-8")
+    assert _render(tree) == 0
+    bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
+    assert "### Extra rung: the fused kernel in Triton" in bench
+    assert "runs in 1.25 times the time of the CUDA v2 kernel" in bench
+    assert "| Triton, fused like v2 (extra rung, best of a small sweep) |" in bench
+    assert "are bit-for-bit identical to v2's" in bench
+    assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
+    lad["triton"] = {"attempted": True, "ok": False, "reason": "triton is not installed"}
+    lad["rungs"].pop()
+    met_path.write_text(json.dumps(met), encoding="utf-8")
+    assert _render(tree) == 0
+    assert "Not measured in this run: `triton is not installed`." in (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
