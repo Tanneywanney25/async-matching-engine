@@ -28,7 +28,7 @@
   ],
   "gpu_hours_used_estimate": 1.216,
   "kaggle_reported": {
-    "checked_at": "2026-10-22T01:19:26Z",
+    "checked_at": "2026-10-22T01:36:28Z",
     "gpu": {
       "remaining_hours": 28.92,
       "total_hours": 30.0,
