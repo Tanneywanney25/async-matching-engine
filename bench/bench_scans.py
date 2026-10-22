@@ -223,7 +223,8 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
         f"({check.get('seconds')} s)")
     sc = Scans()
     bw = bench.metrics.get("sections", {}).get("bandwidth", {})
-    ceilings = {"read_ceiling": bw.get("read_kernel_gbs") or bw.get("ceiling_gbs"),
+    # ceilings only from this run's own bandwidth section (same job, same card); none when it did not run
+    ceilings = {"read_ceiling": bw.get("read_kernel_gbs"),
                 "copy_ceiling": max(bw.get("copy_kernel_gbs") or 0.0, bw.get("cudamemcpy_gbs") or 0.0) or None}
 
     # 1. scan implementations on a real series: top-of-book bid notional per snapshot, in ticks x size

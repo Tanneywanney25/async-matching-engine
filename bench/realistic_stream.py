@@ -8,7 +8,8 @@ Replaying recorded snapshots and trades in time order through the Python referen
   or above its lowest bid, asks at or below its highest ask) every level whose size shrank or
   vanished loses orders, newest first, through cancels (an overshoot is re-added at the same
   price), and every level whose size grew gains one limit order for the difference. All removals
-  come before any addition, so with the recorded book uncrossed no added order can cross.
+  come before any addition, so an added order can cross only a stale level outside the range the
+  snapshot reconciled; the generator counts any that do (``limit_orders_matched``).
 
 The engine is the generator's state, so every cancel names an order that is resting at that
 moment and the stream replays identically through any book with the same semantics. Sizes become
@@ -62,6 +63,7 @@ class _Generator:
         self.ops: List[Op] = []
         self.next_id = 1
         self.counts = {"limit": 0, "market": 0, "cancel": 0}
+        self.limits_matched = self.limit_fills = 0  # limit orders that crossed on arrival, and their fills
 
     def _emit(self, op: Op) -> None:
         self.ops.append(op)
@@ -70,7 +72,10 @@ class _Generator:
     def limit(self, side: str, ticks: int, lots: int) -> None:
         oid, self.next_id = self.next_id, self.next_id + 1
         s = self.Side.BID if side == "bid" else self.Side.ASK
-        self.book.add_order(self.Order(s, ticks * TICK, lots * LOT, id=oid))
+        fills = self.book.add_order(self.Order(s, ticks * TICK, lots * LOT, id=oid))
+        if fills:
+            self.limits_matched += 1
+            self.limit_fills += len(fills)
         self._emit(("limit", oid, side, ticks, lots))
 
     def market(self, side: str, lots: int) -> None:
@@ -159,6 +164,7 @@ def derive(arch: dict, product: str = "BTC-USD", max_ops: Optional[int] = None) 
     span_s = (last_ts - first_ts) / 1e9 if first_ts is not None else 0.0  # timestamps are nanoseconds
     return {"ops": gen.ops, "counts": dict(gen.counts), "snapshots_used": n_snaps, "trades_used": n_trades,
             "product": product, "resting_at_end": len(gen.book), "span_seconds": span_s,
+            "limit_orders_matched": gen.limits_matched, "limit_fills": gen.limit_fills,
             "description": (f"derived from the first {span_s / 60:,.1f} minutes of the recorded {product} book: "
                             f"{n_snaps:,} snapshots reconciled into limit orders and cancels, {n_trades:,} trades "
                             f"replayed as market orders on the aggressor's side")}

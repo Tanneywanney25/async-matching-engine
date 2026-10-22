@@ -80,8 +80,19 @@ def test_every_cancel_names_a_resting_order_and_the_book_ends_at_the_last_snapsh
     # the empty second ask level narrows the reconciled range to 1.02, so the deeper asks stay resting
     assert asks == {Decimal("1.02"): Decimal("0.75"), Decimal("1.03"): Decimal("1.5"), Decimal("1.04"): Decimal("1")}
     assert stream["snapshots_used"] == 3 and stream["trades_used"] == 2
+    assert stream["limit_orders_matched"] == 0 and stream["limit_fills"] == 0
     assert stream["span_seconds"] == pytest.approx(4.0)
     assert "first 0.1 minutes" in stream["description"]
+
+
+def test_a_limit_order_crossing_a_stale_level_is_counted() -> None:
+    arch = fixture_archive()
+    # snapshot 2 shows no asks, so that side is not reconciled and the resting asks stay;
+    # its new best bid at 1.03 then crosses the resting ask at 1.03 on arrival
+    arch["ask_sz"][:, 2] = 0.0
+    arch["bid_px"][0, 2], arch["bid_sz"][0, 2] = 103, 0.25
+    stream = derive(arch)
+    assert stream["limit_orders_matched"] == 1 and stream["limit_fills"] == 1
 
 
 def test_max_ops_stops_after_the_event_that_reaches_it() -> None:

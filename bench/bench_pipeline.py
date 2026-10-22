@@ -746,6 +746,12 @@ def run_two_gpu(bench: Bench, pipe: DevicePipeline, staging: HostStaging, sub: d
         "one_gpu": lambda: wall_all_ms(pipe.pass_h2d, devices),
         "two_gpu": lambda: wall_all_ms(multi.pass_h2d, devices),
     }, n_iters=n_iters, devices=devices)
+    # the negotiated link right after the copies (an idle card may drop to a lower generation);
+    # the "pcie" lines above are each card's maximum, what it is rated for
+    current = subprocess.run(["nvidia-smi", "--query-gpu=index,pcie.link.gen.current,pcie.link.width.current",
+                              "--format=csv,noheader"], capture_output=True, text=True, timeout=30).stdout.strip()
+    out["pcie_current_after_copies"] = [ln.strip() for ln in current.splitlines()]
+    out["pcie_fields"] = "index, pci.bus_id, pcie.link.gen.max, pcie.link.width.max"
     one_ms, two_ms = block["one_gpu"]["median_ms"], block["two_gpu"]["median_ms"]
     out.update({
         "one_gpu_ms": block["one_gpu"], "two_gpu_ms": block["two_gpu"],

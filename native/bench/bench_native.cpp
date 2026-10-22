@@ -73,6 +73,18 @@ std::string array_json(const std::vector<double>& xs) {
     return s + "]";
 }
 
+// The clock's own cost: back-to-back reads, sorted.
+std::vector<double> timer_overhead() {
+    std::vector<double> overhead(100000);
+    for (auto& o : overhead) {
+        const auto a = Clock::now();
+        const auto b = Clock::now();
+        o = std::chrono::duration<double, std::micro>(b - a).count();
+    }
+    std::sort(overhead.begin(), overhead.end());
+    return overhead;
+}
+
 // Mixed stream: every operation timed, latencies kept per kind.
 int run_ops(std::ifstream& in, const char* out_path, int passes, int window_log2) {
     std::uint64_t n_ops = 0, pad = 0;
@@ -122,14 +134,17 @@ int run_ops(std::ifstream& in, const char* out_path, int passes, int window_log2
         }
     }
     per_pass += "]";
+    const std::vector<double> overhead = timer_overhead();
     std::FILE* out = std::fopen(out_path, "w");
     if (!out) return 2;
     std::fprintf(out, "{\"ops\":%llu,\"passes\":%d,\"window_ticks\":%u,\"fills\":%zu,\"resting_at_end\":%zu,"
                       "\"cancels_found\":%zu,\"far_levels_at_end\":%zu,\"timer\":\"std::chrono::steady_clock\","
+                      "\"timer_overhead_us\":{\"p50\":%.6f,\"p99\":%.6f},"
                       "\"limit\":%s,\"market\":%s,\"cancel\":%s,\"per_pass\":%s,"
                       "\"limit_us\":%s,\"market_us\":%s,\"cancel_us\":%s}\n",
                  static_cast<unsigned long long>(n_ops), passes, 1u << window_log2, fills_first, resting_first, found_first,
-                 far_first, stats_json(first[0]).c_str(), stats_json(first[1]).c_str(), stats_json(first[2]).c_str(),
+                 far_first, percentile(overhead, 50), percentile(overhead, 99),
+                 stats_json(first[0]).c_str(), stats_json(first[1]).c_str(), stats_json(first[2]).c_str(),
                  per_pass.c_str(), array_json(first[0]).c_str(), array_json(first[1]).c_str(), array_json(first[2]).c_str());
     std::fclose(out);
     std::printf("bench_native: %llu mixed operations, %d passes, %zu fills -> %s\n", static_cast<unsigned long long>(n_ops),
@@ -173,14 +188,7 @@ int main(int argc, char** argv) {
         return 2;
     }
 
-    // The clock's own cost: back-to-back reads.
-    std::vector<double> overhead(100000);
-    for (auto& o : overhead) {
-        const auto a = Clock::now();
-        const auto b = Clock::now();
-        o = std::chrono::duration<double, std::micro>(b - a).count();
-    }
-    std::sort(overhead.begin(), overhead.end());
+    const std::vector<double> overhead = timer_overhead();
 
     std::string per_pass = "[";
     std::vector<double> first_add, first_cancel;
