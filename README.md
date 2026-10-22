@@ -186,29 +186,35 @@ Archive: 863,153 book snapshots and 280,818 trades of BTC-USD and ETH-USD, 9.36 
 
 | Rung | Per-kernel median ms (IQR) | End to end ms | Effective GB/s | % of measured ceiling | % of theoretical | Block | Verified |
 |---|---:|---:|---:|---:|---:|---:|:---:|
-| v0 array-of-structures, one kernel per metric | 40.7 (IQR 24.7) | 101 | 9.2 | 3.5 | 2.9 | 256 | yes |
-| v1 structure-of-arrays, one kernel per metric | 2.03 (IQR 0.0339) | 32.8 | 184.1 | 70.1 | 57.5 | 256 | yes |
-| v2 structure-of-arrays, fused | 1.78 (IQR 0.0103) | 32.5 | 210.0 | 80.0 | 65.6 | 256 | yes |
-| v3 fused, 128-bit loads | 1.57 (IQR 0.0104) | 32.3 | 238.8 | 90.9 | 74.6 | 256 | yes |
-| v4 v3 + grid-stride, best launch configuration | 1.49 (IQR 0.0614) | 32.2 | 251.1 | 95.6 | 78.5 | 128 | yes |
+| v0 array-of-structures, one kernel per metric | 41.9 (IQR 26.3) | 100 | 8.9 | 3.4 | 2.8 | 256 | yes |
+| v1 structure-of-arrays, one kernel per metric | 2.02 (IQR 0.0143) | 32.3 | 184.6 | 70.4 | 57.7 | 256 | yes |
+| v2 structure-of-arrays, fused | 1.79 (IQR 0.0104) | 32.1 | 209.4 | 79.8 | 65.4 | 256 | yes |
+| v3 fused, 128-bit loads | 1.57 (IQR 0.00834) | 31.9 | 238.3 | 90.8 | 74.4 | 256 | yes |
+| v4 v3 + grid-stride, best launch configuration | 1.49 (IQR 0.0521) | 31.8 | 251.1 | 95.7 | 78.5 | 128 | yes |
+| Triton, fused like v2 (extra rung, best of a small sweep) | 1.76 (IQR 0.0160) | 32.0 | 212.7 | 81.1 | 66.4 | 1,024 | yes |
 
 ### Key findings
 
-- The fused, vectorized feature kernel reaches 95.6% of the measured read-bandwidth ceiling and is 25.8 times faster than single-threaded C++ per kernel, but only 3.2 times faster than NumPy once transfers are counted.
+- The fused, vectorized feature kernel reaches 95.7% of the measured read-bandwidth ceiling and is 23.5 times faster than single-threaded C++ per kernel, but only 2.7 times faster than NumPy once transfers are counted.
 - Moving the book levels from array-of-structures to structure-of-arrays order cut total kernel time by 95.8% in the Nsight Systems profiles.
 - Rolling windows built from prefix sums cancel: the worst float32 window was off by 3.5e+00 of its value and even float64 reached 1.8e-08, above a tenth of a tick, so production uses a double-double scan.
-- The warp-cooperative execution-cost kernel prices 1.68 billion simulated orders per second, 4.3 times the divergent thread-per-order walk.
+- The warp-cooperative execution-cost kernel prices 1.78 billion simulated orders per second, 4.6 times the divergent thread-per-order walk.
 - Ten-level order flow imbalance has essentially no out-of-sample power for the next second's mid move (R squared -0.0020 for BTC-USD), as expected of a liquid market; it is reported as a description, not a signal.
 - Transfers take 94.2% of the pipeline's stage time even with three overlapping streams, so the archive should stay resident on the card and every analysis should run in one residency.
+- A hand-written single-pass decoupled look-back scan reaches 149.9 GB/s on 16,777,216 elements, 3.5% behind CUB.
+- Sending prices as int16 offsets from the best price moves 24.0% fewer bytes and makes the transfer-bound pipeline 25.1% faster end to end, with bit-identical outputs; a second T4 adds no copy bandwidth: 12.3 GB/s on two cards against 12.1 GB/s on one in this session, while 1 of the 2 other full runs, each in its own Kaggle session reporting the same topology, showed close to double.
+- Written in Triton, the fused feature kernel needs 0.96 times the GPU time of the CUDA kernel it mirrors, with bit-identical outputs.
+- The C++20 core adds an order in 0.386 microseconds at p99 natively, 73.4 times faster than the Python engine on the same stream in the same process, and matches the reference book on every fuzzed stream. On a stream derived from the recorded book its p99 limit order is 90.6 times faster than the Python engine's.
+- 43 of 46 launched kernels reach full theoretical occupancy; the others are listed in BENCHMARKS.md with the resource that limits them.
 
 **The GPU is not in the live matching path.** A PCIe round trip alone takes longer than the engine's matching latency, so the GPU only ever analyses recorded history.
 
 ### Limitations
 
-- One Kaggle T4 and its four-vCPU host; numbers move with the card's clocks, which are recorded per block.
-- Nsight Compute is blocked in Kaggle's container, so there are no per-kernel hardware counters, only Nsight Systems traces.
+- Kaggle T4 sessions and their four-vCPU host; numbers move with the cards' clocks, which are recorded per block and card.
+- Nsight Compute is blocked in Kaggle's container, so there are no per-kernel hardware counters: occupancy is theoretical, from the compiler and the occupancy API, and timelines come from Nsight Systems.
 - The archive covers one recording window of two products; the order flow imbalance fit describes that window only.
-- The compiled C++ order book core (a stretch item) was not built; the Python engine remains the reference implementation.
+- The C++20 order book core (`native/`) is checked against the reference book by the differential fuzzer; the Python engine remains the reference implementation.
 
 <!-- gpu-lab:end -->
 

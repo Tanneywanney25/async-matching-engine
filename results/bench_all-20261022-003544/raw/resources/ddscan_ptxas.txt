@@ -1,0 +1,21 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'window_diff_dd' for 'sm_75'
+ptxas info    : Function properties for window_diff_dd
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 16 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 3.242 ms
+ptxas info    : Compiling entry function 'dd_add_offsets' for 'sm_75'
+ptxas info    : Function properties for dd_add_offsets
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 22 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 2.024 ms
+ptxas info    : Compiling entry function 'dd_block_offsets' for 'sm_75'
+ptxas info    : Function properties for dd_block_offsets
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 6.051 ms
+ptxas info    : Compiling entry function 'dd_block_scan' for 'sm_75'
+ptxas info    : Function properties for dd_block_scan
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 38 registers, used 1 barriers, 8320 bytes smem, 400 bytes cmem[0]
+ptxas info    : Compile time = 22.803 ms

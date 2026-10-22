@@ -1,0 +1,2 @@
+timestamp,index,clocks.sm,clocks.mem,power.draw,temperature.gpu,pstate,clocks_event_reasons.active
+2026/10/22 01:07:08.601, 0, 585, 5000, 30.90, 57, P0, 0x0000000000000000

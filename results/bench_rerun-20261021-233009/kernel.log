@@ -1,0 +1,31 @@
+[{"stream_name":"stdout","time":1.209194938,"data":"[    0.0s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":1.209224928,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":25.577222566,"data":"[   24.4s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"NVIDIA Nsight Systems version 2025.1.1.0\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":27.605742633,"data":"[   26.4s] repo at efd7713cca47b79ad09e3d8ac60c900dbe866129 on gpu-phase2\n"}
+,{"stream_name":"stdout","time":27.889359771,"data":"[   26.7s] archive: /kaggle/input/datasets/tanushbhatia/exchange-engine-archive\n"}
+,{"stream_name":"stdout","time":27.924351262,"data":"[   26.8s] archive source=real snapshots=863153 trades=280818 hash=10e3c7d79010feb6\n"}
+,{"stream_name":"stdout","time":27.936070624,"data":"[   26.8s] running: /usr/bin/python3 -u -m bench.run_all --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --out /kaggle/working/results/bench_rerun-20261021-233009 --source real --sections pipeline --skip-engine --budget-minutes 36\n"}
+,{"stream_name":"stdout","time":35.170372107,"data":"[run_all] archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive (real, 863,153 snapshots, 280,818 trades) -\u003e /kaggle/working/results/bench_rerun-20261021-233009\n"}
+,{"stream_name":"stdout","time":35.170403418,"data":"[run_all] gpu Tesla T4; sections pipeline; engine skipped; iters 30; quick False\n"}
+,{"stream_name":"stdout","time":35.217093198,"data":"[bench_pipeline] n=863153 (archive 863153), levels=50, chunks=16, quick=False, int16=True\n"}
+,{"stream_name":"stdout","time":36.726937235,"data":"[bench_pipeline] staged 690.5 MB pinned in 862 ms; device buffers 132.7 MB\n"}
+,{"stream_name":"stdout","time":37.886834745,"data":"[bench_pipeline] verified serial=True overlapped=True max_abs_err={'spread_ticks': 0, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset': 0.00012264311612852907} bad_books=0\n"}
+,{"stream_name":"stdout","time":41.870188224,"data":"[bench_pipeline] overlapped 56.39 ms, serial 60.68 ms, saved 7.1%\n"}
+,{"stream_name":"stdout","time":45.524393466,"data":"[bench_pipeline] breakdown h2d 56.07 ms (12.3 GB/s), kernel 3.65 ms, d2h 1.68 ms (10.3 GB/s), transfer share 94.1%\n"}
+,{"stream_name":"stdout","time":45.575215439,"data":"[bench_pipeline] nsys profile: /opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/nsys profile --trace=cuda,nvtx --stats=false --force-overwrite true -o /kaggle/working/results/bench_rerun-20261021-233009/raw/pipeline /usr/bin/python3 -m bench.bench_pipeline --nsys-child --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --chunks 16\n"}
+,{"stream_name":"stdout","time":53.163855791,"data":"[bench_pipeline] nsys timeline: {'h2d': 16, 'kernel': 16, 'd2h': 16} bars, overlap 8.7% of 56.40 ms\n"}
+,{"stream_name":"stdout","time":62.251686856,"data":"[bench_pipeline] two cards: 56.40 ms on one, 56.26 ms on two (1.00x); copy-only 12.4 GB/s on one, 12.4 GB/s on two; identical outputs True\n"}
+,{"stream_name":"stdout","time":63.581720932,"data":"[bench_pipeline] int16 encode: 1325 ms on the host, 0 of 16 chunks fell back to int32, bytes 690536448 -\u003e 524812288\n"}
+,{"stream_name":"stdout","time":67.923454681,"data":"[bench_pipeline] done\n"}
+,{"stream_name":"stdout","time":67.926029628,"data":"[run_all] pipeline       32.8 s  ok\n"}
+,{"stream_name":"stdout","time":67.92687532,"data":"[run_all] done in 39.7 s: 1 section(s) in /kaggle/working/results/bench_rerun-20261021-233009/metrics.json, 0 error(s)\n"}
+,{"stream_name":"stdout","time":68.17187054,"data":"[   67.0s] run_all exit code 0\n"}
+,{"stream_name":"stdout","time":68.224308725,"data":"[   67.1s] finished: complete 67s\n"}
+,{"stream_name":"stdout","time":68.265668886,"data":"RESULT_BUNDLE results_bench_rerun-20261021-233009.tar.gz\n"}
+,{"stream_name":"stderr","time":70.492850236,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":70.492873462,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":70.75127851,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":70.751301408,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":72.751272466,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":73.755588805,"data":"[NbConvertApp] Writing 325614 bytes to __results__.html\n"}
+]

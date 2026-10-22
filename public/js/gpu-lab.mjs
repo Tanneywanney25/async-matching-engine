@@ -2,9 +2,10 @@
 // All layout math lives in gpu-core.mjs (pure, unit-tested); this module only builds DOM/SVG.
 
 import {
-  DASH, benchmarkRows, engineTiles, fmtBps, fmtInt, fmtMs, fmtPct, fmtX, heatmapLayout, heatmapSummary,
-  ladderLayout, ofiRows, ofiSelections, pipelineSegments, precisionRows, provenanceRows, rooflineLayout,
-  scanRows, scatterLayout, sectionStatus, slippageNote, slippageProducts, speedupTiles, get,
+  DASH, RAW_BASE, benchmarkRows, engineTiles, fmtBps, fmtInt, fmtMs, fmtPct, fmtX, heatmapLayout, heatmapSummary,
+  ladderLayout, nativeRows, nativeSummary, ofiRows, ofiSelections, pipelineSegments, precisionRows, provenanceRows,
+  realisticNote, realisticRows, resourceRows, resourceSummary, rooflineLayout, scanRows, scatterLayout, sectionStatus, slippageNote, slippageProducts, speedupTiles,
+  transferBars, transferNotes, get,
 } from "./gpu-core.mjs";
 
 const DATA_URL = "/data/gpu_lab.json";
@@ -93,9 +94,10 @@ function renderTables(data) {
     precisionRows(get(data, "precision")), { rowClass: (r) => (r.production ? "chosen" : "") });
   $("gpu-scans").innerHTML = table(
     [{ key: "name", label: "Scan" }, { key: "medianMs", label: "Median", num: true },
-     { key: "elementsPerS", label: "Elements/s", num: true }, { key: "gbs", label: "Bandwidth", num: true }],
+     { key: "elementsPerS", label: "Elements/s", num: true }, { key: "gbs", label: "Bandwidth", num: true },
+     { key: "pctCeiling", label: "Read ceiling", num: true }],
     scanRows(get(data, "scans")), { rowClass: (r) => (r.winner ? "chosen" : "") });
-  const bench = benchmarkRows(get(data, "benchmarks"));
+  const bench = benchmarkRows(get(data, "benchmarks"), get(data, "raw_base", RAW_BASE));
   $("gpu-bench-count").textContent = fmtInt(bench.length);
   $("gpu-bench").innerHTML = table(
     [{ key: "section", label: "Section" }, { key: "name", label: "Measurement" }, { key: "value", label: "Median", num: true },
@@ -106,6 +108,55 @@ function renderTables(data) {
     provenanceRows(get(data, "provenance")));
   $("gpu-engine").innerHTML = engineTiles(get(data, "engine"))
     .map((t) => `<div class="tile${t.small ? " small-tile" : ""}"><span>${esc(t.label)}</span><b>${esc(t.value)}</b>${t.sub ? `<em>${esc(t.sub)}</em>` : ""}</div>`).join("");
+}
+
+function renderResources(data) {
+  const res = get(data, "resources");
+  $("gpu-resources-summary").textContent = resourceSummary(res);
+  const occCell = (r) => `<span class="occ-bar" aria-hidden="true"><span style="width:${(r.occupancyFrac * 100).toFixed(1)}%"></span></span>${esc(r.occupancy)}`;
+  $("gpu-resources-table").innerHTML = table(
+    [{ key: "kernel", label: "Kernel", html: (r) => `<code title="${esc(r.file)}">${esc(r.kernel)}</code>` },
+     { key: "occupancy", label: "Occupancy", num: true, html: occCell }, { key: "limitedBy", label: "Limited by" },
+     { key: "registers", label: "Registers", num: true }, { key: "smem", label: "Shared B", num: true },
+     { key: "block", label: "Block", num: true }, { key: "spills", label: "Spill B", num: true }],
+    resourceRows(res), { rowClass: (r) => (r.full ? "" : "chosen") });
+}
+
+function renderTransfer(data) {
+  const t = get(data, "transfer");
+  let group = "";
+  let html = "";
+  for (const b of transferBars(t)) {
+    if (b.group !== group) {
+      html += `<p class="hbar-group">${esc(b.group)}</p>`;
+      group = b.group;
+    }
+    html += `<div class="hbar"><span class="hbar-label">${esc(b.label)}</span>` +
+      `<span class="hbar-track"><span style="width:${(b.frac * 100).toFixed(1)}%"></span></span><b>${esc(b.value)}</b></div>`;
+  }
+  $("gpu-transfer-bars").innerHTML = html;
+  $("gpu-transfer-notes").innerHTML = transferNotes(t).map((n) => `<li>${esc(n)}</li>`).join("");
+}
+
+function renderNative(data) {
+  const n = get(data, "native_engine");
+  $("gpu-native-summary").textContent = nativeSummary(n);
+  const bar = (r) => `<span class="occ-bar log" aria-hidden="true"><span style="width:${(r.p99Frac * 100).toFixed(1)}%"></span></span>${esc(r.addP99)}`;
+  $("gpu-native-table").innerHTML = table(
+    [{ key: "short", label: "Path", html: (r) => `<span title="${esc(r.label)}">${esc(r.short)}</span>` },
+     { key: "addP99", label: "add p99", num: true, html: bar },
+     { key: "addP50", label: "add p50", num: true }, { key: "addP999", label: "add p99.9", num: true },
+     { key: "cancelP99", label: "cancel p99", num: true }],
+    nativeRows(n), { rowClass: (r) => (r.native ? "chosen" : "") });
+  $("gpu-native-note").textContent = `${fmtInt(get(n, "orders"))} orders and ${fmtInt(get(n, "cancels"))} cancels on ` +
+    `${get(n, "cpu_model", "the job's host CPU")}; bars on a log scale from 0.03 to 100 µs.`;
+  const real = realisticRows(n);
+  $("gpu-native-real-table").innerHTML = real.length ? table(
+    [{ key: "short", label: "Path", html: (r) => `<span title="${esc(r.label)}">${esc(r.short)}</span>` },
+     { key: "limitP99", label: "limit", num: true }, { key: "marketP99", label: "market", num: true },
+     { key: "cancelP99", label: "cancel", num: true }],
+    real, { rowClass: (r) => (r.native ? "chosen" : "") }) : "";
+  $("gpu-native-real-note").textContent = realisticNote(n);
 }
 
 function renderSlippage(data) {
@@ -176,7 +227,8 @@ export async function initGpuLab() {
   const show = sectionStatus(data);
   const steps = [
     ["ladder", renderLadder, "gpu-ladder"], ["roofline", renderRoofline, "gpu-roofline"], ["pipeline", renderTimeline, "gpu-timeline"],
-    ["slippage", renderSlippage, "gpu-slippage"], ["ofi", renderOfi, "gpu-ofi"],
+    ["slippage", renderSlippage, "gpu-slippage"], ["ofi", renderOfi, "gpu-ofi"], ["resources", renderResources, "gpu-resources"],
+    ["transfer", renderTransfer, "gpu-transfer"], ["native", renderNative, "gpu-native"],
   ];
   for (const [key, fn, id] of steps) {
     if (!show[key]) { $(id).hidden = true; continue; }

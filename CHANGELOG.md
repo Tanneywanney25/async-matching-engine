@@ -3,6 +3,28 @@
 All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.0] - 2026-10-21
+
+### Added
+- Kernel resource table: registers, spills and shared memory from `nvcc -Xptxas -v`, theoretical occupancy from the
+  occupancy API at every benchmarked launch configuration (recorded as the benchmarks run), and the binding resource.
+- Single-pass decoupled look-back scan (Merrill and Garland, 2016) with an atomic tile counter and release/acquire status
+  words, checked in a child process with a timeout before it is timed against Blelloch, warp shuffle and CUB.
+- int16 tick-offset encoding measured on the real archive, and the pipeline split across both T4s with its own streams and
+  pinned buffers per card; outputs are compared bit for bit with the one-card, int32 pass.
+- C++20 order book core (`native/`, CMake): tick-indexed price window with an ordered fallback, intrusive FIFO levels,
+  pooled orders, open-addressing id map, no heap allocation on the hot path; pybind11 binding, `NativeOrderBook`,
+  `fuzz_engine.py --engine native`, a native latency harness and `benchmark_native.py`.
+- GPU Lab panels for kernel resources, transfers and scaling, and the C++ core's latency; new interview questions and bullets.
+- CI builds the C++ core, runs its native tests, fuzzes it against the reference and compile-checks every CUDA kernel.
+
+### Fixed
+- A raw template expression in `INTERVIEW_NOTES.md`; the renderer now refuses to write unrendered template syntax.
+- `check_numbers.py` matched numbers across documents; it now requires provenance in the same document and covers
+  `DESIGN.md` and `INTERVIEW_NOTES.md`.
+- GPU clocks were never sampled on Kaggle's two-card sessions; every block now samples the cards it uses.
+- Remote jobs ran a pinned branch; they now run the pushed SHA of the current branch under a phase budget.
+
 ## [0.2.0] - 2026-10-21
 
 ### Added

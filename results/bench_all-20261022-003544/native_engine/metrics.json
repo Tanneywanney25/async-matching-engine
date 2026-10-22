@@ -1,0 +1,591 @@
+{
+  "sections": {
+    "native_engine": {
+      "binding": {
+        "add_order": {
+          "max_us": 54.987,
+          "mean_us": 0.55255981,
+          "n": 100000,
+          "p50_us": 0.518,
+          "p95_us": 0.775,
+          "p999_us": 6.686,
+          "p99_us": 0.948
+        },
+        "call": "exchange_engine._native.Book.add_limit_count / cancel, integer ticks and lots",
+        "cancel_order": {
+          "max_us": 12.709,
+          "mean_us": 0.4425183,
+          "n": 10000,
+          "p50_us": 0.397,
+          "p95_us": 0.701,
+          "p999_us": 2.673,
+          "p99_us": 0.932
+        }
+      },
+      "binding_decimal": {
+        "add_order": {
+          "max_us": 2095.001,
+          "mean_us": 5.1457030800000005,
+          "n": 100000,
+          "p50_us": 3.473,
+          "p95_us": 10.973,
+          "p999_us": 28.457,
+          "p99_us": 15.472
+        },
+        "call": "exchange_engine.native_book.NativeOrderBook.add_order / cancel_order with Decimal Orders",
+        "cancel_order": {
+          "max_us": 18.864,
+          "mean_us": 0.7498342,
+          "n": 10000,
+          "p50_us": 0.527,
+          "p95_us": 1.416,
+          "p999_us": 4.596,
+          "p99_us": 1.685
+        }
+      },
+      "build": {
+        "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+        "ctest_ok": true,
+        "ctest_output": "Internal ctest changing into directory: /kaggle/working/repo/build/native\nTest project /kaggle/working/repo/build/native\n    Start 1: test_order_book\n1/2 Test #1: test_order_book ..................   Passed    0.65 sec\n    Start 2: test_no_alloc\n2/2 Test #2: test_no_alloc ....................   Passed    0.04 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =   0.71 sec\n",
+        "flags": "-O3 (CMake Release), C++20",
+        "seconds": 12.5,
+        "test_no_alloc": {
+          "allocations": 0,
+          "deallocations": 0,
+          "fills": 159307,
+          "ok": true,
+          "operations": 200000,
+          "output": "test_no_alloc: 200000 operations, 159307 fills, 438 resting, 14 far bid levels: 0 allocations, 0 deallocations"
+        },
+        "test_order_book": {
+          "checks": 2482227,
+          "ok": true,
+          "output": "test_order_book: 2482227 checks passed"
+        }
+      },
+      "cancels": 10000,
+      "consistent": true,
+      "counts": {
+        "binding": {
+          "cancels_found": 3575,
+          "fills": 77994,
+          "resting_after_adds": 22006
+        },
+        "binding_decimal": {
+          "cancels_found": 3575,
+          "fills": 77994,
+          "resting_after_adds": 22006
+        },
+        "native": {
+          "cancels_found": 3575,
+          "fills": 77994,
+          "resting_after_adds": 22006
+        },
+        "python_engine": {
+          "cancels_found": 3575,
+          "fills": 77994,
+          "resting_after_adds": 22006
+        }
+      },
+      "cpu_cores": 4,
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+      "fuzz": {
+        "divergences": 0,
+        "first_divergence": null,
+        "operations": 548317,
+        "reference": "exchange_engine.reference_engine.ReferenceBook",
+        "seconds": 29.2,
+        "streams": 10000
+      },
+      "native": {
+        "add_order": {
+          "max_us": 24.027,
+          "mean_us": 0.108643,
+          "n": 100000,
+          "p50_us": 0.082,
+          "p95_us": 0.221,
+          "p999_us": 0.596,
+          "p99_us": 0.4
+        },
+        "cancel_order": {
+          "max_us": 17.633,
+          "mean_us": 0.089117,
+          "n": 10000,
+          "p50_us": 0.051,
+          "p95_us": 0.202,
+          "p999_us": 0.571,
+          "p99_us": 0.418
+        },
+        "far_levels_after_adds": 2879,
+        "passes": 5,
+        "per_pass": [
+          {
+            "add_order": {
+              "max_us": 24.027,
+              "mean_us": 0.108643,
+              "n": 100000,
+              "p50_us": 0.082,
+              "p95_us": 0.221,
+              "p999_us": 0.596,
+              "p99_us": 0.4
+            },
+            "cancel_order": {
+              "max_us": 17.633,
+              "mean_us": 0.089117,
+              "n": 10000,
+              "p50_us": 0.051,
+              "p95_us": 0.202,
+              "p999_us": 0.571,
+              "p99_us": 0.418
+            }
+          },
+          {
+            "add_order": {
+              "max_us": 31.554,
+              "mean_us": 0.101636,
+              "n": 100000,
+              "p50_us": 0.077,
+              "p95_us": 0.204,
+              "p999_us": 0.569,
+              "p99_us": 0.372
+            },
+            "cancel_order": {
+              "max_us": 9.661,
+              "mean_us": 0.083593,
+              "n": 10000,
+              "p50_us": 0.051,
+              "p95_us": 0.185,
+              "p999_us": 0.544,
+              "p99_us": 0.406
+            }
+          },
+          {
+            "add_order": {
+              "max_us": 26.481,
+              "mean_us": 0.097873,
+              "n": 100000,
+              "p50_us": 0.075,
+              "p95_us": 0.195,
+              "p999_us": 0.558,
+              "p99_us": 0.364
+            },
+            "cancel_order": {
+              "max_us": 12.242,
+              "mean_us": 0.084124,
+              "n": 10000,
+              "p50_us": 0.051,
+              "p95_us": 0.184,
+              "p999_us": 0.547,
+              "p99_us": 0.407
+            }
+          },
+          {
+            "add_order": {
+              "max_us": 569.805,
+              "mean_us": 0.102429,
+              "n": 100000,
+              "p50_us": 0.075,
+              "p95_us": 0.194,
+              "p999_us": 0.565,
+              "p99_us": 0.357
+            },
+            "cancel_order": {
+              "max_us": 11.323,
+              "mean_us": 0.08411,
+              "n": 10000,
+              "p50_us": 0.051,
+              "p95_us": 0.181,
+              "p999_us": 0.554,
+              "p99_us": 0.412
+            }
+          },
+          {
+            "add_order": {
+              "max_us": 17.69,
+              "mean_us": 0.095962,
+              "n": 100000,
+              "p50_us": 0.074,
+              "p95_us": 0.192,
+              "p999_us": 0.555,
+              "p99_us": 0.353
+            },
+            "cancel_order": {
+              "max_us": 8.919,
+              "mean_us": 0.083651,
+              "n": 10000,
+              "p50_us": 0.051,
+              "p95_us": 0.184,
+              "p999_us": 0.554,
+              "p99_us": 0.407
+            }
+          }
+        ],
+        "timer": "std::chrono::steady_clock",
+        "timer_overhead_us": {
+          "p50": 0.024,
+          "p99": 0.029
+        },
+        "window_ticks": 262144
+      },
+      "orders": 100000,
+      "p99_add_python_engine_over_binding": 30.712025316455698,
+      "p99_add_python_engine_over_binding_decimal": 1.8817864529472594,
+      "p99_add_python_engine_over_native": 72.7875,
+      "p99_add_python_engine_over_python_engine": 1.0,
+      "platform": "Linux-6.18.48+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "python_engine": {
+        "add_order": {
+          "max_us": 2886.77,
+          "mean_us": 8.92532997,
+          "n": 100000,
+          "p50_us": 6.316,
+          "p95_us": 19.706,
+          "p999_us": 54.34,
+          "p99_us": 29.115
+        },
+        "call": "exchange_engine.orderbook.OrderBook.add_order / cancel_order",
+        "cancel_order": {
+          "max_us": 32.248,
+          "mean_us": 1.939038,
+          "n": 10000,
+          "p50_us": 0.436,
+          "p95_us": 5.273,
+          "p999_us": 20.756,
+          "p99_us": 7.531
+        }
+      },
+      "raw_file": "raw/synthetic_native_engine_latency_us.json",
+      "realistic": {
+        "binding": {
+          "cancel": {
+            "max_us": 65.738,
+            "mean_us": 0.4038622865773439,
+            "n": 482669,
+            "p50_us": 0.383,
+            "p95_us": 0.477,
+            "p999_us": 3.308,
+            "p99_us": 0.694
+          },
+          "limit": {
+            "max_us": 513.276,
+            "mean_us": 0.5757446277289019,
+            "n": 491040,
+            "p50_us": 0.547,
+            "p95_us": 0.74,
+            "p999_us": 4.824,
+            "p99_us": 0.937
+          },
+          "market": {
+            "max_us": 26.846,
+            "mean_us": 0.7151616434191023,
+            "n": 26311,
+            "p50_us": 0.603,
+            "p95_us": 1.067,
+            "p999_us": 6.671,
+            "p99_us": 3.322
+          }
+        },
+        "binding_decimal": {
+          "cancel": {
+            "max_us": 139.233,
+            "mean_us": 0.60722611769142,
+            "n": 482669,
+            "p50_us": 0.571,
+            "p95_us": 0.778,
+            "p999_us": 5.14,
+            "p99_us": 1.006
+          },
+          "limit": {
+            "max_us": 485.955,
+            "mean_us": 3.04700419925057,
+            "n": 491040,
+            "p50_us": 2.908,
+            "p95_us": 3.408,
+            "p999_us": 15.927,
+            "p99_us": 6.229
+          },
+          "market": {
+            "max_us": 121.151,
+            "mean_us": 5.230002926532628,
+            "n": 26311,
+            "p50_us": 4.354,
+            "p95_us": 9.793,
+            "p999_us": 34.275,
+            "p99_us": 17.504
+          }
+        },
+        "calls": {
+          "binding": "exchange_engine._native.Book.add_limit_count / match_market / cancel",
+          "binding_decimal": "NativeOrderBook.add_order / match_market_order / cancel_order",
+          "python_engine": "OrderBook.add_order / match_market_order / cancel_order"
+        },
+        "consistent": true,
+        "counts": {
+          "binding": {
+            "cancels_found": 482669,
+            "fills": 32921,
+            "resting_at_end": 1431
+          },
+          "binding_decimal": {
+            "cancels_found": 482669,
+            "fills": 32921,
+            "resting_at_end": 1431
+          },
+          "native": {
+            "cancels_found": 482669,
+            "fills": 32921,
+            "resting_at_end": 1431
+          },
+          "python_engine": {
+            "cancels_found": 482669,
+            "fills": 32921,
+            "resting_at_end": 1431
+          }
+        },
+        "derive_seconds": 33.9,
+        "limit_fills": 0,
+        "limit_orders_matched": 0,
+        "max_ops": 1000000,
+        "native": {
+          "cancel": {
+            "max_us": 40.401,
+            "mean_us": 0.053951,
+            "n": 482669,
+            "p50_us": 0.05,
+            "p95_us": 0.073,
+            "p999_us": 0.166,
+            "p99_us": 0.104
+          },
+          "far_levels_at_end": 0,
+          "limit": {
+            "max_us": 31.532,
+            "mean_us": 0.071311,
+            "n": 491040,
+            "p50_us": 0.061,
+            "p95_us": 0.121,
+            "p999_us": 0.41,
+            "p99_us": 0.147
+          },
+          "market": {
+            "max_us": 31.332,
+            "mean_us": 0.049008,
+            "n": 26311,
+            "p50_us": 0.039,
+            "p95_us": 0.108,
+            "p999_us": 0.43,
+            "p99_us": 0.204
+          },
+          "passes": 5,
+          "per_pass": [
+            {
+              "cancel": {
+                "max_us": 40.401,
+                "mean_us": 0.053951,
+                "n": 482669,
+                "p50_us": 0.05,
+                "p95_us": 0.073,
+                "p999_us": 0.166,
+                "p99_us": 0.104
+              },
+              "limit": {
+                "max_us": 31.532,
+                "mean_us": 0.071311,
+                "n": 491040,
+                "p50_us": 0.061,
+                "p95_us": 0.121,
+                "p999_us": 0.41,
+                "p99_us": 0.147
+              },
+              "market": {
+                "max_us": 31.332,
+                "mean_us": 0.049008,
+                "n": 26311,
+                "p50_us": 0.039,
+                "p95_us": 0.108,
+                "p999_us": 0.43,
+                "p99_us": 0.204
+              }
+            },
+            {
+              "cancel": {
+                "max_us": 35.403,
+                "mean_us": 0.052421,
+                "n": 482669,
+                "p50_us": 0.05,
+                "p95_us": 0.067,
+                "p999_us": 0.153,
+                "p99_us": 0.096
+              },
+              "limit": {
+                "max_us": 39.878,
+                "mean_us": 0.069062,
+                "n": 491040,
+                "p50_us": 0.061,
+                "p95_us": 0.12,
+                "p999_us": 0.402,
+                "p99_us": 0.136
+              },
+              "market": {
+                "max_us": 11.419,
+                "mean_us": 0.047109,
+                "n": 26311,
+                "p50_us": 0.038,
+                "p95_us": 0.105,
+                "p999_us": 0.41,
+                "p99_us": 0.201
+              }
+            },
+            {
+              "cancel": {
+                "max_us": 31.652,
+                "mean_us": 0.053523,
+                "n": 482669,
+                "p50_us": 0.05,
+                "p95_us": 0.07,
+                "p999_us": 0.161,
+                "p99_us": 0.104
+              },
+              "limit": {
+                "max_us": 24.209,
+                "mean_us": 0.071093,
+                "n": 491040,
+                "p50_us": 0.061,
+                "p95_us": 0.121,
+                "p999_us": 0.419,
+                "p99_us": 0.142
+              },
+              "market": {
+                "max_us": 28.072,
+                "mean_us": 0.050041,
+                "n": 26311,
+                "p50_us": 0.039,
+                "p95_us": 0.109,
+                "p999_us": 0.459,
+                "p99_us": 0.209
+              }
+            },
+            {
+              "cancel": {
+                "max_us": 30.546,
+                "mean_us": 0.053111,
+                "n": 482669,
+                "p50_us": 0.05,
+                "p95_us": 0.068,
+                "p999_us": 0.158,
+                "p99_us": 0.097
+              },
+              "limit": {
+                "max_us": 31.652,
+                "mean_us": 0.068943,
+                "n": 491040,
+                "p50_us": 0.061,
+                "p95_us": 0.12,
+                "p999_us": 0.408,
+                "p99_us": 0.137
+              },
+              "market": {
+                "max_us": 17.112,
+                "mean_us": 0.047267,
+                "n": 26311,
+                "p50_us": 0.038,
+                "p95_us": 0.108,
+                "p999_us": 0.429,
+                "p99_us": 0.208
+              }
+            },
+            {
+              "cancel": {
+                "max_us": 30.309,
+                "mean_us": 0.052747,
+                "n": 482669,
+                "p50_us": 0.05,
+                "p95_us": 0.069,
+                "p999_us": 0.157,
+                "p99_us": 0.102
+              },
+              "limit": {
+                "max_us": 37.195,
+                "mean_us": 0.070795,
+                "n": 491040,
+                "p50_us": 0.061,
+                "p95_us": 0.122,
+                "p999_us": 0.424,
+                "p99_us": 0.142
+              },
+              "market": {
+                "max_us": 9.445,
+                "mean_us": 0.046841,
+                "n": 26311,
+                "p50_us": 0.038,
+                "p95_us": 0.106,
+                "p999_us": 0.404,
+                "p99_us": 0.201
+              }
+            }
+          ],
+          "timer": "std::chrono::steady_clock",
+          "timer_overhead_us": {
+            "p50": 0.024,
+            "p99": 0.026
+          }
+        },
+        "op_counts": {
+          "cancel": 482669,
+          "limit": 491040,
+          "market": 26311
+        },
+        "ops": 1000020,
+        "p99_cancel_python_engine_over_native": 60.80769230769231,
+        "p99_limit_python_engine_over_native": 98.4013605442177,
+        "p99_market_python_engine_over_native": 147.34313725490196,
+        "python_engine": {
+          "cancel": {
+            "max_us": 425.305,
+            "mean_us": 2.5532325485995577,
+            "n": 482669,
+            "p50_us": 2.434,
+            "p95_us": 3.341,
+            "p999_us": 17.267,
+            "p99_us": 6.324
+          },
+          "limit": {
+            "max_us": 1755.952,
+            "mean_us": 6.057105431329423,
+            "n": 491040,
+            "p50_us": 5.88,
+            "p95_us": 7.562,
+            "p999_us": 25.757,
+            "p99_us": 14.465
+          },
+          "market": {
+            "max_us": 215.14,
+            "mean_us": 7.769809965413705,
+            "n": 26311,
+            "p50_us": 6.569,
+            "p95_us": 16.288,
+            "p999_us": 56.345,
+            "p99_us": 30.058
+          }
+        },
+        "raw_file": "raw/realistic_native_engine_latency_us.json",
+        "snapshots_used": 82059,
+        "span_seconds": 5729.249557,
+        "stream": "derived from the first 95.5 minutes of the recorded BTC-USD book: 82,059 snapshots reconciled into limit orders and cancels, 26,311 trades replayed as market orders on the aggressor's side",
+        "stream_file": {
+          "bytes": 32000664,
+          "name": "stream_realistic.bin",
+          "sha256": "1c3e8eb479f224ab0e5ff47ab15542dcf096139f9acf2fd679171544c6273366"
+        },
+        "trades_used": 26311
+      },
+      "stream": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids",
+      "stream_file": {
+        "bytes": 3280032,
+        "name": "stream_synthetic.bin",
+        "sha256": "abd98c1a34181c8aa72a35873b6e623be1acae26667dee880285212d6345192f"
+      }
+    }
+  },
+  "source": "real"
+}

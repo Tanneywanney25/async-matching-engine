@@ -307,6 +307,18 @@ code { color: var(--connection-cyan); font-size: 0.92em; }
 .gpu-table .num { text-align: right; font-variant-numeric: tabular-nums; }
 .gpu-table tr.chosen td { color: var(--accent); }
 .gpu-table a { color: var(--connection-cyan); }
+.gpu-table code { font-size: 12px; }
+.gpu-card p code { overflow-wrap: anywhere; }
+.occ-bar { display: inline-block; width: 44px; height: 6px; margin-right: 6px; vertical-align: middle;
+  background: var(--line); border-radius: 3px; overflow: hidden; }
+.occ-bar > span { display: block; height: 100%; background: var(--accent); }
+.hbar-group { margin: 10px 0 4px; font-size: 12.5px; color: var(--muted); }
+.hbar { display: grid; grid-template-columns: minmax(84px, 7.5em) minmax(0, 1fr) auto; align-items: center; gap: 8px; font-size: 13px; }
+.hbar + .hbar { margin-top: 4px; }
+.hbar-track { height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; }
+.hbar-track > span { display: block; height: 100%; background: var(--accent); }
+.hbar b { font-variant-numeric: tabular-nums; font-weight: 600; }
+.gpu-notes { margin: 10px 0 0; padding-left: 18px; }
 .grid-line { stroke: var(--line); stroke-width: 1; }
 .axis-label, .ref-label, .point-label { fill: var(--muted); font-size: 11px; }
 .axis-title { fill: var(--muted); font-size: 11px; font-style: italic; }

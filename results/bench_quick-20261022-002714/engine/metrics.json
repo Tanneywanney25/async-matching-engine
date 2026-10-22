@@ -1,0 +1,24 @@
+{
+  "sections": {
+    "engine": {
+      "add_order": {
+        "mean_us": 11.19037385,
+        "p50_us": 8.301,
+        "p95_us": 24.202,
+        "p99_us": 35.267
+      },
+      "cancel_order": {
+        "mean_us": 2.3904625,
+        "p50_us": 0.473,
+        "p95_us": 6.697,
+        "p99_us": 9.798
+      },
+      "cancels": 10000,
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+      "orders": 100000,
+      "python": "3.13.15",
+      "raw_file": "raw/engine_latency_us.json"
+    }
+  },
+  "source": "real"
+}

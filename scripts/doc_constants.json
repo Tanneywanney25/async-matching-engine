@@ -1,9 +1,13 @@
 {
   "1": "levels are numbered from the top of the book; also 'v1' style rung labels written as words",
   "10": "top-10 levels in the imbalance definition (metrics.book_imbalance with levels=10)",
+  "20": "the C++20 language standard, written as part of a name (C++20), not a measurement",
   "30": "the time-ordered 70/30 split leaves the last 30% of each series for testing",
+  "32": "threads per warp on every NVIDIA GPU, a hardware constant (DESIGN.md's coalescing note)",
   "99": "99th percentile (the latency statistic named in bullet 3)",
   "100": "the 100-trade window of metrics.rolling_vwap",
   "128": "128-bit (16-byte) vectorized loads, a property of the code, not a measurement",
-  "2014": "Cont, Kukanov and Stoikov (2014), the order flow imbalance reference"
+  "2014": "Cont, Kukanov and Stoikov (2014), the order flow imbalance reference",
+  "2016": "Merrill and Garland (2016), the single-pass decoupled look-back scan reference",
+  "32,767": "the largest int16 value, the offset limit of the int16 price encoding (INT16_MAX_ABS in bench/bench_pipeline.py)"
 }

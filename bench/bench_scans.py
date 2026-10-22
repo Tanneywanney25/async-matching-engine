@@ -4,10 +4,13 @@
 
 Section ``scans`` (shape in ``bench/CONTRACT.md``):
 
-* three inclusive float64 scans, interleaved, CUDA events: the work-efficient Blelloch scan in
-  shared memory with bank-conflict padding, the warp-shuffle scan, and ``cub::DeviceScan::
-  InclusiveSum`` (built in-job with nvcc); at the archive's snapshot count and, for throughput,
-  at 2**24 elements (the real series tiled). Each is checked against ``numpy.cumsum``.
+* four inclusive float64 scans, interleaved, CUDA events: the work-efficient Blelloch scan in
+  shared memory with bank-conflict padding, the warp-shuffle scan, the single-pass decoupled
+  look-back scan (Merrill and Garland, 2016) and ``cub::DeviceScan::InclusiveSum`` (built in-job
+  with nvcc); at the archive's snapshot count and, for throughput, at 2**24 elements (the real
+  series tiled). Each is checked against ``numpy.cumsum`` and against the others. The look-back
+  scan first passes ``bench.lookback_check`` in a child process with a timeout (a deadlock would
+  otherwise hold the GPU job); if it fails or hangs it is reported as such and not timed.
 * rolling VWAP over trades as two inclusive scans (price x size, size) per product plus a windowed
   difference: the 100-trade window of ``metrics.rolling_vwap`` (checked in Decimal on 200 sampled
   trades) and 1 s / 10 s windows sampled at every snapshot (checked against NumPy).
@@ -18,8 +21,10 @@ from __future__ import annotations
 
 import argparse
 import ctypes
+import json
 import math
 import subprocess
+import sys
 import time
 from decimal import Decimal
 from pathlib import Path
@@ -37,6 +42,8 @@ QUICK_LARGE_N = 1 << 20
 QUICK_N = 100_000
 VWAP_SAMPLE = 200
 BLOCK = 256
+LB_TILE = 256 * 8
+LOOKBACK_CHECK_TIMEOUT_S = 240
 
 
 def log(*args) -> None:
@@ -46,20 +53,22 @@ def log(*args) -> None:
 class Scans:
     """The NVRTC scans (multi-block, recursive carries) plus the CUB library when it builds."""
 
-    def __init__(self) -> None:
+    def __init__(self, with_cub: bool = True) -> None:
         cp = self.cp = cupy()
         self.mod = raw_module(["scan.cu"])
         self.k = {name: self.mod.get_function(name) for name in (
             "blelloch_f64", "blelloch_f32", "warpscan_f64", "warpscan_f32",
-            "scan_add_offsets_f64", "scan_add_offsets_f32")}
+            "scan_add_offsets_f64", "scan_add_offsets_f32", "lookback_init", "lookback_f64", "lookback_f32")}
         self.bufs: Dict[tuple, list] = {}
+        self.lb_bufs: Dict[tuple, tuple] = {}
         self.cub = None
         self.cub_error: Optional[str] = None
-        try:
-            self.cub = build_cub()
-        except Exception as exc:  # noqa: BLE001 - recorded, CUB skipped honestly
-            self.cub_error = repr(exc)
-            log("CUB unavailable:", exc)
+        if with_cub:
+            try:
+                self.cub = build_cub()
+            except Exception as exc:  # noqa: BLE001 - recorded, CUB skipped honestly
+                self.cub_error = repr(exc)
+                log("CUB unavailable:", exc)
         self.stream = cp.cuda.get_current_stream()
 
     def _levels(self, n: int, dtype) -> list:
@@ -85,7 +94,23 @@ class Scans:
                 raise RuntimeError(f"cub returned {rc}")
             return
         suffix = "f64" if x.dtype == np.float64 else "f32"
+        if kind == "lookback":
+            self._lookback(suffix, x, out)
+            return
         self._scan(kind, suffix, x, out, self._levels(int(x.size), x.dtype), 0)
+
+    def _lookback(self, suffix, x, out) -> None:
+        """One pass: reset tile statuses and the tile counter, then one block per tile."""
+        n = int(x.size)
+        tiles = max(1, math.ceil(n / LB_TILE))
+        key = (tiles, np.dtype(x.dtype).str)
+        if key not in self.lb_bufs:
+            cp = self.cp
+            self.lb_bufs[key] = (cp.empty(tiles, dtype=cp.int32), cp.empty(tiles, dtype=x.dtype),
+                                 cp.empty(tiles, dtype=x.dtype), cp.zeros(1, dtype=cp.uint32))
+        status, aggregate, inclusive, counter = self.lb_bufs[key]
+        self.k["lookback_init"]((min(1024, math.ceil(tiles / 256)),), (256,), (status, counter, np.int64(tiles)))
+        self.k[f"lookback_{suffix}"]((tiles,), (256,), (x, out, status, aggregate, inclusive, counter, np.int64(n)))
 
     def _scan(self, kind, suffix, x, out, levels, depth) -> None:
         m, sums, scanned = levels[depth]
@@ -113,38 +138,76 @@ def build_cub() -> ctypes.CDLL:
     return lib
 
 
-def scan_table(bench: Bench, sc: Scans, values: np.ndarray, label: str) -> dict:
+def lookback_check(quick: bool) -> dict:
+    """Run ``bench.lookback_check`` in a child process with a timeout; never raises."""
+    cmd = [sys.executable, "-m", "bench.lookback_check"] + (["--quick"] if quick else [])
+    t0 = time.perf_counter()
+    try:
+        proc = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True, text=True, timeout=LOOKBACK_CHECK_TIMEOUT_S)
+    except subprocess.TimeoutExpired:
+        return {"passed": False, "error": f"timed out after {LOOKBACK_CHECK_TIMEOUT_S} s (deadlock or livelock)",
+                "seconds": round(time.perf_counter() - t0, 1)}
+    for line in proc.stdout.splitlines():
+        if line.startswith("LOOKBACK_CHECK "):
+            return json.loads(line[len("LOOKBACK_CHECK "):])
+    return {"passed": False, "error": f"exit {proc.returncode}: {(proc.stderr or proc.stdout)[-1500:]}"}
+
+
+NAMES = {"blelloch": "blelloch_shared", "warpscan": "warp_shuffle", "lookback": "decoupled_lookback", "cub": "cub_device_scan"}
+KINDS = {v: k for k, v in NAMES.items()}
+NOTES = {"blelloch": "work-efficient up-sweep/down-sweep, 1024 elements per block, bank-conflict padding; recursive carries",
+         "warpscan": "__shfl_up_sync warp scan, 256 threads x 4 elements, warp totals scanned by warp 0; recursive carries",
+         "lookback": "single pass, Merrill and Garland (2016): tiles of 256 x 8 claimed by an atomic counter, status words "
+                     "with release/acquire ordering, warp-wide look-back over 32 predecessors",
+         "cub": "cub::DeviceScan::InclusiveSum, CUDA toolkit CUB, nvcc -O3 -arch=sm_75"}
+
+
+def scan_table(bench: Bench, sc: Scans, values: np.ndarray, label: str, lookback_ok: bool = True,
+               ceilings: Optional[dict] = None) -> dict:
     cp = sc.cp
     x = cp.asarray(values.astype(np.float64))
-    outs = {k: cp.empty_like(x) for k in ("blelloch", "warpscan", "cub")}
+    kinds = ["blelloch", "warpscan"] + (["lookback"] if lookback_ok else []) + (["cub"] if sc.cub is not None else [])
+    outs = {k: cp.empty_like(x) for k in kinds}
     want = np.cumsum(values.astype(np.float64))
-    kinds = ["blelloch", "warpscan"] + (["cub"] if sc.cub is not None else [])
-    verified = {}
+    verified, got = {}, {}
     for kind in kinds:
         outs[kind].fill(0)
         sc.scan(kind, x, outs[kind])
-        got = cp.asnumpy(outs[kind])
-        err = np.abs(got - want) / np.maximum(np.abs(want), 1e-300)
+        got[kind] = cp.asnumpy(outs[kind])
+        err = np.abs(got[kind] - want) / np.maximum(np.abs(want), 1e-300)
         verified[kind] = {"verified": bool(err.max() <= 1e-9), "max_rel_err": float(err.max()),
                           "final_rel_err": float(err[-1])}
-    names = {"blelloch": "blelloch_shared", "warpscan": "warp_shuffle", "cub": "cub_device_scan"}
-    res = bench.block(f"scan_{label}", {names[k]: (lambda k=k: event_time_ms(sc.stream, lambda: sc.scan(k, x, outs[k])))
+    for kind in kinds:  # agreement with every other implementation, not only with NumPy
+        verified[kind]["max_rel_diff_vs"] = {NAMES[o]: float(np.max(np.abs(got[kind] - got[o]) / np.maximum(np.abs(want), 1e-300)))
+                                             for o in kinds if o != kind}
+    del got
+    res = bench.block(f"scan_{label}", {NAMES[k]: (lambda k=k: event_time_ms(sc.stream, lambda: sc.scan(k, x, outs[k])))
                                        for k in kinds})
     n = int(values.size)
     impls = []
-    notes = {"blelloch": "work-efficient up-sweep/down-sweep, 1024 elements per block, bank-conflict padding",
-             "warpscan": "__shfl_up_sync warp scan, 256 threads x 4 elements, warp totals scanned by warp 0",
-             "cub": "cub::DeviceScan::InclusiveSum, CUDA toolkit CUB, nvcc -O3 -arch=sm_75"}
     for kind in kinds:
-        m = res[names[kind]]
-        impls.append({"name": names[kind], "ms": m, "elements_per_s": n / (m["median_ms"] * 1e-3),
-                      "gbs": 16 * n / (m["median_ms"] * 1e-3) / 1e9, "notes": notes[kind], **verified[kind]})
+        m = res[NAMES[kind]]
+        gbs = 16 * n / (m["median_ms"] * 1e-3) / 1e9
+        row = {"name": NAMES[kind], "ms": m, "elements_per_s": n / (m["median_ms"] * 1e-3), "gbs": gbs, "notes": NOTES[kind],
+               **verified[kind]}
+        for key, ceiling in (ceilings or {}).items():
+            if ceiling:
+                row[f"pct_of_{key}"] = gbs / ceiling * 100.0
+        impls.append(row)
     if sc.cub is None:
         impls.append({"name": "cub_device_scan", "ms": None, "verified": False, "error": sc.cub_error})
+    if not lookback_ok:
+        impls.append({"name": "decoupled_lookback", "ms": None, "verified": False,
+                      "error": "not timed: bench.lookback_check did not pass in this job"})
     timed = [i for i in impls if i.get("ms")]
     winner = min(timed, key=lambda i: i["ms"]["median_ms"])["name"]
+    by = {i["name"]: i for i in timed}
+    gap = None
+    if "decoupled_lookback" in by and "cub_device_scan" in by:
+        lb, cub = by["decoupled_lookback"]["ms"]["median_ms"], by["cub_device_scan"]["ms"]["median_ms"]
+        gap = {"lookback_ms": lb, "cub_ms": cub, "lookback_over_cub": lb / cub, "pct_slower_than_cub": (lb / cub - 1) * 100.0}
     del x, outs
-    return {"n_elements": n, "dtype": "float64", "implementations": impls, "winner": winner,
+    return {"n_elements": n, "dtype": "float64", "implementations": impls, "winner": winner, "lookback_vs_cub": gap,
             "bytes_per_element": 16, "counting": "8 bytes read + 8 bytes written per element"}
 
 
@@ -155,15 +218,22 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
     n_products = len(meta["products"])
     n_total = int(meta["n_snapshots"])
     n = min(n_total, QUICK_N) if quick else n_total
+    check = lookback_check(quick)
+    log("look-back check:", "passed" if check.get("passed") else f"FAILED {str(check.get('error', ''))[:300]}",
+        f"({check.get('seconds')} s)")
     sc = Scans()
+    bw = bench.metrics.get("sections", {}).get("bandwidth", {})
+    # ceilings only from this run's own bandwidth section (same job, same card); none when it did not run
+    ceilings = {"read_ceiling": bw.get("read_kernel_gbs"),
+                "copy_ceiling": max(bw.get("copy_kernel_gbs") or 0.0, bw.get("cudamemcpy_gbs") or 0.0) or None}
 
     # 1. scan implementations on a real series: top-of-book bid notional per snapshot, in ticks x size
     series = arch["bid_px"][0][:n].astype(np.float64) * arch["bid_sz"][0][:n].astype(np.float64)
-    main = scan_table(bench, sc, series, "snapshots")
+    main = scan_table(bench, sc, series, "snapshots", bool(check.get("passed")), ceilings)
     large_n = QUICK_LARGE_N if quick else LARGE_N
-    large = scan_table(bench, sc, np.resize(series, large_n), "large")
+    large = scan_table(bench, sc, np.resize(series, large_n), "large", bool(check.get("passed")), ceilings)
     log(f"scans n={n:,}: winner {main['winner']}; n={large_n:,}: winner {large['winner']}")
-    scan_kind = {"cub_device_scan": "cub", "warp_shuffle": "warpscan", "blelloch_shared": "blelloch"}[large["winner"]]
+    scan_kind = KINDS[large["winner"]]
 
     # 2. rolling VWAP over trades
     t_prod = arch["trade_product"].astype(np.int64)
@@ -289,7 +359,8 @@ def run(bench: Bench, arch: dict, quick: bool = False) -> None:
                     "definition": "mean over the same product's snapshots with time in (t - 1 s, t]"}
     log(f"rolling book: {book_ms['median_ms']:.3f} ms, spread err {err_sp:.2e}, imbalance err {err_im:.2e}")
 
-    bench.section("scans", {**main, "large": large, "rolling_vwap": rolling_vwap_section, "rolling_book": rolling_book,
+    bench.section("scans", {**main, "large": large, "lookback_check": check, "ceilings_gbs": ceilings,
+                            "rolling_vwap": rolling_vwap_section, "rolling_book": rolling_book,
                             "cub_error": sc.cub_error, "quick": bool(quick), "wall_seconds": time.perf_counter() - t0,
                             "series": "top-of-book bid notional per snapshot (ticks x size), float64"})
     cp.get_default_memory_pool().free_all_blocks()

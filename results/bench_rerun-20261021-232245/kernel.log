@@ -1,0 +1,35 @@
+[{"stream_name":"stdout","time":1.209059274,"data":"[    0.0s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":1.20912896,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":46.130296008,"data":"[   45.0s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"NVIDIA Nsight Systems version 2025.1.1.0\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":48.403987163,"data":"[   47.2s] repo at d86371921eaf3adbdb3c51248461f705cb1a0fd1 on gpu-phase2\n"}
+,{"stream_name":"stdout","time":49.295027666,"data":"[   48.1s] archive: /kaggle/input/datasets/tanushbhatia/exchange-engine-archive\n"}
+,{"stream_name":"stdout","time":49.425168593,"data":"[   48.3s] archive source=real snapshots=863153 trades=280818 hash=10e3c7d79010feb6\n"}
+,{"stream_name":"stdout","time":49.439205003,"data":"[   48.3s] running: /usr/bin/python3 -u -m bench.run_all --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --out /kaggle/working/results/bench_rerun-20261021-232245 --source real --sections ladder,scans --skip-engine --budget-minutes 36\n"}
+,{"stream_name":"stdout","time":71.7531066,"data":"[run_all] archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive (real, 863,153 snapshots, 280,818 trades) -\u003e /kaggle/working/results/bench_rerun-20261021-232245\n"}
+,{"stream_name":"stdout","time":71.753143011,"data":"[run_all] gpu Tesla T4; sections ladder, scans; engine skipped; iters 30; quick False\n"}
+,{"stream_name":"stdout","time":74.862650846,"data":"[ladder] bandwidth: copy kernel 221.6 GB/s, cudaMemcpy 233.1 GB/s, read-only 262.4 GB/s, theoretical 320.1\n"}
+,{"stream_name":"stdout","time":77.604628338,"data":"[ladder] n=863,153 levels=50 n_stride=863,156\n"}
+,{"stream_name":"stdout","time":78.152101497,"data":"[ladder] verify v0_aos: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":78.24698583,"data":"[ladder] verify v1_soa: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":78.338071351,"data":"[ladder] verify v2_soa_fused: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":78.42742801200001,"data":"[ladder] verify v3_soa_fused_vec4: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":78.517726661,"data":"[ladder] verify v4_soa_fused_vec4_sweep: True max_abs {'spread_ticks': 0, 'spread_usd': 1.7620623111724854e-06, 'depth_bid': 0.00016174453776329756, 'depth_ask': 0.0007611687999542482, 'imbalance10': 1.7138831246224506e-07, 'microprice_offset_ticks': 0.00012264311612852907}\n"}
+,{"stream_name":"stdout","time":80.33820195,"data":"[ladder] sweep best: block 128 grid 80 1.4833 ms\n"}
+,{"stream_name":"stdout","time":118.260585966,"data":"[ladder] best rung v4_soa_fused_vec4_sweep: kernel 1.4871 ms (251.3 GB/s, 95.8% of ceiling), e2e 31.76 ms; speedups {'best_rung': 'v4_soa_fused_vec4_sweep', 'e2e_vs_numpy': 2.8370115651434538, 'e2e_vs_numpy_pageable': 1.0975644892877718, 'kernel_vs_cupy': 2.8769716331084862, 'e2e_vs_cupy': 1.1048636938317027, 'v0_to_best_kernel': 27.64768740299099, 'kernel_vs_cpp_single': 23.49488940531919, 'kernel_vs_cpp_omp': 11.820495183276744, 'e2e_vs_cpp_single': 1.1001318769226913}\n"}
+,{"stream_name":"stdout","time":118.327527881,"data":"[run_all] ladder         46.6 s  ok\n"}
+,{"stream_name":"stdout","time":125.941426288,"data":"[scans] look-back check: passed (3.29 s)\n"}
+,{"stream_name":"stdout","time":141.055072353,"data":"[scans] scans n=863,153: winner cub_device_scan; n=16,777,216: winner cub_device_scan\n"}
+,{"stream_name":"stdout","time":141.893786001,"data":"[scans] rolling vwap: 1.055 ms, decimal max rel err 1.88e-16, {'1s': {'nan_pattern_equal': True, 'max_rel_err': 0.0, 'reference': 'math.fsum over each sampled window', 'sample': 2000, 'float64_cumsum_max_rel_err': 1.4835426079406455e-05, 'gpu_vs_numpy_cumsum_max_rel_err': 0.0004258928190165954, 'coverage_pct': 74.33965936514151}, '10s': {'nan_pattern_equal': True, 'max_rel_err': 0.0, 'reference': 'math.fsum over each sampled window', 'sample': 2000, 'float64_cumsum_max_rel_err': 6.041221601206292e-07, 'gpu_vs_numpy_cumsum_max_rel_err': 1.2830449770460848e-05, 'coverage_pct': 99.86051140411955}}\n"}
+,{"stream_name":"stdout","time":142.43736303,"data":"[scans] rolling book: 1.211 ms, spread err 0.00e+00, imbalance err 1.79e-07\n"}
+,{"stream_name":"stdout","time":142.447398724,"data":"[run_all] scans          23.8 s  ok\n"}
+,{"stream_name":"stdout","time":142.505609558,"data":"[run_all] done in 92.7 s: 4 section(s) in /kaggle/working/results/bench_rerun-20261021-232245/metrics.json, 0 error(s)\n"}
+,{"stream_name":"stdout","time":142.692635759,"data":"[  141.5s] run_all exit code 0\n"}
+,{"stream_name":"stdout","time":142.752723725,"data":"[  141.6s] finished: complete 142s\n"}
+,{"stream_name":"stdout","time":142.78282735,"data":"RESULT_BUNDLE results_bench_rerun-20261021-232245.tar.gz\n"}
+,{"stream_name":"stderr","time":145.346142772,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":145.346172724,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":145.682274111,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":145.682301888,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":146.810038544,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":148.035663036,"data":"[NbConvertApp] Writing 325618 bytes to __results__.html\n"}
+]

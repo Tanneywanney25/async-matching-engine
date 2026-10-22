@@ -1,0 +1,492 @@
+{
+  "archive": {
+    "bytes": 245300000,
+    "capture_end_ns": 1760031542297381535,
+    "capture_seconds": 31542.107849594,
+    "capture_start_ns": 1760000000189531941,
+    "content_hash": "805644066b5d802da56706841a2ac40c600e4f856a0c1e5147b8e555d1cbfae3",
+    "gap_count": 0,
+    "levels": 50,
+    "n_snapshots": 300000,
+    "n_trades": 100000,
+    "per_product_snapshots": {
+      "BTC-USD": 150000,
+      "ETH-USD": 150000
+    },
+    "source": "synthetic"
+  },
+  "created_unix": 1792625323.1722934,
+  "errors": [],
+  "gpu": {
+    "compute_capability": "7.5",
+    "cuda_runtime": 12090,
+    "cupy_version": "14.0.1",
+    "l2_cache_bytes": 4194304,
+    "memory_bus_width_bits": 256,
+    "memory_clock_khz": 5001000,
+    "memory_gb": 15.636,
+    "name": "Tesla T4",
+    "nvrtc_arch": "sm_75",
+    "shared_mem_per_sm_bytes": 65536,
+    "sm_count": 40,
+    "theoretical_bw_gbs": 320.06
+  },
+  "run_all": {
+    "argv": [
+      "--archive",
+      "/kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth",
+      "--out",
+      "/kaggle/working/results/bench_quick-20261021-232727",
+      "--source",
+      "synthetic",
+      "--quick",
+      "--sections",
+      "pipeline",
+      "--budget-minutes",
+      "36"
+    ],
+    "engine": true,
+    "finished_unix": 1792625334.4332705,
+    "hostname": "62be2273f31c",
+    "n_iters": 5,
+    "platform": "Linux-6.18.48+-x86_64-with-glibc2.39",
+    "python": "3.13.15",
+    "quick": true,
+    "sections_requested": [
+      "pipeline"
+    ],
+    "started_unix": 1792625283.952952,
+    "wall_seconds": 50.5
+  },
+  "sections": {
+    "engine": {
+      "add_order": {
+        "mean_us": 10.43391814,
+        "p50_us": 7.772,
+        "p95_us": 22.512,
+        "p99_us": 32.043
+      },
+      "cancel_order": {
+        "mean_us": 1.842021,
+        "p50_us": 0.374,
+        "p95_us": 5.128,
+        "p99_us": 6.119
+      },
+      "cancels": 10000,
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+      "orders": 100000,
+      "python": "3.13.15",
+      "raw_file": "raw/engine_latency_us.json",
+      "runner": "scripts/benchmark.py --results-dir"
+    },
+    "pipeline": {
+      "bad_books_device": 0,
+      "block_size": 256,
+      "breakdown": {
+        "d2h_ms": 0.3868160005658865,
+        "h2d_ms": 8.620031893253326,
+        "kernel_ms": 0.545024000108242,
+        "measured_in": "overlapped pass: CUDA events recorded on each stream around every chunk's H2D, kernel and D2H, summed per stage, median over the passes",
+        "overlapped_wall_ms": 8.73583299994607,
+        "passes": 5,
+        "sum_ms": 9.551871893927455
+      },
+      "breakdown_serial": {
+        "d2h_ms": 0.3632320035248995,
+        "h2d_ms": 8.687871932983398,
+        "kernel_ms": 0.47283199802041054,
+        "passes": 5,
+        "serial_wall_ms": 9.449456999959693,
+        "sum_ms": 9.523935934528708
+      },
+      "bytes_d2h_per_pass": 2621440,
+      "bytes_h2d_per_pass": 104857600,
+      "chunk_bytes": 6553600,
+      "chunk_snapshots": 8192,
+      "chunks": 16,
+      "consequence": "Transfers dominate: the host-to-device and device-to-host copies are 94% of the pipeline's GPU time (H2D 8.6 ms at 12.2 GB/s, kernel 0.5 ms, D2H 0.4 ms). Overlapping three streams can only hide the kernel and the copy-back behind the input copy, which saved 7.6% of the serial wall time. The design consequence is that the archive should be copied to the card once and stay resident, with every analysis run in that one residency instead of streaming the data per analysis.",
+      "d2h_gbs": 6.776968884857412,
+      "d2h_gbs_serial": 7.21698521760432,
+      "device_bytes": 20152324,
+      "h2d_gbs": 12.164409749118132,
+      "h2d_gbs_serial": 12.069422847027637,
+      "host_pinned_bytes": 107479040,
+      "int16_encoding": {
+        "attempted": true,
+        "breakdown": {
+          "d2h_ms": 0.37324799969792366,
+          "h2d_ms": 6.5773440301418304,
+          "kernel_ms": 0.3976959977298975,
+          "sum_ms": 7.348288027569652
+        },
+        "bytes_h2d_int16": 79691776,
+        "bytes_h2d_int32": 104857600,
+        "bytes_saved_pct": 24.0,
+        "chunks": 16,
+        "e2e_ms": {
+          "clock_drop_pct": 0.0,
+          "iqr_ms": 0.0037070000189487473,
+          "max_ms": 6.661718000032124,
+          "mean_ms": 6.652196599975468,
+          "median_ms": 6.653532999962408,
+          "min_ms": 6.639898999992511,
+          "n": 5,
+          "q1_ms": 6.651062999935675,
+          "q3_ms": 6.654769999954624,
+          "samples_file": "raw/pipeline_int16__int16.json",
+          "sm_clock_after_mhz": 1515.0,
+          "sm_clock_before_mhz": 1515.0,
+          "throttle_flag": false,
+          "warmup_discarded": 3
+        },
+        "encode_ms_host_total": 221.36996400001863,
+        "encoding": "per side: best price int32 per snapshot plus int16 offsets px - best per level (-32768 marks a missing level), decoded on the device inside the kernel; a chunk with any |offset| > 32767 is sent as int32 (overflow_fallbacks). Encoding is done once on the host like the pinned int32 staging; encode_ms_host_total is its cost.",
+        "h2d_gbs": 12.116102736119394,
+        "identical_to_int32": {
+          "identical": true,
+          "per_output": {
+            "depth_ask": true,
+            "depth_bid": true,
+            "imbalance10": true,
+            "microprice_offset": true,
+            "spread_ticks": true
+          }
+        },
+        "int32_e2e_ms": {
+          "clock_drop_pct": 0.0,
+          "iqr_ms": 0.010124000027644797,
+          "max_ms": 8.67567099999178,
+          "mean_ms": 8.670688999995946,
+          "median_ms": 8.673421000025883,
+          "min_ms": 8.664060999990397,
+          "n": 5,
+          "q1_ms": 8.665083999972012,
+          "q3_ms": 8.675207999999657,
+          "samples_file": "raw/pipeline_int16__int32.json",
+          "sm_clock_after_mhz": 1515.0,
+          "sm_clock_before_mhz": 1515.0,
+          "throttle_flag": false,
+          "warmup_discarded": 3
+        },
+        "kernel": "pipeline_features_i16",
+        "ok": true,
+        "overflow_fallbacks": 0,
+        "snapshots_in_fallback_chunks": 0,
+        "speedup_vs_int32": 1.3035812702927734,
+        "verification": {
+          "bad_books_device": 0,
+          "encoding": "int16",
+          "max_abs_err": {
+            "depth_ask": 1.5307217836380005e-05,
+            "depth_bid": 1.1168420314788818e-05,
+            "imbalance10": 1.7376876787489337e-07,
+            "microprice_offset": 4.991138498056102e-07,
+            "spread_ticks": 0
+          },
+          "pass": "overlapped",
+          "verified": true
+        }
+      },
+      "kernel": "pipeline_features_i32",
+      "kernel_effective_gbs": 197.20056360573957,
+      "layout": "chunk-major pinned copy built once: chunk i = snapshots [i*n/K, (i+1)*n/K); one contiguous 256-byte-aligned block per chunk holding bid_px, bid_sz, ask_px, ask_sz (each level-major inside the chunk), so every chunk is one cudaMemcpyAsync in and one out",
+      "levels": 50,
+      "n_snapshots": 131072,
+      "n_snapshots_archive": 300000,
+      "nsys_child": {
+        "bytes_d2h": 2621440,
+        "bytes_h2d": 104857600,
+        "chunks": 16,
+        "n_snapshots": 131072,
+        "nvtx": true,
+        "overlapped_ms": 8.791986000005636,
+        "serial_ms": 9.425857999985965
+      },
+      "nsys_command": "/opt/nvidia/nsight-compute/2025.1.1/host/target-linux-x64/nsys profile --trace=cuda,nvtx --stats=false --force-overwrite true -o /kaggle/working/results/bench_quick-20261021-232727/raw/pipeline /usr/bin/python3 -m bench.bench_pipeline --nsys-child --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive-synth --chunks 16 --subset 131072",
+      "nsys_report": "raw/pipeline.nsys-rep",
+      "nsys_sqlite": "raw/pipeline.sqlite",
+      "nsys_timeline": {
+        "bars": {
+          "d2h": 16,
+          "h2d": 16,
+          "kernel": 16
+        },
+        "busy_ms": {
+          "d2h": 0.332763,
+          "h2d": 8.60398,
+          "kernel": 0.432281
+        },
+        "bytes": {
+          "d2h": 2621440,
+          "h2d": 104857600
+        },
+        "kernels": {
+          "pipeline_features_i32": 16
+        },
+        "nvtx_range": "overlapped_pass",
+        "nvtx_range_found": true,
+        "other_memcpy": 0,
+        "overlap_fraction": 0.0829896828921752,
+        "overlap_pct": 8.29896828921752,
+        "sqlite": "/kaggle/working/results/bench_quick-20261021-232727/raw/pipeline.sqlite",
+        "svg": "/kaggle/working/results/bench_quick-20261021-232727/raw/pipeline_timeline.svg",
+        "window_ms": 8.756233
+      },
+      "nsys_timeline_serial": {
+        "bars": {
+          "d2h": 16,
+          "h2d": 16,
+          "kernel": 16
+        },
+        "busy_ms": {
+          "d2h": 0.231678,
+          "h2d": 8.565323,
+          "kernel": 0.38124
+        },
+        "bytes": {
+          "d2h": 2621440,
+          "h2d": 104857600
+        },
+        "kernels": {
+          "pipeline_features_i32": 16
+        },
+        "nvtx_range": "serial_pass",
+        "nvtx_range_found": true,
+        "other_memcpy": 0,
+        "overlap_fraction": 0.0,
+        "overlap_pct": 0.0,
+        "sqlite": "/kaggle/working/results/bench_quick-20261021-232727/raw/pipeline.sqlite",
+        "svg": "/kaggle/working/results/bench_quick-20261021-232727/raw/pipeline_timeline_serial.svg",
+        "window_ms": 9.390846
+      },
+      "nsys_version": "NVIDIA Nsight Systems version 2025.1.1.0",
+      "overlap_saved_pct": 7.552010660683127,
+      "overlapped_ms": {
+        "clock_drop_pct": 0.0,
+        "iqr_ms": 0.020995999875594862,
+        "max_ms": 8.760599000083857,
+        "mean_ms": 8.736524200025997,
+        "median_ms": 8.73583299994607,
+        "min_ms": 8.699981000063417,
+        "n": 5,
+        "q1_ms": 8.732606000080523,
+        "q3_ms": 8.753601999956118,
+        "samples_file": "raw/pipeline__overlapped.json",
+        "sm_clock_after_mhz": 585.0,
+        "sm_clock_before_mhz": 585.0,
+        "throttle_flag": false,
+        "warmup_discarded": 3
+      },
+      "payload_bytes_per_pass": 104857600,
+      "pinned": true,
+      "quick": true,
+      "serial_ms": {
+        "clock_drop_pct": 0.0,
+        "iqr_ms": 0.023005000002740417,
+        "max_ms": 9.470684999996593,
+        "mean_ms": 9.453832799977135,
+        "median_ms": 9.449456999959693,
+        "min_ms": 9.439814999950613,
+        "n": 5,
+        "q1_ms": 9.443100999988019,
+        "q3_ms": 9.46610599999076,
+        "samples_file": "raw/pipeline__serial.json",
+        "sm_clock_after_mhz": 585.0,
+        "sm_clock_before_mhz": 585.0,
+        "throttle_flag": false,
+        "warmup_discarded": 3
+      },
+      "staging_ms": 116.5988999999854,
+      "streams": 3,
+      "subset": 131072,
+      "timeline_svg": "raw/pipeline_timeline.svg",
+      "timeline_svg_serial": "raw/pipeline_timeline_serial.svg",
+      "transfer_share_pct": 94.29406082744119,
+      "triple_buffered": true,
+      "two_gpu": {
+        "attempted": true,
+        "bytes_h2d_per_device": [
+          52428800,
+          52428800
+        ],
+        "bytes_h2d_total": 104857600,
+        "chunks_per_device": 8,
+        "device_count": 2,
+        "devices": [
+          0,
+          1
+        ],
+        "h2d_aggregate_vs_one_gpu": 1.0053194563997894,
+        "h2d_gbs_one_gpu": 12.25448398638256,
+        "h2d_gbs_two_gpu_aggregate": 12.31967117965004,
+        "h2d_only_one_gpu_ms": {
+          "clock_drop_pct": 4.35,
+          "clock_drop_pct_per_gpu": {
+            "0": 0.0,
+            "1": 4.35
+          },
+          "iqr_ms": 0.0034060000189128914,
+          "max_ms": 8.574533999990308,
+          "mean_ms": 8.55904739999005,
+          "median_ms": 8.55667199994059,
+          "min_ms": 8.551490999934686,
+          "n": 5,
+          "q1_ms": 8.554567000032876,
+          "q3_ms": 8.557973000051788,
+          "samples_file": "raw/pipeline_h2d_only__one_gpu.json",
+          "sm_clock_after_mhz": 900.0,
+          "sm_clock_before_mhz": 900.0,
+          "throttle_flag": false,
+          "warmup_discarded": 3
+        },
+        "h2d_only_two_gpu_ms": {
+          "clock_drop_pct": 4.35,
+          "clock_drop_pct_per_gpu": {
+            "0": 0.0,
+            "1": 4.35
+          },
+          "iqr_ms": 0.004055999966112722,
+          "max_ms": 8.521541000050092,
+          "mean_ms": 8.512472200004595,
+          "median_ms": 8.511396000017157,
+          "min_ms": 8.50661599997693,
+          "n": 5,
+          "q1_ms": 8.509376000006341,
+          "q3_ms": 8.513431999972454,
+          "samples_file": "raw/pipeline_h2d_only__two_gpu.json",
+          "sm_clock_after_mhz": 900.0,
+          "sm_clock_before_mhz": 900.0,
+          "throttle_flag": false,
+          "warmup_discarded": 3
+        },
+        "host_memcpy_gbs": 5.781370746700794,
+        "identical_to_one_gpu": {
+          "identical": true,
+          "per_output": {
+            "depth_ask": true,
+            "depth_bid": true,
+            "imbalance10": true,
+            "microprice_offset": true,
+            "spread_ticks": true
+          }
+        },
+        "ok": true,
+        "one_gpu_ms": {
+          "clock_drop_pct": 8.0,
+          "clock_drop_pct_per_gpu": {
+            "0": 0.0,
+            "1": 8.0
+          },
+          "iqr_ms": 0.013806000083604886,
+          "max_ms": 8.733693000067433,
+          "mean_ms": 8.718189600040205,
+          "median_ms": 8.713676000070336,
+          "min_ms": 8.707846999982394,
+          "n": 5,
+          "q1_ms": 8.710962999998628,
+          "q3_ms": 8.724769000082233,
+          "samples_file": "raw/pipeline_two_gpu__one_gpu.json",
+          "sm_clock_after_mhz": 585.0,
+          "sm_clock_before_mhz": 585.0,
+          "throttle_flag": false,
+          "warmup_discarded": 3
+        },
+        "pcie": [
+          "0, 00000000:00:04.0, 3, 16",
+          "1, 00000000:00:05.0, 3, 16"
+        ],
+        "scaling_efficiency_pct": 50.54312386671819,
+        "speedup": 1.0108624773343637,
+        "split": [
+          [
+            0,
+            65536
+          ],
+          [
+            65536,
+            131072
+          ]
+        ],
+        "topology": {
+          "cpu_affinity": {
+            "GPU1": "0-3"
+          },
+          "gpus": [
+            "GPU1"
+          ],
+          "links": {},
+          "numa_affinity": {
+            "GPU1": "0"
+          }
+        },
+        "topology_text": "\t\u001b[4mGPU0\tGPU1\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nGPU0\t X \tPHB\t0-3\t0\t\tN/A\nGPU1\tPHB\t X \t0-3\t0\t\tN/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks\n",
+        "two_gpu_ms": {
+          "clock_drop_pct": 8.0,
+          "clock_drop_pct_per_gpu": {
+            "0": 0.0,
+            "1": 8.0
+          },
+          "iqr_ms": 0.03071999992698693,
+          "max_ms": 8.630407999930867,
+          "mean_ms": 8.612700799994855,
+          "median_ms": 8.620041000085621,
+          "min_ms": 8.58982299996569,
+          "n": 5,
+          "q1_ms": 8.596256000032554,
+          "q3_ms": 8.62697599995954,
+          "samples_file": "raw/pipeline_two_gpu__two_gpu.json",
+          "sm_clock_after_mhz": 585.0,
+          "sm_clock_before_mhz": 585.0,
+          "throttle_flag": false,
+          "warmup_discarded": 3
+        },
+        "verification": {
+          "max_abs_err": {
+            "depth_ask": 1.5307217836380005e-05,
+            "depth_bid": 1.1168420314788818e-05,
+            "imbalance10": 1.7376876787489337e-07,
+            "microprice_offset": 4.991138498056102e-07,
+            "spread_ticks": 0
+          },
+          "verified": true
+        }
+      },
+      "verification": {
+        "overlapped": {
+          "bad_books_device": 0,
+          "encoding": "int32",
+          "max_abs_err": {
+            "depth_ask": 1.5307217836380005e-05,
+            "depth_bid": 1.1168420314788818e-05,
+            "imbalance10": 1.7376876787489337e-07,
+            "microprice_offset": 4.991138498056102e-07,
+            "spread_ticks": 0
+          },
+          "pass": "overlapped",
+          "verified": true
+        },
+        "serial": {
+          "bad_books_device": 0,
+          "encoding": "int32",
+          "max_abs_err": {
+            "depth_ask": 1.5307217836380005e-05,
+            "depth_bid": 1.1168420314788818e-05,
+            "imbalance10": 1.7376876787489337e-07,
+            "microprice_offset": 4.991138498056102e-07,
+            "spread_ticks": 0
+          },
+          "pass": "serial",
+          "verified": true
+        },
+        "verified": true
+      },
+      "verified": true
+    }
+  },
+  "source": "synthetic",
+  "timings_s": {
+    "engine": 1.67,
+    "pipeline": 9.133
+  },
+  "updated_unix": 1792625334.433279
+}

@@ -1,0 +1,47 @@
+[{"stream_name":"stdout","time":0.695560249,"data":"[    0.0s] nvidia-smi: Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":0.695599392,"data":"Tesla T4, 580.178.04\n"}
+,{"stream_name":"stdout","time":16.979170513,"data":"[   16.3s] env: {\"gpu_line\": \"Tesla T4, 580.178.04\\nTesla T4, 580.178.04\", \"nvcc\": \"Cuda compilation tools, release 12.8, V12.8.93\\nBuild cuda_12.8.r12.8/compiler.35583870_0\", \"nsys\": \"NVIDIA Nsight Systems version 2025.1.1.0\", \"gxx\": \"g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\", \"cpu_model\": \"Intel(R) Xeon(R) CPU @ 2.00GHz\", \"cpu_cores\": 4, \"cupy\": \"14.0.1\", \"numpy\": \"2.1.3\"}\n"}
+,{"stream_name":"stdout","time":19.323956438,"data":"[   18.7s] repo at e6cfe66cafc93396ce25df105585d851387f00d4 on gpu-phase2\n"}
+,{"stream_name":"stdout","time":19.743991667,"data":"[   19.1s] archive: /kaggle/input/datasets/tanushbhatia/exchange-engine-archive\n"}
+,{"stream_name":"stdout","time":19.788895375,"data":"[   19.1s] archive source=real snapshots=863153 trades=280818 hash=10e3c7d79010feb6\n"}
+,{"stream_name":"stdout","time":19.79438481,"data":"[   19.1s] running: /usr/bin/python3 -u -m bench.run_all --archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive --out /kaggle/working/results/bench_rerun-20261021-233814 --source real --sections none --budget-minutes 36\n"}
+,{"stream_name":"stdout","time":30.083235444,"data":"[run_all] archive /kaggle/input/datasets/tanushbhatia/exchange-engine-archive (real, 863,153 snapshots, 280,818 trades) -\u003e /kaggle/working/results/bench_rerun-20261021-233814\n"}
+,{"stream_name":"stdout","time":30.083264205,"data":"[run_all] gpu Tesla T4; sections none; engine 100,000 orders / 10,000 cancels; iters 30; quick False\n"}
+,{"stream_name":"stdout","time":30.083511202,"data":"[run_all] $ python /kaggle/working/repo/scripts/benchmark.py --orders 100000 --cancels 10000 --results-dir /kaggle/working/results/bench_rerun-20261021-233814/engine\n"}
+,{"stream_name":"stdout","time":31.883651403000002,"data":"    Benchmarking OrderBook with 100,000 orders (mid=64,000)...\n"}
+,{"stream_name":"stdout","time":31.883709665,"data":"\n"}
+,{"stream_name":"stdout","time":31.88371495,"data":"    add_order (insert + match) (100,000 ops)\n"}
+,{"stream_name":"stdout","time":31.883718623,"data":"      mean :    11.18 us\n"}
+,{"stream_name":"stdout","time":31.88372183,"data":"      p50  :     7.90 us\n"}
+,{"stream_name":"stdout","time":31.883725005,"data":"      p95  :    24.64 us\n"}
+,{"stream_name":"stdout","time":31.883728183,"data":"      p99  :    39.35 us\n"}
+,{"stream_name":"stdout","time":31.883731362,"data":"\n"}
+,{"stream_name":"stdout","time":31.883734555,"data":"    cancel_order (10,000 ops)\n"}
+,{"stream_name":"stdout","time":31.883739446,"data":"      mean :     2.42 us\n"}
+,{"stream_name":"stdout","time":31.883746063,"data":"      p50  :     0.47 us\n"}
+,{"stream_name":"stdout","time":31.883748701000002,"data":"      p95  :     6.33 us\n"}
+,{"stream_name":"stdout","time":31.883750894,"data":"      p99  :    12.71 us\n"}
+,{"stream_name":"stdout","time":31.883752948,"data":"\n"}
+,{"stream_name":"stdout","time":31.883755027,"data":"    Target: median add_order under 50 us.\n"}
+,{"stream_name":"stdout","time":31.88375713,"data":"\n"}
+,{"stream_name":"stdout","time":31.883759197,"data":"    Wrote /kaggle/working/results/bench_rerun-20261021-233814/engine/metrics.json, /kaggle/working/results/bench_rerun-20261021-233814/engine/manifest.json and /kaggle/working/results/bench_rerun-20261021-233814/engine/raw/engine_latency_us.json\n"}
+,{"stream_name":"stdout","time":31.885139498,"data":"[run_all] engine          1.8 s  ok\n"}
+,{"stream_name":"stdout","time":31.885169329,"data":"[run_all] $ python /kaggle/working/repo/scripts/benchmark_native.py --results-dir /kaggle/working/results/bench_rerun-20261021-233814/native_engine --orders 100000 --cancels 10000\n"}
+,{"stream_name":"stdout","time":80.326630156,"data":"    fuzz: 10,000 streams, 548,317 operations, 0 divergences\n"}
+,{"stream_name":"stdout","time":80.326670048,"data":"    native           add p50    0.083 p99    0.417 p99.9    0.627 us | cancel p50    0.050 p99    0.400 p99.9    0.551 us\n"}
+,{"stream_name":"stdout","time":80.326679237,"data":"    binding          add p50    0.516 p99    1.194 p99.9    6.878 us | cancel p50    0.412 p99    0.969 p99.9    4.877 us\n"}
+,{"stream_name":"stdout","time":80.3266825,"data":"    binding_decimal  add p50    3.663 p99   17.036 p99.9   35.035 us | cancel p50    0.586 p99    2.784 p99.9   18.732 us\n"}
+,{"stream_name":"stdout","time":80.326685761,"data":"    python_engine    add p50    6.333 p99   29.131 p99.9   56.188 us | cancel p50    0.434 p99    5.968 p99.9   15.283 us\n"}
+,{"stream_name":"stdout","time":80.326688948,"data":"    consistent across all four: True {'native': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}, 'binding': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}, 'binding_decimal': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}, 'python_engine': {'fills': 77994, 'resting_after_adds': 22006, 'cancels_found': 3575}}\n"}
+,{"stream_name":"stdout","time":80.329020991,"data":"[run_all] native         48.4 s  ok\n"}
+,{"stream_name":"stdout","time":80.329383016,"data":"[run_all] done in 60.2 s: 2 section(s) in /kaggle/working/results/bench_rerun-20261021-233814/metrics.json, 0 error(s)\n"}
+,{"stream_name":"stdout","time":81.526345598,"data":"[   80.9s] run_all exit code 0\n"}
+,{"stream_name":"stdout","time":81.590961462,"data":"[   80.9s] finished: complete 81s\n"}
+,{"stream_name":"stdout","time":90.16088497,"data":"RESULT_BUNDLE results_bench_rerun-20261021-233814.tar.gz\n"}
+,{"stream_name":"stderr","time":92.395083795,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":92.395113074,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":92.63211597,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":92.63214234,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":93.514275731,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":94.476143293,"data":"[NbConvertApp] Writing 325610 bytes to __results__.html\n"}
+]

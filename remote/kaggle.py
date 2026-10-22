@@ -29,8 +29,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
-from .base import (BOOTSTRAP, GIT_URL, REPO_ROOT, RESULTS_DIR, TOKEN_PREFIX, JobSpec, git_sha, sanitize,
-                   write_json)
+from .base import (BOOTSTRAP, GIT_URL, REPO_ROOT, RESULTS_DIR, TOKEN_PREFIX, JobSpec, current_branch, git_sha,
+                   pushed_sha_problem, sanitize, write_json)
 
 USER = "tanushbhatia"
 LEDGER = REPO_ROOT / "remote" / "quota.json"
@@ -38,6 +38,9 @@ PUSH_DIR = REPO_ROOT / "remote" / ".push"
 DATASET_DIR = REPO_ROOT / "remote" / ".datasets"
 JOBS_DIR = REPO_ROOT / "remote" / "jobs"
 GPU_HOURS_BUDGET = 20.0
+MAX_JOB_MINUTES = 45
+# Phase 2 has its own cap: every run pushed at or after ``started_at`` counts against it.
+PHASE2 = {"budget_gpu_hours": 6.0, "started_at": "2026-10-21T22:25:01Z", "kaggle_used_hours_at_start": 0.2}
 TERMINAL = {"complete", "error", "cancelacknowledged", "cancelled", "failed"}
 
 
@@ -61,7 +64,9 @@ def kaggle(*args: str, timeout: int = 1800, check: bool = True) -> str:
 
 def load_ledger() -> dict:
     if LEDGER.exists():
-        return json.loads(LEDGER.read_text(encoding="utf-8"))
+        ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+        ledger.setdefault("phase2", dict(PHASE2))
+        return ledger
     return {"budget_gpu_hours": GPU_HOURS_BUDGET, "runs": [], "gpu_hours_used_estimate": 0.0,
             "kaggle_reported": None}
 
@@ -70,6 +75,8 @@ def save_ledger(ledger: dict) -> None:
     ledger["gpu_hours_used_estimate"] = round(
         sum(r.get("gpu_minutes") or 0.0 for r in ledger["runs"]) / 60.0, 3
     )
+    if "phase2" in ledger:
+        ledger["phase2"]["gpu_hours_used_estimate"] = round(phase2_hours(ledger), 3)
     write_json(LEDGER, ledger)
 
 
@@ -106,11 +113,24 @@ def quota_report() -> dict:
     return report
 
 
+def phase2_hours(ledger: dict) -> float:
+    """GPU hours of every run pushed since phase 2 started (the ledger's own minutes)."""
+    start = ledger.get("phase2", PHASE2)["started_at"]
+    return sum(r.get("gpu_minutes") or 0.0 for r in ledger["runs"] if (r.get("pushed_at") or "") >= start) / 60.0
+
+
 def budget_guard(expected_minutes: int) -> None:
+    if expected_minutes > MAX_JOB_MINUTES:
+        raise SystemExit(f"job timeout {expected_minutes} min exceeds the {MAX_JOB_MINUTES}-minute limit per job")
     ledger = load_ledger()
     used = ledger.get("gpu_hours_used_estimate", 0.0)
     if used + expected_minutes / 60.0 > ledger.get("budget_gpu_hours", GPU_HOURS_BUDGET):
         raise SystemExit(f"GPU budget exhausted: {used:.2f} h used, job needs {expected_minutes} min")
+    phase = ledger.get("phase2", PHASE2)
+    p2 = phase2_hours(ledger)
+    if p2 + expected_minutes / 60.0 > phase["budget_gpu_hours"]:
+        raise SystemExit(f"phase 2 GPU budget exhausted: {p2:.2f} of {phase['budget_gpu_hours']} h used, "
+                         f"job could take {expected_minutes} min")
 
 
 # --------------------------------------------------------------------------- #
@@ -137,8 +157,19 @@ import tarfile as _tarfile
 with _tarfile.open(f"/kaggle/working/results_{RUN_ID}.tar.gz", "w:gz") as _tf:
     _tf.add(OUT, arcname=RUN_ID)
 print("RESULT_BUNDLE", f"results_{RUN_ID}.tar.gz", flush=True)
+# Everything left in /kaggle/working is downloaded file by file by `kaggle kernels output`; the
+# repository clone alone is hundreds of files, so only the bundle (and the log) stay behind.
+try:
+    os.chdir("/kaggle/working")
+    for _left in os.listdir("/kaggle/working"):
+        if _left != f"results_{RUN_ID}.tar.gz":
+            _path = os.path.join("/kaggle/working", _left)
+            shutil.rmtree(_path, ignore_errors=True) if os.path.isdir(_path) else os.remove(_path)
+except Exception as _exc:  # the bundle is already written; a failed cleanup only makes the pull slower
+    print("cleanup of /kaggle/working failed:", repr(_exc), flush=True)
 '''
-    return header + "\n" + spec.body + "\n" + footer
+    env = "".join(f"os.environ[{k!r}] = {v!r}\n" for k, v in sorted(spec.env.items()))
+    return header + "\n" + env + spec.body + "\n" + footer
 
 
 def load_job(name: str) -> str:
@@ -149,10 +180,19 @@ def load_job(name: str) -> str:
 
 
 def push(spec: JobSpec, run_id: Optional[str] = None) -> str:
-    """Push a kernel version for ``spec``; returns the run id."""
+    """Push a kernel version for ``spec``; returns the run id.
+
+    The job clones the current branch and checks out HEAD, so HEAD must already be on GitHub and
+    the working tree clean: anything else would run code that was never pushed.
+    """
     budget_guard(spec.timeout_minutes)
     run_id = run_id or f"{spec.name}-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}"
     sha = spec.git_sha or git_sha()
+    spec.branch = spec.branch or current_branch()
+    if spec.needs_repo:
+        problem = pushed_sha_problem(spec.branch, sha)
+        if problem:
+            raise SystemExit(f"refusing to push {spec.name}: {problem}")
     folder = PUSH_DIR / run_id
     folder.mkdir(parents=True, exist_ok=True)
     (folder / "run.py").write_text(compose(spec, run_id, sha), encoding="utf-8")
@@ -178,8 +218,8 @@ def push(spec: JobSpec, run_id: Optional[str] = None) -> str:
     if "error" in out.lower() and "pushed" not in out.lower():
         raise RuntimeError(f"kernel push failed: {out}")
     ledger_update(run_id, kernel=kernel_id(spec.name), job=spec.name, pushed_at=now_iso(),
-                  git_sha=sha, status="pushed", source=spec.source, datasets=list(spec.datasets),
-                  timeout_minutes=spec.timeout_minutes)
+                  git_sha=sha, branch=spec.branch, status="pushed", source=spec.source, datasets=list(spec.datasets),
+                  timeout_minutes=spec.timeout_minutes, env=dict(spec.env))
     return run_id
 
 
@@ -189,9 +229,22 @@ def status(job_name: str) -> str:
     return (m.group(1) if m else out.strip()).lower()
 
 
+def _ledger_run(run_id: str) -> dict:
+    return next((r for r in load_ledger()["runs"] if r["run_id"] == run_id), {})
+
+
+def _unix(iso: Optional[str]) -> Optional[float]:
+    return datetime.strptime(iso, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc).timestamp() if iso else None
+
+
 def wait(job_name: str, run_id: str, poll_seconds: int = 30, max_minutes: int = 70) -> str:
-    """Poll until the kernel finishes; records running time in the ledger."""
-    started_running: Optional[float] = None
+    """Poll until the kernel finishes; records running time in the ledger.
+
+    Safe to call repeatedly in short chunks (the cloud VM pauses when idle, so waits run in the
+    foreground at most 25 minutes at a time): the first time the job was seen running is kept in
+    the ledger, so GPU minutes always count from there, not from the start of the last chunk.
+    """
+    started_running: Optional[float] = _unix(_ledger_run(run_id).get("running_at"))
     t0 = time.time()
     last = None
     while time.time() - t0 < max_minutes * 60:
@@ -203,7 +256,8 @@ def wait(job_name: str, run_id: str, poll_seconds: int = 30, max_minutes: int = 
             started_running = time.time()
             ledger_update(run_id, status="running", running_at=now_iso())
         if st in TERMINAL:
-            minutes = (time.time() - (started_running or t0)) / 60.0
+            start = started_running or _unix(_ledger_run(run_id).get("pushed_at")) or t0
+            minutes = (time.time() - start) / 60.0
             ledger_update(run_id, status=st, finished_at=now_iso(), gpu_minutes=round(minutes, 2))
             return st
         time.sleep(poll_seconds)
@@ -392,6 +446,8 @@ def main(argv: Optional[List[str]] = None) -> None:
     p.add_argument("--timeout-minutes", type=int, default=45)
     p.add_argument("--no-wait", action="store_true")
     p.add_argument("--sha", default=None)
+    p.add_argument("--env", action="append", default=[], metavar="KEY=VALUE",
+                   help="environment variable set in the job before its body runs (e.g. SECTIONS=resources)")
 
     p = sub.add_parser("wait", help="poll a pushed job, then pull it")
     p.add_argument("--job", required=True)
@@ -421,14 +477,18 @@ def main(argv: Optional[List[str]] = None) -> None:
         else:
             run(spec)
     elif args.cmd == "run":
+        env = dict(kv.split("=", 1) for kv in args.env)
         spec = JobSpec(name=args.job, body=load_job(args.job), datasets=args.dataset, source=args.source,
-                       archive_hash=args.archive_hash, timeout_minutes=args.timeout_minutes, git_sha=args.sha)
+                       archive_hash=args.archive_hash, timeout_minutes=args.timeout_minutes, git_sha=args.sha, env=env)
         if args.no_wait:
             print("run id:", push(spec))
         else:
             run(spec)
     elif args.cmd == "wait":
         st = wait(args.job, args.run_id, max_minutes=args.max_minutes)
+        if st == "timeout":
+            print("status: still running after this chunk; wait again", flush=True)
+            return
         pull(args.job, args.run_id)
         quota_report()
         print("status:", st)

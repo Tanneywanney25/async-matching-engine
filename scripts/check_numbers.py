@@ -2,12 +2,14 @@
 
     python scripts/check_numbers.py [--root .]
 
-Scans ``BENCHMARKS.md``, ``BULLETS.md`` and the README section between the gpu-lab markers.
-Fenced code blocks, inline code spans, link targets, HTML comments, ISO dates and times are
-ignored. Every remaining numeric token must either be a key of ``results/provenance.json`` (written
-by ``scripts/render_docs.py``) with at least one source run whose manifest says ``"source": "real"``
-and whose GPU name contains ``T4``, or be listed with a justification in
-``scripts/doc_constants.json``. Prints PASS, or FAIL with every offending token.
+Scans ``BENCHMARKS.md``, ``BULLETS.md``, ``DESIGN.md``, ``INTERVIEW_NOTES.md`` and the README
+section between the gpu-lab markers. Fenced code blocks, inline code spans, link targets, HTML
+comments, ISO dates and times are ignored. Every remaining numeric token must either be a key of
+``results/provenance.json`` (written by ``scripts/render_docs.py``) with at least one source that
+was rendered into the same document and whose run manifest says ``"source": "real"`` with a GPU
+name containing ``T4``, or be listed with a justification in ``scripts/doc_constants.json``. A
+number that matches a value rendered into some other document does not count. Prints PASS, or FAIL
+with every offending token.
 """
 
 from __future__ import annotations
@@ -21,6 +23,8 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 NUM_RE = re.compile(r"(?<![A-Za-z_\d.])\d[\d,]*(?:\.\d+)?(?:e[-+]?\d+)?")
 MARK_START, MARK_END = "<!-- gpu-lab:start -->", "<!-- gpu-lab:end -->"
+DOCUMENTS = ("BENCHMARKS.md", "BULLETS.md", "DESIGN.md", "INTERVIEW_NOTES.md")
+README_DOC = "README.md (GPU section)"
 
 
 def strip_ignored(text: str) -> str:
@@ -38,14 +42,14 @@ def tokens(text: str) -> list:
 
 def documents(root: Path) -> dict:
     docs = {}
-    for name in ("BENCHMARKS.md", "BULLETS.md"):
+    for name in DOCUMENTS:
         path = root / name
         docs[name] = path.read_text(encoding="utf-8") if path.exists() else None
     readme = (root / "README.md").read_text(encoding="utf-8") if (root / "README.md").exists() else ""
     if MARK_START in readme and MARK_END in readme:
-        docs["README.md (GPU section)"] = readme[readme.index(MARK_START):readme.index(MARK_END)]
+        docs[README_DOC] = readme[readme.index(MARK_START):readme.index(MARK_END)]
     else:
-        docs["README.md (GPU section)"] = None
+        docs[README_DOC] = None
     return docs
 
 
@@ -85,9 +89,12 @@ def main(argv=None) -> int:
             counted += 1
             if tok in constants:
                 continue
-            sources = prov.get(tok, [])
+            # entries written before documents were tagged carry no "doc" and match any document
+            sources = [s for s in prov.get(tok, []) if s.get("doc") in (None, name)]
             if not sources:
-                bad.append((name, tok, "no provenance"))
+                elsewhere = sorted({s.get("doc") for s in prov.get(tok, [])})
+                bad.append((name, tok, "no provenance" + (f" in this document (rendered into {', '.join(elsewhere)})"
+                                                         if elsewhere else "")))
             elif not any(run_ok(s["run_id"]) for s in sources):
                 bad.append((name, tok, "source run is not real T4 data: " + ", ".join(sorted({s["run_id"] for s in sources}))))
     if bad:
@@ -95,8 +102,8 @@ def main(argv=None) -> int:
             print(f"FAIL {name}: {tok!r} ({why})")
         print(f"FAIL: {len(bad)} of {counted} numbers do not trace to real T4 results")
         return 1
-    print(f"PASS: {counted} numbers in BENCHMARKS.md, BULLETS.md and the README GPU section trace to real T4 results "
-          f"or justified constants")
+    print(f"PASS: {counted} numbers in {', '.join(DOCUMENTS)} and the README GPU section trace to real T4 results "
+          f"rendered into the same document, or to justified constants")
     return 0
 
 

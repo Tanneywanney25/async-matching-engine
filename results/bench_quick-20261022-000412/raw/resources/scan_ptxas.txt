@@ -1,0 +1,46 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'lookback_f32' for 'sm_75'
+ptxas info    : Function properties for lookback_f32
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 33 registers, used 1 barriers, 9256 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compile time = 31.982 ms
+ptxas info    : Compiling entry function 'lookback_f64' for 'sm_75'
+ptxas info    : Function properties for lookback_f64
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 1 barriers, 18508 bytes smem, 408 bytes cmem[0]
+ptxas info    : Compile time = 38.557 ms
+ptxas info    : Compiling entry function 'lookback_init' for 'sm_75'
+ptxas info    : Function properties for lookback_init
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 8.050 ms
+ptxas info    : Compiling entry function 'scan_add_offsets_f32' for 'sm_75'
+ptxas info    : Function properties for scan_add_offsets_f32
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 1.624 ms
+ptxas info    : Compiling entry function 'scan_add_offsets_f64' for 'sm_75'
+ptxas info    : Function properties for scan_add_offsets_f64
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 14 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 1.629 ms
+ptxas info    : Compiling entry function 'warpscan_f32' for 'sm_75'
+ptxas info    : Function properties for warpscan_f32
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 26 registers, used 1 barriers, 4128 bytes smem, 384 bytes cmem[0]
+ptxas info    : Compile time = 8.623 ms
+ptxas info    : Compiling entry function 'warpscan_f64' for 'sm_75'
+ptxas info    : Function properties for warpscan_f64
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 28 registers, used 1 barriers, 8256 bytes smem, 384 bytes cmem[0]
+ptxas info    : Compile time = 11.580 ms
+ptxas info    : Compiling entry function 'blelloch_f32' for 'sm_75'
+ptxas info    : Function properties for blelloch_f32
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 25 registers, used 1 barriers, 4228 bytes smem, 384 bytes cmem[0]
+ptxas info    : Compile time = 11.567 ms
+ptxas info    : Compiling entry function 'blelloch_f64' for 'sm_75'
+ptxas info    : Function properties for blelloch_f64
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 30 registers, used 1 barriers, 8712 bytes smem, 384 bytes cmem[0]
+ptxas info    : Compile time = 11.516 ms

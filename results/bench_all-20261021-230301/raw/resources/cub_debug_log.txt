@@ -1,0 +1,8 @@
+SIZE 863153
+Invoking init_kernel<<<8, 128, 0, 0>>>()
+Invoking 0 scan_kernel<<<964, 128, 0, 0>>>(), 7 items per thread, 8 SM occupancy
+RC 0
+SIZE 16777216
+Invoking init_kernel<<<147, 128, 0, 0>>>()
+Invoking 0 scan_kernel<<<18725, 128, 0, 0>>>(), 7 items per thread, 8 SM occupancy
+RC 0

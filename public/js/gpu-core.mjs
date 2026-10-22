@@ -835,16 +835,19 @@ export function scanRows(scans) {
     medianMs: fmtMs(s.median_ms),
     elementsPerS: fmtRate(s.elements_per_s),
     gbs: fmtGbs(s.gbs),
+    pctCeiling: fmtPct(s.pct_of_read_ceiling),
     winner: s.name === winner,
   }));
 }
 
-/** Link a results-relative raw path to the file on GitHub (branch gpu-analytics). */
-export function rawLink(raw) {
+/** Link a results-relative raw path to the file on GitHub. `base` defaults to the 0.2.0 branch;
+ * gpu_lab.json carries `raw_base` (the branch the results were merged into) and the page passes it. */
+export function rawLink(raw, base = RAW_BASE) {
   if (typeof raw !== "string") return null;
   const cleaned = raw.trim().replace(/\\/g, "/").replace(/^(\.\/)+/, "").replace(/^\/+/, "");
   if (!cleaned) return null;
-  return RAW_BASE + cleaned.split("/").map(encodeURIComponent).join("/");
+  const root = typeof base === "string" && /^https:\/\//.test(base) ? (base.endsWith("/") ? base : `${base}/`) : RAW_BASE;
+  return root + cleaned.split("/").map(encodeURIComponent).join("/");
 }
 
 export function formatMetric(value, unit) {
@@ -892,7 +895,7 @@ export function formatMetric(value, unit) {
   }
 }
 
-export function benchmarkRows(benchmarks) {
+export function benchmarkRows(benchmarks, base = RAW_BASE) {
   return list(benchmarks).filter(Boolean).map((b) => ({
     section: String(b.section ?? ""),
     name: String(b.name ?? ""),
@@ -901,7 +904,7 @@ export function benchmarkRows(benchmarks) {
     unit: String(b.unit ?? ""),
     runId: b.run_id ? String(b.run_id) : DASH,
     raw: typeof b.raw === "string" ? b.raw : null,
-    href: rawLink(b.raw),
+    href: rawLink(b.raw, base),
   }));
 }
 
@@ -971,5 +974,151 @@ export function sectionStatus(data) {
     ofi: ofiSelections(get(data, "ofi")).products.length > 0,
     benchmarks: list(get(data, "benchmarks")).length > 0,
     engine: isNum(get(data, "engine.p99_us")),
+    resources: list(get(data, "resources.kernels")).length > 0,
+    transfer: transferBars(get(data, "transfer")).length > 0,
+    native: list(get(data, "native_engine.paths")).length > 0,
   };
+}
+
+// --- Kernel resources (phase 2) -----------------------------------------------
+
+export const LIMIT_LABELS = { registers: "registers", shared_memory: "shared memory", warps: "warp slots", blocks: "block cap" };
+
+export function limitLabel(names) {
+  const parts = list(names).map((n) => LIMIT_LABELS[n] ?? String(n));
+  return parts.length ? parts.join(" + ") : DASH;
+}
+
+/** Rows for the resource table, lowest occupancy first (ties: more registers first). */
+export function resourceRows(resources) {
+  return list(get(resources, "kernels"))
+    .filter((k) => k && typeof k.kernel === "string")
+    .map((k) => {
+      const occ = num(k.occupancy);
+      const spills = isNum(k.spill_stores) || isNum(k.spill_loads) ? (num(k.spill_stores, 0) + num(k.spill_loads, 0)) : null;
+      return {
+        kernel: k.kernel,
+        file: String(k.file ?? ""),
+        registers: fmtInt(k.registers),
+        spills: spills === null ? DASH : fmtInt(spills),
+        smem: fmtInt(k.static_smem_bytes),
+        block: fmtInt(k.block),
+        blocksPerSm: fmtInt(k.blocks_per_sm),
+        occupancy: occ === null ? DASH : fmtPct(occ * 100, 0),
+        occupancyFrac: occ === null ? 0 : clamp01(occ),
+        limitedBy: limitLabel(k.limited_by),
+        full: occ !== null && occ >= 0.999,
+        sortKey: [occ === null ? 2 : occ, -num(k.registers, 0)],
+      };
+    })
+    .sort((a, b) => a.sortKey[0] - b.sortKey[0] || a.sortKey[1] - b.sortKey[1] || a.kernel.localeCompare(b.kernel));
+}
+
+/** One sentence: how many kernels reach full theoretical occupancy, and the lowest one. */
+export function resourceSummary(resources) {
+  const rows = resourceRows(resources);
+  if (!rows.length) return "";
+  const full = rows.filter((r) => r.full).length;
+  const low = rows[0];
+  const spilling = rows.filter((r) => r.spills !== DASH && r.spills !== "0").length;
+  const lowest = low.full ? "every launched kernel is at full theoretical occupancy" :
+    `lowest: ${low.kernel} at ${low.occupancy} (${low.limitedBy})`;
+  return `${full} of ${rows.length} kernels reach full theoretical occupancy; ${lowest}; ` +
+    `${spilling === 0 ? "no kernel spills registers" : `${spilling} spill registers`}.`;
+}
+
+// --- Transfers and scaling (0.3.0) ---------------------------------------------
+
+/** Horizontal bars for the two comparisons, each scaled to the larger of its pair. */
+export function transferBars(transfer) {
+  const rows = [];
+  const pair = (group, a, b) => {
+    if (!isNum(a.ms) || !isNum(b.ms)) return;
+    const max = Math.max(a.ms, b.ms) || 1;
+    for (const x of [a, b]) rows.push({ group, label: x.label, value: fmtMs(x.ms), frac: clamp01(x.ms / max) });
+  };
+  const e = get(transfer, "int16");
+  if (e) pair("Price encoding, end to end", { label: "int32 prices", ms: e.e2e_int32_ms }, { label: "int16 offsets", ms: e.e2e_int16_ms });
+  const t = get(transfer, "two_gpu");
+  if (t) pair("Pipeline on one T4 or two", { label: "one card", ms: t.one_gpu_ms }, { label: "two cards", ms: t.two_gpu_ms });
+  return rows;
+}
+
+/** One line per comparison, saying what moved and whether the outputs stayed identical. */
+export function transferNotes(transfer) {
+  const notes = [];
+  const e = get(transfer, "int16");
+  if (e && isNum(e.bytes_saved_pct)) {
+    notes.push(`int16 offsets move ${fmtPct(e.bytes_saved_pct)} fewer bytes; ${fmtInt(e.fallbacks)} of ${fmtInt(e.chunks)} chunks ` +
+      `fell back to int32; outputs ${e.identical ? "identical bit for bit" : "NOT identical"}.`);
+  }
+  const t = get(transfer, "two_gpu");
+  if (t && isNum(t.h2d_gbs_one_gpu)) {
+    notes.push(`Copies run at ${fmtGbs(t.h2d_gbs_one_gpu)} on one card and ${fmtGbs(t.h2d_gbs_two_gpu)} on two together` +
+      `${t.link ? ` (topology ${t.link})` : ""}; outputs ${t.identical ? "identical bit for bit" : "NOT identical"}.`);
+  }
+  return notes;
+}
+
+// --- C++ core latency (0.3.0) --------------------------------------------------
+
+/** Microseconds with sub-microsecond precision: 0.083 µs, 1.19 µs, 29.1 µs. */
+export function fmtUsFine(v) {
+  if (!isNum(v)) return DASH;
+  const a = Math.abs(v);
+  return `${fmtNum(v, a < 1 ? 3 : a < 10 ? 2 : 1)} µs`;
+}
+
+/** Position of `v` on a log axis from `lo` to `hi`, as a fraction. */
+export function logFrac(v, lo = 0.03, hi = 100) {
+  if (!isNum(v) || v <= 0) return 0;
+  return clamp01((Math.log10(v) - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo)));
+}
+
+export const NATIVE_SHORT = { native: "C++ native", binding: "C++ via binding", binding_decimal: "C++ via Decimal", python_engine: "Python engine" };
+
+export function nativeRows(native) {
+  return list(get(native, "paths")).filter((p) => p && p.add).map((p) => ({
+    key: String(p.key ?? ""),
+    label: String(p.label ?? ""),
+    short: NATIVE_SHORT[p.key] ?? String(p.label ?? ""),
+    addP50: fmtUsFine(get(p, "add.p50_us")),
+    addP99: fmtUsFine(get(p, "add.p99_us")),
+    addP999: fmtUsFine(get(p, "add.p999_us")),
+    cancelP99: fmtUsFine(get(p, "cancel.p99_us")),
+    p99Frac: logFrac(get(p, "add.p99_us")),
+    native: p.key === "native",
+  }));
+}
+
+// The same paths on the stream derived from the recorded book: p99 per operation kind.
+export function realisticRows(native) {
+  return list(get(native, "realistic.paths")).filter((p) => p && p.limit).map((p) => ({
+    key: String(p.key ?? ""),
+    label: String(p.label ?? ""),
+    short: NATIVE_SHORT[p.key] ?? String(p.label ?? ""),
+    limitP99: fmtUsFine(get(p, "limit.p99_us")),
+    marketP99: fmtUsFine(get(p, "market.p99_us")),
+    cancelP99: fmtUsFine(get(p, "cancel.p99_us")),
+    native: p.key === "native",
+  }));
+}
+
+export function realisticNote(native) {
+  const r = get(native, "realistic");
+  if (!r) return "";
+  const c = get(r, "op_counts", {}) || {};
+  return `p99 per operation on the recorded-book stream: ${fmtInt(r.ops)} operations (${fmtInt(c.limit)} limit, ` +
+    `${fmtInt(c.market)} market, ${fmtInt(c.cancel)} cancel) replayed through every path; ` +
+    `${r.consistent ? "all paths agreed on fills and resting orders" : "paths DISAGREED on fills or resting orders"}.`;
+}
+
+export function nativeSummary(native) {
+  if (!native) return "";
+  const f = get(native, "fuzz", {}) || {};
+  const parts = [];
+  if (isNum(f.streams)) parts.push(`${fmtInt(f.streams)} fuzzed streams against the reference book, ${fmtInt(f.divergences)} divergences`);
+  if (isNum(get(native, "allocations"))) parts.push(`${fmtInt(native.allocations)} heap allocations over ${fmtInt(native.alloc_operations)} operations`);
+  if (isNum(get(native, "speedup_p99_vs_python"))) parts.push(`p99 add ${fmtX(native.speedup_p99_vs_python)} faster than the Python engine`);
+  return parts.length ? `${parts.join("; ")}.` : "";
 }

@@ -16,6 +16,7 @@ Makefile
 /results/
 cuda/
 cpu/
+native/
 bench/
 remote/
 profiles/

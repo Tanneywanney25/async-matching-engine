@@ -1,0 +1,345 @@
+{
+  "archive": {
+    "bytes": 705592045,
+    "capture_end_ns": 1792602657291211100,
+    "capture_seconds": 33692.928069,
+    "capture_start_ns": 1792568964363142100,
+    "content_hash": "10e3c7d79010feb6281d9c3833d00e6a05a51275dc9e1aa58c05c5aa75451959",
+    "gap_count": 0,
+    "levels": 50,
+    "n_snapshots": 863153,
+    "n_trades": 280818,
+    "per_product_snapshots": {
+      "BTC-USD": 437152,
+      "ETH-USD": 426001
+    },
+    "source": "real"
+  },
+  "created_unix": 1792625929.2939065,
+  "errors": [],
+  "gpu": {
+    "compute_capability": "7.5",
+    "cuda_runtime": 12090,
+    "cupy_version": "14.0.1",
+    "l2_cache_bytes": 4194304,
+    "memory_bus_width_bits": 256,
+    "memory_clock_khz": 5001000,
+    "memory_gb": 15.636,
+    "name": "Tesla T4",
+    "nvrtc_arch": "sm_75",
+    "shared_mem_per_sm_bytes": 65536,
+    "sm_count": 40,
+    "theoretical_bw_gbs": 320.06
+  },
+  "run_all": {
+    "argv": [
+      "--archive",
+      "/kaggle/input/datasets/tanushbhatia/exchange-engine-archive",
+      "--out",
+      "/kaggle/working/results/bench_rerun-20261021-233814",
+      "--source",
+      "real",
+      "--sections",
+      "none",
+      "--budget-minutes",
+      "36"
+    ],
+    "engine": true,
+    "finished_unix": 1792625979.988179,
+    "hostname": "370cd5799b1a",
+    "n_iters": 30,
+    "platform": "Linux-6.18.48+-x86_64-with-glibc2.39",
+    "python": "3.13.15",
+    "quick": false,
+    "sections_requested": [],
+    "started_unix": 1792625919.7494211,
+    "wall_seconds": 60.2
+  },
+  "sections": {
+    "engine": {
+      "add_order": {
+        "mean_us": 11.177903559999999,
+        "p50_us": 7.896,
+        "p95_us": 24.641,
+        "p99_us": 39.346
+      },
+      "cancel_order": {
+        "mean_us": 2.4191319,
+        "p50_us": 0.473,
+        "p95_us": 6.329,
+        "p99_us": 12.706
+      },
+      "cancels": 10000,
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+      "orders": 100000,
+      "python": "3.13.15",
+      "raw_file": "raw/engine_latency_us.json",
+      "runner": "scripts/benchmark.py --results-dir"
+    },
+    "native_engine": {
+      "binding": {
+        "add_order": {
+          "max_us": 36.822,
+          "mean_us": 0.56877988,
+          "n": 100000,
+          "p50_us": 0.516,
+          "p95_us": 0.82,
+          "p999_us": 6.878,
+          "p99_us": 1.194
+        },
+        "call": "exchange_engine._native.Book.add_limit_count / cancel, integer ticks and lots",
+        "cancel_order": {
+          "max_us": 32.201,
+          "mean_us": 0.4745335,
+          "n": 10000,
+          "p50_us": 0.412,
+          "p95_us": 0.733,
+          "p999_us": 4.877,
+          "p99_us": 0.969
+        }
+      },
+      "binding_decimal": {
+        "add_order": {
+          "max_us": 2108.375,
+          "mean_us": 5.40299,
+          "n": 100000,
+          "p50_us": 3.663,
+          "p95_us": 11.638,
+          "p999_us": 35.035,
+          "p99_us": 17.036
+        },
+        "call": "exchange_engine.native_book.NativeOrderBook.add_order / cancel_order with Decimal Orders",
+        "cancel_order": {
+          "max_us": 32.531,
+          "mean_us": 0.9155247999999999,
+          "n": 10000,
+          "p50_us": 0.586,
+          "p95_us": 1.663,
+          "p999_us": 18.732,
+          "p99_us": 2.784
+        }
+      },
+      "build": {
+        "compiler": "c++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+        "ctest_ok": true,
+        "ctest_output": "Internal ctest changing into directory: /kaggle/working/repo/build/native\nTest project /kaggle/working/repo/build/native\n    Start 1: test_order_book\n1/2 Test #1: test_order_book ..................   Passed    0.67 sec\n    Start 2: test_no_alloc\n2/2 Test #2: test_no_alloc ....................   Passed    0.04 sec\n\n100% tests passed, 0 tests failed out of 2\n\nTotal Test time (real) =   0.72 sec\n",
+        "flags": "-O3 (CMake Release), C++20",
+        "seconds": 13.4,
+        "test_no_alloc": {
+          "allocations": 0,
+          "deallocations": 0,
+          "fills": 159307,
+          "ok": true,
+          "operations": 200000,
+          "output": "test_no_alloc: 200000 operations, 159307 fills, 438 resting, 14 far bid levels: 0 allocations, 0 deallocations"
+        },
+        "test_order_book": {
+          "checks": 2482227,
+          "ok": true,
+          "output": "test_order_book: 2482227 checks passed"
+        }
+      },
+      "cancels": 10000,
+      "consistent": true,
+      "counts": {
+        "binding": {
+          "cancels_found": 3575,
+          "fills": 77994,
+          "resting_after_adds": 22006
+        },
+        "binding_decimal": {
+          "cancels_found": 3575,
+          "fills": 77994,
+          "resting_after_adds": 22006
+        },
+        "native": {
+          "cancels_found": 3575,
+          "fills": 77994,
+          "resting_after_adds": 22006
+        },
+        "python_engine": {
+          "cancels_found": 3575,
+          "fills": 77994,
+          "resting_after_adds": 22006
+        }
+      },
+      "cpu_cores": 4,
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.00GHz",
+      "exit_code": 0,
+      "fuzz": {
+        "divergences": 0,
+        "first_divergence": null,
+        "operations": 548317,
+        "reference": "exchange_engine.reference_engine.ReferenceBook",
+        "seconds": 30.3,
+        "streams": 10000
+      },
+      "native": {
+        "add_order": {
+          "max_us": 20.632,
+          "mean_us": 0.108279,
+          "n": 100000,
+          "p50_us": 0.083,
+          "p95_us": 0.22,
+          "p999_us": 0.627,
+          "p99_us": 0.417
+        },
+        "cancel_order": {
+          "max_us": 4.312,
+          "mean_us": 0.081059,
+          "n": 10000,
+          "p50_us": 0.05,
+          "p95_us": 0.18,
+          "p999_us": 0.551,
+          "p99_us": 0.4
+        },
+        "far_levels_after_adds": 2879,
+        "passes": 5,
+        "per_pass": [
+          {
+            "add_order": {
+              "max_us": 20.632,
+              "mean_us": 0.108279,
+              "n": 100000,
+              "p50_us": 0.083,
+              "p95_us": 0.22,
+              "p999_us": 0.627,
+              "p99_us": 0.417
+            },
+            "cancel_order": {
+              "max_us": 4.312,
+              "mean_us": 0.081059,
+              "n": 10000,
+              "p50_us": 0.05,
+              "p95_us": 0.18,
+              "p999_us": 0.551,
+              "p99_us": 0.4
+            }
+          },
+          {
+            "add_order": {
+              "max_us": 354.974,
+              "mean_us": 0.113577,
+              "n": 100000,
+              "p50_us": 0.084,
+              "p95_us": 0.229,
+              "p999_us": 0.723,
+              "p99_us": 0.434
+            },
+            "cancel_order": {
+              "max_us": 17.582,
+              "mean_us": 0.087187,
+              "n": 10000,
+              "p50_us": 0.05,
+              "p95_us": 0.181,
+              "p999_us": 0.577,
+              "p99_us": 0.397
+            }
+          },
+          {
+            "add_order": {
+              "max_us": 19.265,
+              "mean_us": 0.094729,
+              "n": 100000,
+              "p50_us": 0.072,
+              "p95_us": 0.191,
+              "p999_us": 0.578,
+              "p99_us": 0.364
+            },
+            "cancel_order": {
+              "max_us": 16.793,
+              "mean_us": 0.087122,
+              "n": 10000,
+              "p50_us": 0.052,
+              "p95_us": 0.171,
+              "p999_us": 0.558,
+              "p99_us": 0.405
+            }
+          },
+          {
+            "add_order": {
+              "max_us": 21.432,
+              "mean_us": 0.097977,
+              "n": 100000,
+              "p50_us": 0.075,
+              "p95_us": 0.198,
+              "p999_us": 0.603,
+              "p99_us": 0.382
+            },
+            "cancel_order": {
+              "max_us": 25.795,
+              "mean_us": 0.08694,
+              "n": 10000,
+              "p50_us": 0.05,
+              "p95_us": 0.182,
+              "p999_us": 0.567,
+              "p99_us": 0.4
+            }
+          },
+          {
+            "add_order": {
+              "max_us": 22.654,
+              "mean_us": 0.099386,
+              "n": 100000,
+              "p50_us": 0.075,
+              "p95_us": 0.202,
+              "p999_us": 0.585,
+              "p99_us": 0.383
+            },
+            "cancel_order": {
+              "max_us": 16.94,
+              "mean_us": 0.084303,
+              "n": 10000,
+              "p50_us": 0.05,
+              "p95_us": 0.177,
+              "p999_us": 0.533,
+              "p99_us": 0.392
+            }
+          }
+        ],
+        "timer": "std::chrono::steady_clock",
+        "timer_overhead_us": {
+          "p50": 0.024,
+          "p99": 0.026
+        },
+        "window_ticks": 262144
+      },
+      "orders": 100000,
+      "p99_add_python_engine_over_binding": 24.39782244556114,
+      "p99_add_python_engine_over_binding_decimal": 1.7099671284339046,
+      "p99_add_python_engine_over_native": 69.85851318944844,
+      "p99_add_python_engine_over_python_engine": 1.0,
+      "platform": "Linux-6.18.48+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "python_engine": {
+        "add_order": {
+          "max_us": 2635.474,
+          "mean_us": 8.97325759,
+          "n": 100000,
+          "p50_us": 6.333,
+          "p95_us": 19.884,
+          "p999_us": 56.188,
+          "p99_us": 29.131
+        },
+        "call": "exchange_engine.orderbook.OrderBook.add_order / cancel_order",
+        "cancel_order": {
+          "max_us": 28.1,
+          "mean_us": 1.8620326,
+          "n": 10000,
+          "p50_us": 0.434,
+          "p95_us": 5.095,
+          "p999_us": 15.283,
+          "p99_us": 5.968
+        }
+      },
+      "raw_file": "raw/synthetic_native_engine_latency_us.json",
+      "stream": "scripts/benchmark.py's stream: 100,000 limit orders, price gauss(mid, 1% of mid) to the cent, size uniform(0.001, 2.0) to 1e-6, seed 42; 10,000 cancels of rested ids"
+    }
+  },
+  "source": "real",
+  "timings_s": {
+    "engine": 1.802,
+    "native_engine": 48.443
+  },
+  "updated_unix": 1792625979.9881852
+}

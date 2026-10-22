@@ -14,9 +14,14 @@ operations while a divergence persists, then a one-at-a-time pass so the result 
 1-minimal) and the run fails with a reproduction: the seed, the minimised operation
 list as Python literals, and the differing values.
 
+``--engine native`` puts the C++20 core (``native/``, through
+:class:`exchange_engine.native_book.NativeOrderBook`) in place of the Python OrderBook, with
+the same reference, the same streams and the same comparisons.
+
 Run with::
 
     python scripts/fuzz_engine.py --streams 10000          # the full run, exit 1 on divergence
+    python scripts/fuzz_engine.py --streams 10000 --engine native   # the C++ core against the reference
     python scripts/fuzz_engine.py --seed 1234              # one stream
     python scripts/fuzz_engine.py --replay ops.txt         # a file holding a literal list of operations
 
@@ -376,25 +381,34 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--max-reports", type=int, default=5, help="print at most this many reproductions")
     parser.add_argument("--progress-every", type=int, default=1000,
                         help="progress line every N streams (0 = off)")
+    parser.add_argument("--engine", choices=("python", "native"), default="python",
+                        help="book under test: the Python OrderBook or the C++ core (exchange_engine.native_book)")
     args = parser.parse_args(argv)
+    book_factory: BookFactory = OrderBook
+    if args.engine == "native":
+        from exchange_engine.native_book import NativeOrderBook
+
+        book_factory = NativeOrderBook
 
     if args.replay is not None:
         ops = load_ops(args.replay)
-        found = find_divergence(ops)
+        found = find_divergence(ops, book_factory)
         if found is None:
             print(f"no divergence over {len(ops)} replayed operation(s)")
             return 0
-        print(minimize_divergence(None, ops, found, minimize=not args.no_minimize).report())
+        print(minimize_divergence(None, ops, found, book_factory, minimize=not args.no_minimize).report())
         return 1
 
+    name = "the C++ core (NativeOrderBook)" if args.engine == "native" else "OrderBook"
     if args.seed is not None:
-        result = run_streams(1, args.seed, min_ops=args.min_ops, max_ops=args.max_ops,
+        result = run_streams(1, args.seed, min_ops=args.min_ops, max_ops=args.max_ops, book_factory=book_factory,
                              minimize=not args.no_minimize)
     else:
-        print(f"fuzzing OrderBook against ReferenceBook: {args.streams:,} streams, "
+        print(f"fuzzing {name} against ReferenceBook: {args.streams:,} streams, "
               f"{args.min_ops}-{args.max_ops} operations each, seeds {args.base_seed}..", flush=True)
         result = run_streams(args.streams, args.base_seed, min_ops=args.min_ops, max_ops=args.max_ops,
-                             minimize=not args.no_minimize, progress_every=args.progress_every)
+                             book_factory=book_factory, minimize=not args.no_minimize,
+                             progress_every=args.progress_every)
 
     for divergence in result.divergences[: args.max_reports]:
         print(divergence.report())

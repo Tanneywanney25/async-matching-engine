@@ -1,0 +1,11 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'pipeline_features_i16' for 'sm_75'
+ptxas info    : Function properties for pipeline_features_i16
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 50 registers, used 0 barriers, 456 bytes cmem[0]
+ptxas info    : Compile time = 22.492 ms
+ptxas info    : Compiling entry function 'pipeline_features_i32' for 'sm_75'
+ptxas info    : Function properties for pipeline_features_i32
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 51 registers, used 0 barriers, 440 bytes cmem[0]
+ptxas info    : Compile time = 18.291 ms

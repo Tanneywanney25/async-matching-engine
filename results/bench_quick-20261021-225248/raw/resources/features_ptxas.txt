@@ -1,0 +1,56 @@
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function 'v4_fused_vec4_gs' for 'sm_75'
+ptxas info    : Function properties for v4_fused_vec4_gs
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 64 registers, used 0 barriers, 456 bytes cmem[0]
+ptxas info    : Compile time = 38.226 ms
+ptxas info    : Compiling entry function 'v3_fused_vec4' for 'sm_75'
+ptxas info    : Function properties for v3_fused_vec4
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 66 registers, used 0 barriers, 456 bytes cmem[0]
+ptxas info    : Compile time = 31.703 ms
+ptxas info    : Compiling entry function 'v2_fused' for 'sm_75'
+ptxas info    : Function properties for v2_fused
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 464 bytes cmem[0]
+ptxas info    : Compile time = 15.017 ms
+ptxas info    : Compiling entry function 'v1_microprice' for 'sm_75'
+ptxas info    : Function properties for v1_microprice
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 17 registers, used 0 barriers, 400 bytes cmem[0]
+ptxas info    : Compile time = 6.911 ms
+ptxas info    : Compiling entry function 'v1_imbalance' for 'sm_75'
+ptxas info    : Function properties for v1_imbalance
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compile time = 9.074 ms
+ptxas info    : Compiling entry function 'v1_depth' for 'sm_75'
+ptxas info    : Function properties for v1_depth
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 42 registers, used 0 barriers, 400 bytes cmem[0]
+ptxas info    : Compile time = 4.396 ms
+ptxas info    : Compiling entry function 'v1_spread' for 'sm_75'
+ptxas info    : Function properties for v1_spread
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, used 0 barriers, 408 bytes cmem[0]
+ptxas info    : Compile time = 1.605 ms
+ptxas info    : Compiling entry function 'v0_microprice' for 'sm_75'
+ptxas info    : Function properties for v0_microprice
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 16 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 6.551 ms
+ptxas info    : Compiling entry function 'v0_imbalance' for 'sm_75'
+ptxas info    : Function properties for v0_imbalance
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 44 registers, used 0 barriers, 376 bytes cmem[0]
+ptxas info    : Compile time = 7.438 ms
+ptxas info    : Compiling entry function 'v0_depth' for 'sm_75'
+ptxas info    : Function properties for v0_depth
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 48 registers, used 0 barriers, 384 bytes cmem[0]
+ptxas info    : Compile time = 3.030 ms
+ptxas info    : Compiling entry function 'v0_spread' for 'sm_75'
+ptxas info    : Function properties for v0_spread
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 14 registers, used 0 barriers, 400 bytes cmem[0]
+ptxas info    : Compile time = 1.786 ms
