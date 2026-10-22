@@ -279,7 +279,7 @@ def triton_md(r: Renderer) -> List[str]:
              f"warps per program: {r.fmt('ladder', f'triton.sweep.{i}.median_ms', 'ms')} ms" for i, _ in enumerate(t.get("sweep") or [])]
     best_label = rung_label(best_name)
     if qd:
-        timing = (f"Measured with its launch queued ahead, the best one runs in {qd[0]} times the GPU time of the CUDA v2 kernel "
+        timing = (f"Measured with its launch queued ahead, the best one takes {qd[0]} times the GPU time of the CUDA v2 kernel "
                   f"it mirrors and {qd[1]} times that of the best CUDA rung ({best_label}). With the events around the launch, as "
                   f"in the ladder table, the ratios are {ev[0]} and {ev[1]}: enqueuing one Triton launch took a median "
                   f"{r.fmt('ladder', 'queued.host_enqueue_us.triton_fused.median_us', 'us')} µs on the host, against "
@@ -574,6 +574,38 @@ def two_gpu_kind(t: dict) -> str:
     return "scales" if ratio >= 1.7 else "none" if ratio <= 1.05 else "barely" if ratio <= 1.25 else "partial"
 
 
+KIND_FOUND = {"none": "that two cards copied no faster than one", "barely": "that two cards copied barely faster than one",
+              "partial": "that the second card added only part of a card's copy bandwidth",
+              "scales": "that two cards copied close to twice as fast as one"}
+KIND_SHORT = {"none": "showed no gain", "barely": "showed almost none", "partial": "showed less", "scales": "showed close to double"}
+
+
+def earlier_two_gpu(r: Renderer) -> Optional[Tuple[str, str]]:
+    """``(run id, kind)`` of the newest other full real T4 run whose second-card verdict differs from the rendered one."""
+    if not r.has("pipeline"):
+        return None
+    cur_run, cur = r.sections["pipeline"]
+    t = cur.get("two_gpu") or {}
+    if "two_gpu_ms" not in t:
+        return None
+    kind = two_gpu_kind(t)
+    for run in sorted(r.runs, key=lambda x: x.started, reverse=True):
+        if run.id == cur_run.id or not (run.t4 and run.real and not run.quick):
+            continue
+        other = ((run.metrics.get("sections") or {}).get("pipeline") or {}).get("two_gpu") or {}
+        if "two_gpu_ms" in other and two_gpu_kind(other) != kind:
+            return run.id, two_gpu_kind(other)
+    return None
+
+
+def earlier_two_gpu_sentence(r: Renderer) -> str:
+    e = earlier_two_gpu(r)
+    if not e:
+        return ""
+    return (f" An earlier full run, `{e[0]}`, on another Kaggle host that `nvidia-smi` described the same way, found "
+            f"{KIND_FOUND[e[1]]}; DECISIONS.md compares the two. This page reports the run above.")
+
+
 def transfer_bound(r: Renderer) -> bool:
     share = r.get("pipeline", "transfer_share_pct")
     return share is not None and share >= 50.0
@@ -627,7 +659,8 @@ def two_gpu_md(r: Renderer) -> List[str]:
             f"card: {verdict}. A single-threaded "
             f"host memcpy on this machine runs at {r.fmt('pipeline', q + '.host_memcpy_gbs', 'gbs')} GB/s for comparison. The "
             f"two-card outputs are {'bit-for-bit identical to' if (t.get('identical_to_one_gpu') or {}).get('identical') else 'NOT identical to'} "
-            f"the one-card outputs and {'match' if (t.get('verification') or {}).get('verified') else 'do NOT match'} the NumPy reference.", ""]
+            f"the one-card outputs and {'match' if (t.get('verification') or {}).get('verified') else 'do NOT match'} the NumPy reference."
+            + earlier_two_gpu_sentence(r), ""]
 
 
 def lookback_check_lines(r: Renderer) -> List[str]:
@@ -889,7 +922,11 @@ def resources_md(r: Renderer) -> List[str]:
            f"that was actually timed (CuPy's NVRTC `{r.get('resources', 'cupy_nvrtc')}`) has the same register and shared-memory "
            "counts as the nvcc build; where it differs the timed binary's count is shown in brackets"
            + (", and for " + ", ".join(f"`{k}`" for k in r.get("resources", "occupancy_differs_for_nvrtc")) + " that changes its blocks per SM."
-              if r.get("resources", "occupancy_differs_for_nvrtc") else ", and in no case does that change the blocks per SM.") , "",
+              if r.get("resources", "occupancy_differs_for_nvrtc") else ", and in no case does that change the blocks per SM.")
+           + (" Not listed: the Triton rung's kernel, which Triton compiles rather than nvcc"
+              + (", and the one-thread busy-wait the queued timing launches ahead of each pass." if r.get("ladder", "queued") else ".")
+              if (r.get("ladder", "triton") or {}).get("ok") else
+              " Not listed: the one-thread busy-wait the queued timing launches ahead of each pass." if r.get("ladder", "queued") else ""), "",
            "| Kernel | Source | Registers per thread | Spill stores / loads, bytes | Static shared memory, bytes | Block | Blocks per SM | Occupancy % | Limited by |",
            "|---|---|---:|---:|---:|---:|---:|---:|---|"]
     for i, row in rows:
@@ -1106,8 +1143,11 @@ def readme_phase2_findings(r: Renderer) -> List[str]:
         if t.get("h2d_gbs_one_gpu") and t.get("h2d_gbs_two_gpu_aggregate"):
             verdict = {"none": "adds no copy bandwidth", "barely": "adds almost no copy bandwidth",
                        "partial": "adds some copy bandwidth", "scales": "nearly doubles the copy bandwidth"}[two_gpu_kind(t)]
+            e2 = earlier_two_gpu(r)
             line += (f"; a second T4 {verdict}: {r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two cards "
-                     f"against {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one.")
+                     f"against {r.fmt('pipeline', 'two_gpu.h2d_gbs_one_gpu', 'gbs')} GB/s on one"
+                     + (f" on this run's machine, while an earlier Kaggle machine reporting the same topology {KIND_SHORT[e2[1]]}."
+                        if e2 else "."))
         else:
             line += "."
         out.append(line)
@@ -1116,7 +1156,7 @@ def readme_phase2_findings(r: Renderer) -> List[str]:
     if t.get("ok") and "triton_fused" in q and "v2_soa_fused" in q:
         ratio = q["triton_fused"]["median_ms"] / q["v2_soa_fused"]["median_ms"]
         ratio_txt = r.record(f"{ratio:.2f}", r.run_of("ladder").id, "ladder Triton / v2, launches queued", ratio)
-        out.append(f"- Written in Triton, the fused feature kernel needs {ratio_txt} times the GPU time of the CUDA kernel it mirrors "
+        out.append(f"- Written in Triton, the fused feature kernel needs {ratio_txt} times the GPU time of the CUDA kernel it mirrors, "
                    + ("with bit-identical outputs." if t.get("identical_to_v2_all") else "and passes the same tolerance check."))
     if r.has("native_engine") and r.get("native_engine", "native.add_order"):
         div = r.get("native_engine", "fuzz.divergences")
@@ -1157,19 +1197,22 @@ def design_phase2(r: Renderer) -> List[str]:
         why = (f"Transfers take {r.fmt('pipeline', 'transfer_share_pct', 'pct')}% of the pipeline's stage time, so a second T4 with "
                "its own PCIe link looked like a way to double the copy rate. ")
         e = r.get("pipeline", "int16_encoding") or {}
+        lever = ""
+        if e.get("ok") and e.get("bytes_saved_pct") is not None:
+            same = (e.get("identical_to_int32") or {}).get("identical")
+            lever = ((" The lever that works here is sending fewer bytes: the int16 encoding cuts " if kind in ("none", "barely") else
+                      " Sending fewer bytes helps on any of these machines: the int16 encoding cuts ")
+                     + f"{r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% of them"
+                     + (" with identical outputs." if same else ", though its outputs differ from the int32 pass."))
+        earlier = earlier_two_gpu_sentence(r).replace(" This page reports the run above.", "")
         if kind in ("none", "barely"):
-            lever = ""
-            if e.get("ok") and e.get("bytes_saved_pct") is not None:
-                same = (e.get("identical_to_int32") or {}).get("identical")
-                lever = (" The lever that works here is sending fewer bytes: the int16 encoding cuts "
-                         f"{r.fmt('pipeline', 'int16_encoding.bytes_saved_pct', 'pct')}% of them"
-                         + (" with identical outputs." if same else ", though its outputs differ from the int32 pass."))
             out += ["## Two cards, one bottleneck", "",
-                    why + f"Measured, it does not: {rates}. Whatever they share upstream of their own links sets the ceiling." + lever, ""]
+                    why + f"Measured, it does not: {rates}. Whatever they share upstream of their own links sets the ceiling."
+                    + earlier + lever, ""]
         else:
             out += ["## Two cards", "",
                     why + f"Measured, {'it nearly does' if kind == 'scales' else 'it partly does'}: {rates}. Two cards run the whole "
-                    f"pipeline {r.fmt('pipeline', 'two_gpu.speedup', 'num')} times as fast as one.", ""]
+                    f"pipeline {r.fmt('pipeline', 'two_gpu.speedup', 'num')} times as fast as one." + earlier + lever, ""]
     if r.has("native_engine"):
         out += ["## A C++ core beside the Python engine", "",
                 "The Python engine stays the reference: it is clear, exact in Decimal, and the fuzzer's reference book checks it. The C++20 "
@@ -1375,15 +1418,21 @@ def phase2_questions(r: Renderer) -> List[Tuple[str, str]]:
                  f"{r.fmt('pipeline', 'two_gpu.h2d_gbs_two_gpu_aggregate', 'gbs')} GB/s on two together, and `nvidia-smi topo -m` reports "
                  f"their connection as `{link}`, {meaning}")
         if two_gpu_kind(t) in ("none", "barely"):
+            e2 = earlier_two_gpu(r)
             qa.append(("Why did the second T4 not speed up the pipeline?",
                        ("Because the pipeline is transfer-bound and the copies hit a limit both cards share: " if transfer_bound(r) else
                         "Because the copies hit a limit both cards share: ") + moved + "."
                        + (" A second card adds compute, which this pipeline barely uses; sending fewer bytes is what helps."
-                          if transfer_bound(r) else "")))
+                          if transfer_bound(r) else "")
+                       + (f" An earlier run on another Kaggle machine that reported the same topology {KIND_SHORT[e2[1]]}, so the "
+                          "answer depends on the machine." if e2 else "")))
         else:
+            e2 = earlier_two_gpu(r)
             qa.append(("What did the second T4 buy?",
                        f"Copy bandwidth: {moved}. The whole pipeline ran {r.fmt('pipeline', 'two_gpu.speedup', 'num')} times as fast "
-                       "on two cards as on one."))
+                       "on two cards as on one."
+                       + (f" An earlier run on another Kaggle machine that reported the same topology {KIND_SHORT[e2[1]]}, so the "
+                          "answer depends on the machine, not on what `nvidia-smi topo -m` prints." if e2 else "")))
     e = r.get("pipeline", "int16_encoding") or {}
     if e.get("ok") and "e2e_ms" in e:
         qa.append(("What did narrowing prices to int16 buy?",

@@ -223,3 +223,33 @@ def test_went_wrong_reads_tags_only_where_entries_carry_them() -> None:
         "- 2026-10-21 13:00 [went-wrong][biggest] New big problem.",
     ])
     assert render_docs.went_wrong(log) == ["New big problem.", "Old big problem.", "Smaller problem."]
+
+
+def test_an_earlier_run_with_a_different_second_card_verdict_is_named(tree: Path, monkeypatch) -> None:
+    """Two fixture runs (values made up): the newer one scales on two cards, the older one did not."""
+    monkeypatch.setattr(render_docs, "REPO", tree)
+    newer = tree / "results" / "fixture-run"
+    older = tree / "results" / "fixture-older"
+    shutil.copytree(newer, older)
+
+    def set_two_gpu(run_dir: Path, aggregate: float, speedup: float, started: float) -> None:
+        met = json.loads((run_dir / "metrics.json").read_text(encoding="utf-8"))
+        met["sections"].setdefault("pipeline", {})["two_gpu"] = {
+            "attempted": True, "ok": True, "speedup": speedup, "one_gpu_ms": {"median_ms": 56.0, "iqr_ms": 0.5},
+            "two_gpu_ms": {"median_ms": 56.0 / speedup, "iqr_ms": 0.5}, "h2d_gbs_one_gpu": 12.0,
+            "h2d_gbs_two_gpu_aggregate": aggregate, "h2d_aggregate_vs_one_gpu": aggregate / 12.0,
+            "topology": {"links": {"GPU0-GPU1": "PHB"}}}
+        (run_dir / "metrics.json").write_text(json.dumps(met), encoding="utf-8")
+        man = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
+        man["started_unix"] = started
+        (run_dir / "manifest.json").write_text(json.dumps(man), encoding="utf-8")
+
+    set_two_gpu(older, 12.0, 1.0, 1000.0)
+    set_two_gpu(newer, 24.0, 2.0, 2000.0)
+    assert _render(tree) == 0
+    bench = (tree / "BENCHMARKS.md").read_text(encoding="utf-8")
+    assert "An earlier full run, `fixture-older`, on another Kaggle host" in bench
+    assert "found that two cards copied no faster than one" in bench
+    assert "showed no gain, so the answer depends on the machine" in (tree / "INTERVIEW_NOTES.md").read_text(encoding="utf-8")
+    assert "`fixture-older`" in (tree / "DESIGN.md").read_text(encoding="utf-8")
+    assert check_numbers.main(["--root", str(tree), "--results", str(tree / "results")]) == 0
